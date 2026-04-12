@@ -51,7 +51,7 @@ export function GlobalHeader() {
   ];
 
   const triggerNode = (
-    <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150 min-h-[40px]">
+    <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150 min-h-10">
       {user?.photoURL ? (
         <Image
           src={user.photoURL}
