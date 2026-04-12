@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { type LucideIcon, CheckIcon } from "lucide-react";
-import Button from "@/components/Button";
+import { Button } from "@/components/Button";
 import { classes } from "@/lib/classes";
 
 export type MenuItem = {
