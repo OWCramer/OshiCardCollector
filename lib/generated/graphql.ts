@@ -96,6 +96,22 @@ export type CardFilter = {
   tag?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CardSort = {
+  field: CardSortField;
+  order?: InputMaybe<SortOrder>;
+};
+
+export enum CardSortField {
+  CardNumber = 'CARD_NUMBER',
+  CardType = 'CARD_TYPE',
+  Color = 'COLOR',
+  Hp = 'HP',
+  Id = 'ID',
+  Name = 'NAME',
+  Rarity = 'RARITY',
+  ReleaseDate = 'RELEASE_DATE'
+}
+
 export enum CardType {
   Cheer = 'CHEER',
   Holomem = 'HOLOMEM',
@@ -144,7 +160,7 @@ export type Query = {
   __typename?: 'Query';
   /** Get a single card by ID or card number */
   card?: Maybe<Card>;
-  /** Search and filter cards with pagination */
+  /** Search and filter cards with pagination. Use pageSize: 0 to fetch all matching cards. */
   cards: CardConnection;
   /** List all unique colors */
   colors: Array<Scalars['String']['output']>;
@@ -169,7 +185,13 @@ export type QueryCardsArgs = {
   filter?: InputMaybe<CardFilter>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<CardSort>;
 };
+
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}
 
 export enum SupportType {
   Event = 'EVENT',
