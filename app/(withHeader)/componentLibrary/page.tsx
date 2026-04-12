@@ -1,14 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/Button";
-import Menu from "@/components/Menu";
-import Dropdown from "@/components/Dropdown";
-import Input from "@/components/Input";
-import Checkbox from "@/components/Checkbox";
-import Modal from "@/components/Modal";
-import Tabs from "@/components/Tabs";
-import { SettingsIcon, TrashIcon, PencilIcon, SunIcon, MoonIcon, SunMoonIcon, LayersIcon, GridIcon, ListIcon, BookmarkIcon } from "lucide-react";
+import { Button } from "@/components/Button";
+import { Menu } from "@/components/Menu";
+import { Dropdown } from "@/components/Dropdown";
+import { Input } from "@/components/Input";
+import { Checkbox } from "@/components/Checkbox";
+import { Modal } from "@/components/Modal";
+import { Tabs } from "@/components/Tabs";
+import {
+  SettingsIcon,
+  TrashIcon,
+  PencilIcon,
+  SunIcon,
+  MoonIcon,
+  SunMoonIcon,
+  LayersIcon,
+  GridIcon,
+  ListIcon,
+  BookmarkIcon,
+} from "lucide-react";
 
 export default function ComponentPage() {
   const [fruit, setFruit] = useState("apple");
@@ -25,7 +36,6 @@ export default function ComponentPage() {
 
   return (
     <div className="p-8 flex flex-col gap-12">
-
       {/* Buttons */}
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Button</h2>
@@ -37,10 +47,16 @@ export default function ComponentPage() {
           />
           <div className="absolute inset-0 flex gap-3 items-center justify-center flex-wrap p-6">
             <Button highContrast={false}>Primary</Button>
-            <Button variant="secondary" highContrast={false}>Secondary</Button>
-            <Button variant="transparent" highContrast={false}>Transparent</Button>
+            <Button variant="secondary" highContrast={false}>
+              Secondary
+            </Button>
+            <Button variant="transparent" highContrast={false}>
+              Transparent
+            </Button>
             <Button icon={SettingsIcon} highContrast={false} />
-            <Button icon={PencilIcon} highContrast={false}>Edit</Button>
+            <Button icon={PencilIcon} highContrast={false}>
+              Edit
+            </Button>
           </div>
         </div>
       </section>
@@ -88,22 +104,42 @@ export default function ComponentPage() {
         <h2 className="text-lg font-semibold">Modal</h2>
         <div>
           <div className="flex gap-3">
-            <Button onClick={() => setModalOpen(true)} highContrast>Open Modal</Button>
-            <Button variant="destructive" onClick={() => setDeleteModalOpen(true)}>Delete Item</Button>
+            <Button onClick={() => setModalOpen(true)} highContrast>
+              Open Modal
+            </Button>
+            <Button variant="destructive" onClick={() => setDeleteModalOpen(true)}>
+              Delete Item
+            </Button>
           </div>
 
           <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Modal Title">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">This is a modal. Click outside or press Escape to close.</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+              This is a modal. Click outside or press Escape to close.
+            </p>
             <div className="flex gap-2 justify-end">
-              <Button variant="transparent" highContrast onClick={() => setModalOpen(false)}>Cancel</Button>
-              <Button highContrast onClick={() => setModalOpen(false)}>Confirm</Button>
+              <Button variant="transparent" highContrast onClick={() => setModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button highContrast onClick={() => setModalOpen(false)}>
+                Confirm
+              </Button>
             </div>
           </Modal>
-          <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Delete Item">
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+          <Modal
+            isOpen={deleteModalOpen}
+            onClose={() => setDeleteModalOpen(false)}
+            title="Delete Item"
+          >
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
+              Are you sure you want to delete this item? This action cannot be undone.
+            </p>
             <div className="flex gap-2 justify-end">
-              <Button variant="transparent" highContrast onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
-              <Button variant="destructive" onClick={() => setDeleteModalOpen(false)}>Delete</Button>
+              <Button variant="transparent" highContrast onClick={() => setDeleteModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={() => setDeleteModalOpen(false)}>
+                Delete
+              </Button>
             </div>
           </Modal>
         </div>
@@ -150,7 +186,11 @@ export default function ComponentPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Input</h2>
         <div className="flex gap-4 items-end flex-wrap">
-          <Input placeholder="Default..." value={inputVal} onChange={(e) => setInputVal(e.target.value)} />
+          <Input
+            placeholder="Default..."
+            value={inputVal}
+            onChange={(e) => setInputVal(e.target.value)}
+          />
           <Input label="With Label" placeholder="Enter value..." />
           <Input label="Disabled" placeholder="Can't touch this" disabled />
           <Input label="Password" type="password" placeholder="••••••••" />
@@ -165,7 +205,12 @@ export default function ComponentPage() {
           <Checkbox checked={checked2} onCheckedChange={setChecked2} label="Checked" />
           <Checkbox checked={checked3} onCheckedChange={setChecked3} label="With a longer label" />
           <Checkbox checked={true} onCheckedChange={() => {}} label="Disabled checked" disabled />
-          <Checkbox checked={false} onCheckedChange={() => {}} label="Disabled unchecked" disabled />
+          <Checkbox
+            checked={false}
+            onCheckedChange={() => {}}
+            label="Disabled unchecked"
+            disabled
+          />
         </div>
       </section>
 
@@ -173,7 +218,6 @@ export default function ComponentPage() {
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Menu</h2>
         <div className="flex gap-4 items-center flex-wrap">
-
           {/* Icon trigger */}
           <Menu
             icon={SettingsIcon}
@@ -235,10 +279,8 @@ export default function ComponentPage() {
               Custom Trigger
             </div>
           </Menu>
-
         </div>
       </section>
-
     </div>
   );
 }

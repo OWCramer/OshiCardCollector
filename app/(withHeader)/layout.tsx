@@ -1,4 +1,4 @@
-import GlobalHeader from "@/components/GlobalHeader";
+import { GlobalHeader } from "@/components/GlobalHeader";
 import { ReactNode } from "react";
 
 export default function WithHeaderLayout({ children }: { children: ReactNode }) {

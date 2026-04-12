@@ -5,10 +5,10 @@ import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/lib/theme-context";
 import { signOutUser } from "@/lib/firebase";
 import Image from "next/image";
-import Menu, { type MenuSection } from "@/components/Menu";
+import { Menu, type MenuSection } from "@/components/Menu";
 import { LogOutIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 
-export default function GlobalHeader() {
+export function GlobalHeader() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -22,16 +22,29 @@ export default function GlobalHeader() {
     {
       label: "Theme",
       items: [
-        { label: "Light", icon: SunIcon, active: theme === "light", onClick: () => setTheme("light") },
-        { label: "Dark", icon: MoonIcon, active: theme === "dark", onClick: () => setTheme("dark") },
-        { label: "System", icon: SunMoonIcon, active: theme === "system", onClick: () => setTheme("system") },
+        {
+          label: "Light",
+          icon: SunIcon,
+          active: theme === "light",
+          onClick: () => setTheme("light"),
+        },
+        {
+          label: "Dark",
+          icon: MoonIcon,
+          active: theme === "dark",
+          onClick: () => setTheme("dark"),
+        },
+        {
+          label: "System",
+          icon: SunMoonIcon,
+          active: theme === "system",
+          onClick: () => setTheme("system"),
+        },
       ],
     },
     {
       label: "Account",
-      items: [
-        { label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut },
-      ],
+      items: [{ label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut }],
     },
   ];
 

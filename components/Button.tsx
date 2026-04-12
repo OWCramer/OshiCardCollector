@@ -15,7 +15,7 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-export default function Button({
+export function Button({
   onClick,
   children,
   className,

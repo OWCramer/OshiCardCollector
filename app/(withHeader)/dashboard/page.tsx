@@ -1,39 +1,42 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useAuth } from "@/lib/auth-context";
 import { useGetAllCardsQuery } from "@/generated/graphql";
-import { ItemCard, CARD_SIZES, type CardSize } from "@/components/Card";
-import { useBreakpoint } from "@/lib/useBreakpoint";
+import { ItemCard, CARD_SIZES } from "@/components/Card";
+
+const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_SIZES["lg"];
+const GAP = 20;
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { data, loading, fetchMore } = useGetAllCardsQuery({ variables: { page: 1, pageSize: 100 } });
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const isFetchingMore = useRef(false);
-
-  const isSm = useBreakpoint("sm");
-  const isLg = useBreakpoint("lg");
-  const isXl = useBreakpoint("xl");
-
-  const size: CardSize = isXl ? "xl" : isLg ? "lg" : isSm ? "md" : "sm";
-  const cardWidth = CARD_SIZES[size].width;
-
-  const pageInfo = data?.cards.pageInfo;
+  const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [columns, setColumns] = useState(1);
+  const [scrollMargin, setScrollMargin] = useState(0);
 
   useEffect(() => {
-    if (!sentinelRef.current) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && pageInfo?.hasNextPage && !isFetchingMore.current) {
-        isFetchingMore.current = true;
-        fetchMore({ variables: { page: pageInfo.currentPage + 1 } }).finally(() => {
-          isFetchingMore.current = false;
-        });
-      }
-    }, { rootMargin: "800px" });
-    observer.observe(sentinelRef.current);
+    const el = gridRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const cols = Math.max(1, Math.floor((entry.contentRect.width + GAP) / (CARD_WIDTH + GAP)));
+      setColumns(cols);
+      setScrollMargin(el.offsetTop);
+    });
+    observer.observe(el);
     return () => observer.disconnect();
-  }, [pageInfo, fetchMore]);
+  }, []);
+
+  const cards = data?.cards.nodes ?? [];
+  const rowCount = Math.ceil(cards.length / columns);
+
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rowCount,
+    estimateSize: () => CARD_HEIGHT + GAP,
+    overscan: 5,
+    scrollMargin,
+  });
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
@@ -42,16 +45,31 @@ export default function DashboardPage() {
           Welcome, {user?.displayName}. Your collection dashboard is ready.
         </p>
 
-        <div
-          className="grid gap-5 justify-center"
-          style={{ gridTemplateColumns: `repeat(auto-fill, ${cardWidth}px)` }}
-        >
-          {data?.cards.nodes.map((card) => (
-            <ItemCard key={card.id} card={card} size={size} />
-          ))}
+        <div ref={gridRef} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const startIndex = virtualRow.index * columns;
+            const rowCards = cards.slice(startIndex, startIndex + columns);
+            return (
+              <div
+                key={virtualRow.key}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: virtualRow.size,
+                  transform: `translateY(${virtualRow.start - rowVirtualizer.options.scrollMargin}px)`,
+                }}
+              >
+                <div className="flex gap-5 justify-center">
+                  {rowCards.map((card) => (
+                    <ItemCard key={card.id} card={card} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        <div ref={sentinelRef} className="h-1" />
 
         {loading && (
           <div className="flex justify-center py-4">
