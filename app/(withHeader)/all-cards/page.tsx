@@ -47,7 +47,12 @@ function FilterControls() {
       <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
         Rarity
       </label>
-      <Dropdown value={rarity} items={RARITY_OPTIONS} onValueChange={setRarity} className="w-full" />
+      <Dropdown
+        value={rarity}
+        items={RARITY_OPTIONS}
+        onValueChange={setRarity}
+        className="w-full"
+      />
       <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
         Set
       </label>
@@ -101,6 +106,8 @@ export default function AllCardsPage() {
       searchEl.style.top = "";
       searchEl.style.width = "";
       searchEl.style.zIndex = "";
+      sidebarSlot.style.height = "0";
+      sidebarSlot.style.marginBottom = "0";
       return;
     }
 
@@ -114,6 +121,10 @@ export default function AllCardsPage() {
     searchEl.style.top = `${y}px`;
     searchEl.style.width = `${w}px`;
     searchEl.style.zIndex = "35";
+
+    // Animate sidebar slot height to push filters down smoothly
+    sidebarSlot.style.height = `${lerp(0, 36, t)}px`;
+    sidebarSlot.style.marginBottom = `${lerp(0, 16, t)}px`;
   }, [isLg]);
 
   useEffect(() => {
@@ -214,7 +225,7 @@ export default function AllCardsPage() {
 
         {/* Mobile: sticky search bar + filter button */}
         {!isLg && (
-          <div className="sticky top-[49px] z-30 -mx-6 -mt-6 mb-4 flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-black/80 backdrop-blur-md px-6 py-3">
+          <div className="sticky top-15.25 z-30 -mx-6 -mt-6 mb-4 flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-black/80 backdrop-blur-md px-6 py-3">
             <Input
               placeholder="Search cards..."
               value={query}
@@ -233,9 +244,9 @@ export default function AllCardsPage() {
         {/* Desktop: sidebar + grid layout */}
         {isLg ? (
           <div className="flex gap-6">
-            <aside className="sticky top-[81px] self-start w-56 shrink-0">
+            <aside className="sticky top-20.25 self-start w-56 shrink-0">
               {/* Sidebar slot (measurement target for search bar destination) */}
-              <div ref={sidebarSlotRef} className="mb-4">
+              <div ref={sidebarSlotRef} style={{ height: 0, overflow: "hidden" }}>
                 <div style={{ height: 36 }} />
               </div>
               <FilterControls />

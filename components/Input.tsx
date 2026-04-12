@@ -14,7 +14,7 @@ export function Input({ className, highContrast = true, label, ...props }: Input
       <input
         {...props}
         className={classes(
-          "h-9 px-4 w-full rounded-xl outline-none transition-all duration-150",
+          "h-9 px-4 w-full rounded-xl outline-none transition-all duration-150 backdrop-blur-md backdrop-saturate-150",
           "ring-1 ring-inset",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           highContrast
