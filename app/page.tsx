@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Button from "@/components/Button";
 
 export default function Home() {
   return (
@@ -10,12 +10,7 @@ export default function Home() {
         <p className="max-w-md text-lg text-zinc-600 dark:text-zinc-400">
           Track and manage your card collection in one place.
         </p>
-        <Link
-          href="/dashboard"
-          className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          Get Started
-        </Link>
+        <Button href="/dashboard">Get Started</Button>
       </main>
     </div>
   );
