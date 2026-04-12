@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { signInWithGoogle } from "@/lib/firebase";
+import { ThemeToggle } from "@/lib/theme-toggle";
 
 export default function LoginPage() {
   const { user, loading } = useAuth();
@@ -24,7 +25,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
+    <div className="relative flex flex-1 items-center justify-center bg-zinc-50 dark:bg-black">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-sm space-y-8 px-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
