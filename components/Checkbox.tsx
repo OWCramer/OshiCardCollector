@@ -1,4 +1,5 @@
 import { CheckIcon } from "lucide-react";
+import { classes } from "@/lib/classes";
 
 interface CheckboxProps {
   checked: boolean;

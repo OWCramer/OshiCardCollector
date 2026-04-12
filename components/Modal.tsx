@@ -18,7 +18,7 @@ interface ModalProps {
 export default function Modal({ isOpen, onClose, onOpen, children, className, title }: ModalProps) {
   useEffect(() => {
     if (isOpen) onOpen?.();
-  }, [isOpen]);
+  }, [isOpen, onOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -39,15 +39,13 @@ export default function Modal({ isOpen, onClose, onOpen, children, className, ti
 
   if (!isOpen) return null;
 
-  const root = typeof document !== "undefined" ? document.getElementById("modal-root") : null;
+  const root = document.getElementById("modal-root");
   if (!root) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" aria-modal="true" role="dialog">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Panel */}
       <div className={classes(
         "relative z-10 w-full sm:max-w-lg min-h-0 max-h-[90dvh] flex flex-col",
         "bg-white dark:bg-zinc-900",
@@ -56,15 +54,11 @@ export default function Modal({ isOpen, onClose, onOpen, children, className, ti
         "shadow-xl overflow-hidden",
         className
       )}>
-        {/* Top bar */}
-        <div className="flex items-center justify-between p-4 pb-0 shrink-0">
-          {title ? (
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-white">{title}</h2>
-          ) : <div />}
+        <div className={classes("flex items-center p-4 pb-0 shrink-0", title ? "justify-between" : "justify-end")}>
+          {title && <h2 className="text-base font-semibold text-zinc-900 dark:text-white">{title}</h2>}
           <Button icon={XIcon} variant="transparent" highContrast onClick={onClose} />
         </div>
 
-        {/* Content */}
         <div className="p-4 overflow-y-auto">
           {children}
         </div>

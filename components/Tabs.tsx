@@ -1,4 +1,5 @@
 import { type LucideIcon } from "lucide-react";
+import { classes } from "@/lib/classes";
 
 export type Tab<T extends string = string> = {
   value: T;

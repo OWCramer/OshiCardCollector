@@ -12,6 +12,7 @@ interface ButtonProps {
   iconSize?: number;
   highContrast?: boolean;
   href?: string;
+  disabled?: boolean;
 }
 
 export default function Button({
@@ -23,6 +24,7 @@ export default function Button({
   iconSize = 16,
   highContrast = false,
   href,
+  disabled,
 }: ButtonProps) {
   const iconOnly = !!Icon && !children;
 
@@ -37,6 +39,7 @@ export default function Button({
     variant === "transparent" && "hover:dark:bg-white/10 hover:bg-black/10",
     variant === "destructive" && "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50",
     variant !== "destructive" && highContrast && "ring-black/10 dark:ring-white/15 text-black dark:text-white",
+    disabled && "opacity-50 cursor-not-allowed pointer-events-none",
     className
   );
 
@@ -52,7 +55,7 @@ export default function Button({
   }
 
   return (
-    <button onClick={onClick} className={resolvedClass}>
+    <button onClick={onClick} disabled={disabled} className={resolvedClass}>
       {content}
     </button>
   );

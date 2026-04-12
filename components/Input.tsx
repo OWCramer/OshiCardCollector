@@ -1,4 +1,5 @@
 import { InputHTMLAttributes } from "react";
+import { classes } from "@/lib/classes";
 
 interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "className"> {
   className?: string;
