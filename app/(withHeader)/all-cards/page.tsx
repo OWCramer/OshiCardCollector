@@ -94,15 +94,20 @@ export default function AllCardsPage() {
     const topRect = topSlot.getBoundingClientRect();
     const sidebarRect = sidebarSlot.getBoundingClientRect();
 
+    // At scroll top, use normal flow so it rubber-bands with the page
+    if (t === 0) {
+      searchEl.style.position = "";
+      searchEl.style.left = "";
+      searchEl.style.top = "";
+      searchEl.style.width = "";
+      searchEl.style.zIndex = "";
+      return;
+    }
+
     // Interpolate position and width
     const x = lerp(topRect.left, sidebarRect.left, t);
-    let y = lerp(topRect.top, sidebarRect.top, t);
+    const y = lerp(topRect.top, sidebarRect.top, t);
     const w = lerp(topRect.width, sidebarRect.width, t);
-
-    // Follow overscroll bounce (negative scrollY on rubber-band)
-    if (window.scrollY < 0) {
-      y = topRect.top;
-    }
 
     searchEl.style.position = "fixed";
     searchEl.style.left = `${x}px`;
@@ -193,22 +198,17 @@ export default function AllCardsPage() {
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
       <main className="flex-1 p-6">
-        {/* Desktop: the actual search bar (position controlled by JS) */}
+        {/* Desktop: top slot contains the search bar */}
         {isLg && (
-          <div ref={searchRef}>
-            <Input
-              placeholder="Search cards..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-        )}
-
-        {/* Desktop: top slot (reserves space, provides measurement target) */}
-        {isLg && (
-          <div className="mb-4" ref={topSlotRef}>
-            <div style={{ height: 36 }} />
+          <div className="mb-4" ref={topSlotRef} style={{ minHeight: 36 }}>
+            <div ref={searchRef}>
+              <Input
+                placeholder="Search cards..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
           </div>
         )}
 
