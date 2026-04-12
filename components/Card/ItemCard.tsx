@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
 import { animate } from "animejs";
 import Image from "next/image";
 import type { GetAllCardsQuery } from "@/generated/graphql";
@@ -23,6 +24,7 @@ interface ItemCardProps {
 
 export function ItemCard({ card, size = "lg" }: ItemCardProps) {
   const cardRef = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
   const { width, height } = CARD_SIZES[size];
 
   function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
@@ -46,6 +48,7 @@ export function ItemCard({ card, size = "lg" }: ItemCardProps) {
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onClick={() => router.push(`/card/${card.id}`)}
         style={{ transformStyle: "preserve-3d", willChange: "transform" }}
         className="rounded-lg overflow-hidden cursor-pointer"
       >
