@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/lib/theme-context";
+import ApolloClientProvider from "@/lib/apollo-provider";
 import "./globals.css";
 import {ReactNode} from "react";
 
@@ -39,11 +40,16 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ThemeProvider>
+        <ApolloClientProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <div id="app-root" className="min-h-full flex flex-col">
+                {children}
+              </div>
+            </AuthProvider>
+          </ThemeProvider>
+        </ApolloClientProvider>
+        <div id="modal-root" />
       </body>
     </html>
   );
