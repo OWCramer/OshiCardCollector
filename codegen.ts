@@ -1,13 +1,9 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "https://oshicardapi.luisrvervaet.workers.dev/graphql",
+  schema: "https://api.oshi.cards/graphql",
   ignoreNoDocuments: true,
-  documents: [
-    "app/**/*.{ts,tsx}",
-    "components/**/*.{ts,tsx}",
-    "lib/**/*.{ts,tsx}",
-  ],
+  documents: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
   generates: {
     "lib/generated/graphql.ts": {
       plugins: [

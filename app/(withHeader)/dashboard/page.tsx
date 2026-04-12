@@ -3,27 +3,37 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useGetAllCardsQuery } from "@/lib/generated/graphql";
-import { ItemCard } from "@/components/Card";
+import { ItemCard, CARD_SIZES, type CardSize } from "@/components/Card";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { data, loading, fetchMore } = useGetAllCardsQuery({ variables: { page: 1 } });
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const isFetchingMore = useRef(false);
+
+  const isSm = useBreakpoint("sm");
+  const isLg = useBreakpoint("lg");
+  const isXl = useBreakpoint("xl");
+
+  const size: CardSize = isXl ? "xl" : isLg ? "lg" : isSm ? "md" : "sm";
+  const cardWidth = CARD_SIZES[size].width;
 
   const pageInfo = data?.cards.pageInfo;
 
   useEffect(() => {
     if (!sentinelRef.current) return;
-
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && pageInfo?.hasNextPage && !loading) {
-        fetchMore({ variables: { page: pageInfo.currentPage + 1 } });
+      if (entries[0].isIntersecting && pageInfo?.hasNextPage && !isFetchingMore.current) {
+        isFetchingMore.current = true;
+        fetchMore({ variables: { page: pageInfo.currentPage + 1 } }).finally(() => {
+          isFetchingMore.current = false;
+        });
       }
     }, { rootMargin: "800px" });
-
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [pageInfo, loading, fetchMore]);
+  }, [pageInfo, fetchMore]);
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
@@ -32,12 +42,13 @@ export default function DashboardPage() {
           Welcome, {user?.displayName}. Your collection dashboard is ready.
         </p>
 
-        <div className="flex w-full justify-center">
-          <div className="grid grid-cols-5 gap-5 w-2/3">
-            {data?.cards.nodes.map((card) => (
-              <ItemCard key={card.id} card={card} />
-            ))}
-          </div>
+        <div
+          className="grid gap-5 justify-center"
+          style={{ gridTemplateColumns: `repeat(auto-fill, ${cardWidth}px)` }}
+        >
+          {data?.cards.nodes.map((card) => (
+            <ItemCard key={card.id} card={card} size={size} />
+          ))}
         </div>
 
         <div ref={sentinelRef} className="h-1" />

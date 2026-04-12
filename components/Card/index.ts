@@ -1,1 +1,1 @@
-export {ItemCard} from './ItemCard'
+export { ItemCard, CARD_SIZES, type CardSize } from "./ItemCard";
