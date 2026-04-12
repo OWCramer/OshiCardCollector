@@ -1,37 +1,52 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/lib/theme-context";
 import { signOutUser } from "@/lib/firebase";
 import Image from "next/image";
-import Menu, { type MenuSection } from "@/components/Menu";
+import { Menu, type MenuSection } from "@/components/Menu";
+import { Button } from "@/components/Button";
 import { LogOutIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 
-export default function GlobalHeader() {
+export function GlobalHeader() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
 
   async function handleSignOut() {
     await signOutUser();
-    router.push("/");
+    router.push("/all-cards");
   }
 
   const sections: MenuSection[] = [
     {
       label: "Theme",
       items: [
-        { label: "Light", icon: SunIcon, active: theme === "light", onClick: () => setTheme("light") },
-        { label: "Dark", icon: MoonIcon, active: theme === "dark", onClick: () => setTheme("dark") },
-        { label: "System", icon: SunMoonIcon, active: theme === "system", onClick: () => setTheme("system") },
+        {
+          label: "Light",
+          icon: SunIcon,
+          active: theme === "light",
+          onClick: () => setTheme("light"),
+        },
+        {
+          label: "Dark",
+          icon: MoonIcon,
+          active: theme === "dark",
+          onClick: () => setTheme("dark"),
+        },
+        {
+          label: "System",
+          icon: SunMoonIcon,
+          active: theme === "system",
+          onClick: () => setTheme("system"),
+        },
       ],
     },
     {
       label: "Account",
-      items: [
-        { label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut },
-      ],
+      items: [{ label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut }],
     },
   ];
 
@@ -59,10 +74,21 @@ export default function GlobalHeader() {
 
   return (
     <header className="sticky top-0 z-40 flex items-center justify-between border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
-      <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Dashboard</h1>
-      <Menu sections={sections} align="right" menuClassName="w-44">
-        {triggerNode}
-      </Menu>
+      <Link
+        href={user ? "/all-cards" : "/"}
+        className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity"
+      >
+        oshi.cards
+      </Link>
+      {user ? (
+        <Menu sections={sections} align="right" menuClassName="w-44">
+          {triggerNode}
+        </Menu>
+      ) : (
+        <Button href="/login" variant="transparent" highContrast>
+          Sign in
+        </Button>
+      )}
     </header>
   );
 }

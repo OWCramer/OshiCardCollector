@@ -10,7 +10,7 @@ interface CheckboxProps {
   disabled?: boolean;
 }
 
-export default function Checkbox({ checked, onCheckedChange, label, className, highContrast = true, disabled = false }: CheckboxProps) {
+export function Checkbox({ checked, onCheckedChange, label, className, highContrast = true, disabled = false }: CheckboxProps) {
   return (
     <label className={classes(
       "flex items-center gap-2.5 w-fit select-none",

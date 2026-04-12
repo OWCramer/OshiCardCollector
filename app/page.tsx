@@ -1,4 +1,4 @@
-import Button from "@/components/Button";
+import { Button } from "@/components/Button";
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
         <p className="max-w-md text-lg text-zinc-600 dark:text-zinc-400">
           Track and manage your card collection in one place.
         </p>
-        <Button href="/dashboard">Get Started</Button>
+        <Button href="/all-cards">Get Started</Button>
       </main>
     </div>
   );

@@ -21,7 +21,7 @@ interface ItemCardProps {
   size?: CardSize;
 }
 
-export function ItemCard({ card, size = "xl" }: ItemCardProps) {
+export function ItemCard({ card, size = "lg" }: ItemCardProps) {
   const cardRef = useRef<HTMLButtonElement>(null);
   const { width, height } = CARD_SIZES[size];
 

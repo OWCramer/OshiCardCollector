@@ -203,26 +203,21 @@ export enum SupportType {
 }
 
 export type GetAllCardsQueryVariables = Exact<{
-  page?: InputMaybe<Scalars['Int']['input']>;
+  filters?: InputMaybe<CardFilter>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', name: string, id: number, imageUrl?: string | null }>, pageInfo: { __typename?: 'PageInfo', currentPage: number, hasNextPage: boolean, totalPages: number } } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', name: string, id: number, imageUrl?: string | null }> } };
 
 
 export const GetAllCardsDocument = gql`
-    query GetAllCards($page: Int, $pageSize: Int) {
-  cards(filter: {}, page: $page, pageSize: $pageSize) {
+    query GetAllCards($filters: CardFilter, $pageSize: Int) {
+  cards(filter: $filters, pageSize: $pageSize) {
     nodes {
       name
       id
       imageUrl
-    }
-    pageInfo {
-      currentPage
-      hasNextPage
-      totalPages
     }
   }
 }
@@ -240,7 +235,7 @@ export const GetAllCardsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllCardsQuery({
  *   variables: {
- *      page: // value for 'page'
+ *      filters: // value for 'filters'
  *      pageSize: // value for 'pageSize'
  *   },
  * });
