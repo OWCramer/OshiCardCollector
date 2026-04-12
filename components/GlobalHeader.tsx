@@ -36,8 +36,8 @@ export default function GlobalHeader() {
   ];
 
   const triggerNode = (
-    <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150">
-      {user?.photoURL && (
+    <div className="flex items-center gap-3 px-4 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150 min-h-[40px]">
+      {user?.photoURL ? (
         <Image
           src={user.photoURL}
           alt="Profile image"
@@ -46,8 +46,14 @@ export default function GlobalHeader() {
           className="rounded-full"
           referrerPolicy="no-referrer"
         />
+      ) : (
+        <div className="h-7 w-7 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
       )}
-      <span className=" text-zinc-700 dark:text-zinc-300">{user?.displayName}</span>
+      {user?.displayName ? (
+        <span className="text-sm text-zinc-700 dark:text-zinc-300">{user.displayName}</span>
+      ) : (
+        <div className="h-3.5 w-24 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
+      )}
     </div>
   );
 
