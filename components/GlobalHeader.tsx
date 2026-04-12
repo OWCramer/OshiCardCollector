@@ -17,7 +17,7 @@ export function GlobalHeader() {
 
   async function handleSignOut() {
     await signOutUser();
-    router.push("/");
+    router.push("/all-cards");
   }
 
   const sections: MenuSection[] = [
@@ -85,7 +85,9 @@ export function GlobalHeader() {
           {triggerNode}
         </Menu>
       ) : (
-        <Button href="/login" size="sm">Sign in</Button>
+        <Button href="/login" variant="transparent" highContrast>
+          Sign in
+        </Button>
       )}
     </header>
   );
