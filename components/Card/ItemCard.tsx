@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { animate } from "animejs";
 import Image from "next/image";
-import { GetAllCardsQuery } from "@/lib/generated/graphql";
+import type { GetAllCardsQuery } from "@/generated/graphql";
 
 type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
