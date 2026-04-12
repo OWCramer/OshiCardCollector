@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { signOutUser } from "@/lib/firebase";
+import { ThemeToggle } from "@/lib/theme-toggle";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -33,9 +34,10 @@ export default function DashboardPage() {
               {user?.displayName}
             </span>
           </div>
+          <ThemeToggle />
           <button
             onClick={handleSignOut}
-            className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="cursor-pointer rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
           >
             Sign Out
           </button>
