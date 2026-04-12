@@ -204,6 +204,7 @@ export enum SupportType {
 
 export type GetAllCardsQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -211,8 +212,8 @@ export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'Ca
 
 
 export const GetAllCardsDocument = gql`
-    query GetAllCards($page: Int) {
-  cards(filter: {}, page: $page, pageSize: 100) {
+    query GetAllCards($page: Int, $pageSize: Int) {
+  cards(filter: {}, page: $page, pageSize: $pageSize) {
     nodes {
       name
       id
@@ -240,6 +241,7 @@ export const GetAllCardsDocument = gql`
  * const { data, loading, error } = useGetAllCardsQuery({
  *   variables: {
  *      page: // value for 'page'
+ *      pageSize: // value for 'pageSize'
  *   },
  * });
  */

@@ -3,9 +3,9 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 const config: CodegenConfig = {
   schema: "https://api.oshi.cards/graphql",
   ignoreNoDocuments: true,
-  documents: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"],
+  documents: ["graphql/**/*.{ts,tsx}"],
   generates: {
-    "lib/generated/graphql.ts": {
+    "generated/graphql.ts": {
       plugins: [
         { add: { content: "// @ts-nocheck" } },
         "typescript",

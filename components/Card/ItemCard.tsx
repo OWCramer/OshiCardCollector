@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { animate } from "animejs";
 import Image from "next/image";
-import { GetAllCardsQuery } from "@/lib/generated/graphql";
+import type { GetAllCardsQuery } from "@/generated/graphql";
 
 type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
@@ -22,10 +22,10 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ card, size = "xl" }: ItemCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLButtonElement>(null);
   const { width, height } = CARD_SIZES[size];
 
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+  function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
     const el = cardRef.current;
     if (!el) return;
     const { left, top, width: w, height: h } = el.getBoundingClientRect();
@@ -42,7 +42,7 @@ export function ItemCard({ card, size = "xl" }: ItemCardProps) {
 
   return (
     <div style={{ perspective: "600px", width, height }}>
-      <div
+      <button
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
@@ -58,7 +58,7 @@ export function ItemCard({ card, size = "xl" }: ItemCardProps) {
             height={height}
           />
         )}
-      </div>
+      </button>
     </div>
   );
 }

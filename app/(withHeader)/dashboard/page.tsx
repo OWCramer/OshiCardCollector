@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { useGetAllCardsQuery } from "@/lib/generated/graphql";
+import { useGetAllCardsQuery } from "@/generated/graphql";
 import { ItemCard, CARD_SIZES, type CardSize } from "@/components/Card";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { data, loading, fetchMore } = useGetAllCardsQuery({ variables: { page: 1 } });
+  const { data, loading, fetchMore } = useGetAllCardsQuery({ variables: { page: 1, pageSize: 100 } });
   const sentinelRef = useRef<HTMLDivElement>(null);
   const isFetchingMore = useRef(false);
 
