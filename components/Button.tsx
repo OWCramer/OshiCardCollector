@@ -5,7 +5,7 @@ interface ButtonProps {
   onClick?: () => void;
   children?: ReactNode;
   className?: string;
-  variant?: "primary" | "secondary" | "transparent";
+  variant?: "primary" | "secondary" | "transparent" | "destructive";
   icon?: LucideIcon;
   iconSize?: number;
   highContrast?: boolean;
@@ -31,10 +31,10 @@ export default function Button({
         "ring-1 ring-inset ring-white/10 dark:ring-black/15",
         "active:scale-[0.97]",
         variant === "primary" && "bg-blue-400/15 hover:bg-blue-400/25",
-        variant === "secondary" && "bg-white/10 hover:bg-white/20 ",
-        variant === "transparent" &&
-          " hover:dark:bg-white/10 hover:bg-black/10 text-black dark:text-white",
-        highContrast && "ring-black/10 dark:ring-white/15",
+        variant === "secondary" && "bg-white/10 hover:bg-white/20",
+        variant === "transparent" && "hover:dark:bg-white/10 hover:bg-black/10",
+        variant === "destructive" && "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50",
+        variant !== "destructive" && highContrast && "ring-black/10 dark:ring-white/15 text-black dark:text-white",
         className
       )}
     >
