@@ -7,7 +7,8 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import Checkbox from "@/components/Checkbox";
 import Modal from "@/components/Modal";
-import { SettingsIcon, TrashIcon, PencilIcon, SunIcon, MoonIcon, SunMoonIcon, LayersIcon } from "lucide-react";
+import Tabs from "@/components/Tabs";
+import { SettingsIcon, TrashIcon, PencilIcon, SunIcon, MoonIcon, SunMoonIcon, LayersIcon, GridIcon, ListIcon, BookmarkIcon } from "lucide-react";
 
 export default function ComponentPage() {
   const [fruit, setFruit] = useState("apple");
@@ -17,6 +18,8 @@ export default function ComponentPage() {
   const [checked1, setChecked1] = useState(false);
   const [checked2, setChecked2] = useState(true);
   const [checked3, setChecked3] = useState(false);
+  const [tab, setTab] = useState("collection");
+  const [viewTab, setViewTab] = useState("grid");
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -39,6 +42,44 @@ export default function ComponentPage() {
             <Button icon={SettingsIcon} highContrast={false} />
             <Button icon={PencilIcon} highContrast={false}>Edit</Button>
           </div>
+        </div>
+      </section>
+
+      {/* Tabs */}
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Tabs</h2>
+        <div className="flex flex-col gap-2">
+          <Tabs
+            value={tab}
+            onValueChange={setTab}
+            tabs={[
+              { value: "collection", label: "Collection" },
+              { value: "wishlist", label: "Wishlist" },
+              { value: "trades", label: "Trades" },
+            ]}
+          />
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 px-1">
+            {tab === "collection" && "Viewing your card collection."}
+            {tab === "wishlist" && "Cards you want to acquire."}
+            {tab === "trades" && "Active trade offers and history."}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Tabs
+            value={viewTab}
+            onValueChange={setViewTab}
+            tabs={[
+              { value: "grid", label: "Grid", icon: GridIcon },
+              { value: "list", label: "List", icon: ListIcon },
+              { value: "saved", label: "Saved", icon: BookmarkIcon },
+            ]}
+          />
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 px-1">
+            {viewTab === "grid" && "Cards displayed in a grid layout."}
+            {viewTab === "list" && "Cards displayed in a list layout."}
+            {viewTab === "saved" && "Your bookmarked cards."}
+          </p>
         </div>
       </section>
 
