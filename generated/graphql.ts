@@ -210,7 +210,7 @@ export type GetCardQueryVariables = Exact<{
 }>;
 
 
-export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: number | null, cost?: Array<string> | null, effectText?: string | null }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }> } | null };
+export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: number | null, cost?: Array<string> | null, effectText?: string | null }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }> } | null };
 
 export type GetAllCardsQueryVariables = Exact<{
   filters?: InputMaybe<CardFilter>;
@@ -257,6 +257,10 @@ export const GetCardDocument = gql`
       cost
       usageLimit
       effectText
+    }
+    qna {
+      question
+      answer
     }
   }
 }

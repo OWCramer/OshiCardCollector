@@ -8,6 +8,7 @@ import { CardHeader } from "./components/CardHeader";
 import { CardStats } from "./components/CardStats";
 import { ArtsList } from "./components/ArtsList";
 import { OshiSkillsList } from "./components/OshiSkillsList";
+import { QnaList } from "./components/QnaList";
 import { CardMeta } from "./components/CardMeta";
 
 export default function CardPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,7 +29,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="flex-1 p-8 max-w-4xl mx-auto w-full">
+      <main className="flex-1 p-8 max-w-4xl mx-auto w-full flex flex-col gap-4">
         <div className="flex gap-10">
           {card.imageUrl && (
             <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
@@ -39,7 +40,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               cardNumber={card.cardNumber}
               name={card.name}
               cardType={card.cardType}
-              color={card.color}
+              colors={card.colors}
               rarity={card.rarity}
               isBuzz={card.isBuzz}
               isLimited={card.isLimited}
@@ -61,7 +62,6 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
 
             <ArtsList arts={card.arts} />
             <OshiSkillsList oshiSkills={card.oshiSkills} />
-
             <CardMeta
               illustrator={card.illustrator}
               releaseDate={card.releaseDate}
@@ -69,6 +69,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             />
           </div>
         </div>
+        <QnaList qna={card.qna ?? []} />
       </main>
     </div>
   );

@@ -26,7 +26,7 @@ export function ArtsList({ arts }: ArtsListProps) {
           {art.cost && art.cost.length > 0 && (
             <div className="flex gap-1 mt-1">
               {art.cost.map((c, j) => (
-                <Image key={j} src={getArtCostImageSrc(c)} alt={c} width={20} height={20} title={c} />
+                <Image key={j} src={getArtCostImageSrc(c)} alt={c} width={145} height={145} title={c} className="w-5 h-5" />
               ))}
             </div>
           )}
