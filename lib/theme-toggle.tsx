@@ -1,35 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTheme, type Theme } from "@/lib/theme-context";
+import { type Theme, useTheme } from "@/lib/theme-context";
+import Button from "@/components/Button";
+import { CheckIcon, LucideIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 
-const options: { value: Theme; label: string; icon: React.ReactNode }[] = [
+const options: { value: Theme; label: string; icon: LucideIcon }[] = [
   {
     value: "light",
     label: "Light",
-    icon: (
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m16.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ),
+    icon: SunIcon,
   },
   {
     value: "dark",
     label: "Dark",
-    icon: (
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-    ),
+    icon: MoonIcon,
   },
   {
     value: "system",
     label: "System",
-    icon: (
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: SunMoonIcon,
   },
 ];
 
@@ -52,39 +42,35 @@ export function ThemeToggle() {
 
   return (
     <div className="relative" ref={ref}>
-      <button
+      <Button
         onClick={() => setOpen(!open)}
-        className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-300 px-2.5 py-1.5 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        className="flex items-center gap-1.5"
         aria-expanded={open}
         aria-haspopup="listbox"
+        variant="transparent"
+        icon={current.icon}
+        highContrast
       >
-        {current.icon}
         <span className="sr-only">Theme: {current.label}</span>
-      </button>
+      </Button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-1 w-36 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="absolute flex flex-col gap-1 right-0 z-50 mt-1 w-36 rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
           {options.map((option) => (
-            <button
+            <Button
               key={option.value}
               onClick={() => {
                 setTheme(option.value);
                 setOpen(false);
               }}
-              className={`flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
-                theme === option.value
-                  ? "text-zinc-900 dark:text-zinc-50"
-                  : "text-zinc-600 dark:text-zinc-400"
-              }`}
+              variant="transparent"
+              className="w-full ring-0 justify-start"
+              icon={option.icon}
             >
-              {option.icon}
+              <span className="sr-only">{option.label}</span>
               {option.label}
-              {theme === option.value && (
-                <svg className="ml-auto h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-            </button>
+              {theme === option.value && <CheckIcon className="ml-auto h-4 w-4" />}
+            </Button>
           ))}
         </div>
       )}
