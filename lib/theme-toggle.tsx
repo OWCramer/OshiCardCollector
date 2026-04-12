@@ -1,7 +1,7 @@
 "use client";
 
 import { type Theme, useTheme } from "@/lib/theme-context";
-import Menu, { type MenuItem } from "@/components/Menu";
+import { Menu, type MenuItem } from "@/components/Menu";
 import { MoonIcon, SunIcon, SunMoonIcon, type LucideIcon } from "lucide-react";
 
 const options: { value: Theme; label: string; icon: LucideIcon }[] = [

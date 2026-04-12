@@ -2,15 +2,13 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useAuth } from "@/lib/auth-context";
 import { useGetAllCardsQuery } from "@/generated/graphql";
 import { ItemCard, CARD_SIZES } from "@/components/Card";
 
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_SIZES["lg"];
 const GAP = 20;
 
-export default function DashboardPage() {
-  const { user } = useAuth();
+export default function AllCardsPage() {
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
   const gridRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(1);
@@ -40,11 +38,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="flex-1 p-6 space-y-4">
-        <p className="text-zinc-600 dark:text-zinc-400">
-          Welcome, {user?.displayName}. Your collection dashboard is ready.
-        </p>
-
+      <main className="flex-1 p-6">
         <div ref={gridRef} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const startIndex = virtualRow.index * columns;
