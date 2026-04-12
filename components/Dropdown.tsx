@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { type LucideIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
+import { classes } from "@/lib/classes";
 
 export type DropdownItem<T extends string = string> = {
   value: T;
@@ -29,6 +30,7 @@ export default function Dropdown<T extends string = string>({
   const current = items.find((i) => i.value === value);
 
   useEffect(() => {
+    if (!open) return;
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -36,11 +38,10 @@ export default function Dropdown<T extends string = string>({
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [open]);
 
   return (
     <div className={classes("relative w-48", className)} ref={ref}>
-      {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
         className={classes(
@@ -62,7 +63,6 @@ export default function Dropdown<T extends string = string>({
         />
       </button>
 
-      {/* Popout */}
       {open && (
         <div className={classes(
           "absolute z-50 mt-1 min-w-full w-max rounded-xl shadow-lg p-1",

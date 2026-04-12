@@ -92,16 +92,14 @@ export default function ComponentPage() {
             <Button variant="destructive" onClick={() => setDeleteModalOpen(true)}>Delete Item</Button>
           </div>
 
-          <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-2">Modal Title</h3>
+          <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Modal Title">
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">This is a modal. Click outside or press Escape to close.</p>
             <div className="flex gap-2 justify-end">
               <Button variant="transparent" highContrast onClick={() => setModalOpen(false)}>Cancel</Button>
               <Button highContrast onClick={() => setModalOpen(false)}>Confirm</Button>
             </div>
           </Modal>
-          <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-white mb-2">Delete Item</h3>
+          <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} title="Delete Item">
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
             <div className="flex gap-2 justify-end">
               <Button variant="transparent" highContrast onClick={() => setDeleteModalOpen(false)}>Cancel</Button>

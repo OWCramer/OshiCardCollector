@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
 import { type LucideIcon, CheckIcon } from "lucide-react";
 import Button from "@/components/Button";
+import { classes } from "@/lib/classes";
 
 export type MenuItem = {
   label: ReactNode;
@@ -38,6 +39,7 @@ export default function Menu({ items, sections, icon, trigger, children, classNa
   const resolvedSections: MenuSection[] = sections ?? (items ? [{ items }] : []);
 
   useEffect(() => {
+    if (!open) return;
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
@@ -45,7 +47,7 @@ export default function Menu({ items, sections, icon, trigger, children, classNa
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [open]);
 
   function handleOpen() {
     if (align === "auto" && ref.current) {
