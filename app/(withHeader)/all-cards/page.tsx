@@ -4,7 +4,7 @@ import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
 import { useGetAllCardsQuery } from "@/generated/graphql";
-import { ItemCard, CARD_SIZES } from "@/components/Card";
+import { ItemCard, CARD_SIZES, type CardSize } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Dropdown } from "@/components/Dropdown";
 import { Button } from "@/components/Button";
@@ -12,7 +12,6 @@ import { Modal } from "@/components/Modal";
 import { useSearch } from "@/hooks/useSearch";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 
-const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_SIZES["lg"];
 const GAP = 20;
 const SCROLL_RANGE = 80; // px of scroll over which the animation happens
 
@@ -72,10 +71,18 @@ function lerp(a: number, b: number, t: number) {
 export default function AllCardsPage() {
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
   const gridRef = useRef<HTMLDivElement>(null);
-  const [columns, setColumns] = useState(1);
+  const [containerWidth, setContainerWidth] = useState(0);
   const [scrollMargin, setScrollMargin] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const isMd = useBreakpoint("md");
   const isLg = useBreakpoint("lg");
+
+  // Calculate columns using sm size to determine if we can fit 2+
+  const smCols = Math.max(1, Math.floor((containerWidth + GAP) / (CARD_SIZES["sm"].width + GAP)));
+  // Use lg cards on md+ screens, or when only 1 column fits (so single cards are big)
+  const cardSize: CardSize = isMd || smCols <= 1 ? "lg" : "sm";
+  const { width: cardWidth, height: cardHeight } = CARD_SIZES[cardSize];
+  const columns = Math.max(1, Math.floor((containerWidth + GAP) / (cardWidth + GAP)));
 
   // Refs for scroll-linked search bar animation
   const searchRef = useRef<HTMLDivElement>(null);
@@ -156,13 +163,12 @@ export default function AllCardsPage() {
     };
   }, [isLg, updateSearchPosition]);
 
-  // Measure grid container for column count
+  // Track grid container width
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
     const observer = new ResizeObserver(([entry]) => {
-      const cols = Math.max(1, Math.floor((entry.contentRect.width + GAP) / (CARD_WIDTH + GAP)));
-      setColumns(cols);
+      setContainerWidth(entry.contentRect.width);
       setScrollMargin(el.offsetTop);
     });
     observer.observe(el);
@@ -173,7 +179,7 @@ export default function AllCardsPage() {
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rowCount,
-    estimateSize: () => CARD_HEIGHT + GAP,
+    estimateSize: () => cardHeight + GAP,
     overscan: 5,
     scrollMargin,
   });
@@ -197,7 +203,7 @@ export default function AllCardsPage() {
           >
             <div className="flex gap-5 justify-center">
               {rowCards.map((card) => (
-                <ItemCard key={card.id} card={card} />
+                <ItemCard key={card.id} card={card} size={cardSize} />
               ))}
             </div>
           </div>
