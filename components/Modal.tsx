@@ -3,7 +3,7 @@
 import { useEffect, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { XIcon } from "lucide-react";
-import Button from "@/components/Button";
+import { Button } from "@/components/Button";
 import { classes } from "@/lib/classes";
 
 interface ModalProps {
