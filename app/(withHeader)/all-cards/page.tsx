@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
 import { useGetAllCardsQuery } from "@/generated/graphql";
@@ -108,6 +108,14 @@ export default function AllCardsPage() {
   const searchOptions = useMemo(() => SEARCH_OPTIONS, []);
   const { query, setQuery, results } = useSearch(cards, searchOptions);
 
+  const handleSearch = useCallback(
+    (q: string) => {
+      setQuery(q);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    [setQuery],
+  );
+
   // Grid measurement
   const { ref: gridRef, columns, scrollMargin } = useGridColumns(CARD_WIDTH, GAP);
 
@@ -129,7 +137,7 @@ export default function AllCardsPage() {
         {/* ---- Desktop: search bar in top slot ---- */}
         {isLg && (
           <div className="mb-4" ref={topSlotRef} style={{ minHeight: 36 }}>
-            <SearchBar ref={searchRef} query={query} setQuery={setQuery} />
+            <SearchBar ref={searchRef} query={query} setQuery={handleSearch} />
           </div>
         )}
 
@@ -139,7 +147,7 @@ export default function AllCardsPage() {
             <Input
               placeholder="Search cards..."
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               className="flex-1"
             />
             <Button
