@@ -150,13 +150,22 @@ export default function AllCardsPage() {
       }
       router.replace(`?${params.toString()}`, { scroll: false });
     },
-    [searchParams, router],
+    [searchParams, router]
   );
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-  const handleRaritiesChange = (v: string[]) => { updateParams({ rarity: v.length ? v : null }); scrollToTop(); };
-  const handleSetsChange = (v: string[]) => { updateParams({ set: v.length ? v : null }); scrollToTop(); };
-  const handleSortChange = (v: string) => { updateParams({ sort: v === "none" ? null : v }); scrollToTop(); };
+  const handleRaritiesChange = (v: string[]) => {
+    updateParams({ rarity: v.length ? v : null });
+    scrollToTop();
+  };
+  const handleSetsChange = (v: string[]) => {
+    updateParams({ set: v.length ? v : null });
+    scrollToTop();
+  };
+  const handleSortChange = (v: string) => {
+    updateParams({ sort: v === "none" ? null : v });
+    scrollToTop();
+  };
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useBreakpoint("lg");
 
@@ -214,7 +223,7 @@ export default function AllCardsPage() {
       updateParams({ q: q || null });
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [setQuery, updateParams],
+    [setQuery, updateParams]
   );
 
   // Grid measurement
