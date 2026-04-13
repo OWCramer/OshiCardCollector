@@ -260,23 +260,31 @@ export default function AllCardsPage() {
             </aside>
 
             <div className="flex-1 min-w-0">
+              {!loading && results.length === 0 ? (
+                <EmptyState ref={gridRef} />
+              ) : (
+                <VirtualGrid
+                  ref={gridRef}
+                  virtualizer={rowVirtualizer}
+                  results={results}
+                  columns={columns}
+                />
+              )}
+              {loading && <Spinner />}
+            </div>
+          </div>
+        ) : (
+          <>
+            {!loading && results.length === 0 ? (
+              <EmptyState ref={gridRef} />
+            ) : (
               <VirtualGrid
                 ref={gridRef}
                 virtualizer={rowVirtualizer}
                 results={results}
                 columns={columns}
               />
-              {loading && <Spinner />}
-            </div>
-          </div>
-        ) : (
-          <>
-            <VirtualGrid
-              ref={gridRef}
-              virtualizer={rowVirtualizer}
-              results={results}
-              columns={columns}
-            />
+            )}
             {loading && <Spinner />}
           </>
         )}
@@ -327,6 +335,21 @@ const VirtualGrid = forwardRef<
           </div>
         );
       })}
+    </div>
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/*  Empty state                                                       */
+/* ------------------------------------------------------------------ */
+
+const EmptyState = forwardRef<HTMLDivElement>(function EmptyState(_, ref) {
+  return (
+    <div ref={ref} className="flex flex-col items-center justify-center py-24 text-center">
+      <p className="text-lg font-medium text-zinc-400 dark:text-zinc-500">No cards found</p>
+      <p className="mt-1 text-sm text-zinc-400/70 dark:text-zinc-500/70">
+        Try adjusting your filters or search query
+      </p>
     </div>
   );
 });
