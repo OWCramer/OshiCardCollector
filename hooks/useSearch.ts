@@ -9,8 +9,8 @@ interface UseSearchResult<T> {
   results: T[];
 }
 
-export function useSearch<T>(items: T[], options: IFuseOptions<T>): UseSearchResult<T> {
-  const [query, setQuery] = useState("");
+export function useSearch<T>(items: T[], options: IFuseOptions<T>, initialQuery = ""): UseSearchResult<T> {
+  const [query, setQuery] = useState(initialQuery);
 
   const fuse = useMemo(() => new Fuse(items, options), [items, options]);
 

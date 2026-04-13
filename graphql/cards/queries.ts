@@ -52,7 +52,21 @@ export const GET_ALL_CARDS = gql`
         name
         id
         imageUrl
+        rarity
+        setNames
       }
     }
+  }
+`;
+
+export const GET_RARITIES = gql`
+  query GetRarities {
+    rarities
+  }
+`;
+
+export const GET_SETS = gql`
+  query GetSets {
+    sets
   }
 `;

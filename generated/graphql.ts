@@ -218,7 +218,17 @@ export type GetAllCardsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', name: string, id: number, imageUrl?: string | null }> } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', name: string, id: number, imageUrl?: string | null, rarity: string, setNames: Array<string> }> } };
+
+export type GetRaritiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRaritiesQuery = { __typename?: 'Query', rarities: Array<string> };
+
+export type GetSetsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSetsQuery = { __typename?: 'Query', sets: Array<string> };
 
 
 export const GetCardDocument = gql`
@@ -308,6 +318,8 @@ export const GetAllCardsDocument = gql`
       name
       id
       imageUrl
+      rarity
+      setNames
     }
   }
 }
@@ -349,3 +361,83 @@ export type GetAllCardsQueryHookResult = ReturnType<typeof useGetAllCardsQuery>;
 export type GetAllCardsLazyQueryHookResult = ReturnType<typeof useGetAllCardsLazyQuery>;
 export type GetAllCardsSuspenseQueryHookResult = ReturnType<typeof useGetAllCardsSuspenseQuery>;
 export type GetAllCardsQueryResult = Apollo.QueryResult<GetAllCardsQuery, GetAllCardsQueryVariables>;
+export const GetRaritiesDocument = gql`
+    query GetRarities {
+  rarities
+}
+    `;
+
+/**
+ * __useGetRaritiesQuery__
+ *
+ * To run a query within a React component, call `useGetRaritiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRaritiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRaritiesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetRaritiesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetRaritiesQuery, GetRaritiesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetRaritiesQuery, GetRaritiesQueryVariables>(GetRaritiesDocument, options);
+      }
+export function useGetRaritiesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetRaritiesQuery, GetRaritiesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetRaritiesQuery, GetRaritiesQueryVariables>(GetRaritiesDocument, options);
+        }
+// @ts-ignore
+export function useGetRaritiesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetRaritiesQuery, GetRaritiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetRaritiesQuery, GetRaritiesQueryVariables>;
+export function useGetRaritiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetRaritiesQuery, GetRaritiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetRaritiesQuery | undefined, GetRaritiesQueryVariables>;
+export function useGetRaritiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetRaritiesQuery, GetRaritiesQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetRaritiesQuery, GetRaritiesQueryVariables>(GetRaritiesDocument, options);
+        }
+export type GetRaritiesQueryHookResult = ReturnType<typeof useGetRaritiesQuery>;
+export type GetRaritiesLazyQueryHookResult = ReturnType<typeof useGetRaritiesLazyQuery>;
+export type GetRaritiesSuspenseQueryHookResult = ReturnType<typeof useGetRaritiesSuspenseQuery>;
+export type GetRaritiesQueryResult = Apollo.QueryResult<GetRaritiesQuery, GetRaritiesQueryVariables>;
+export const GetSetsDocument = gql`
+    query GetSets {
+  sets
+}
+    `;
+
+/**
+ * __useGetSetsQuery__
+ *
+ * To run a query within a React component, call `useGetSetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSetsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSetsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetSetsQuery, GetSetsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetSetsQuery, GetSetsQueryVariables>(GetSetsDocument, options);
+      }
+export function useGetSetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetSetsQuery, GetSetsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetSetsQuery, GetSetsQueryVariables>(GetSetsDocument, options);
+        }
+// @ts-ignore
+export function useGetSetsSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetSetsQuery, GetSetsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetSetsQuery, GetSetsQueryVariables>;
+export function useGetSetsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetSetsQuery, GetSetsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetSetsQuery | undefined, GetSetsQueryVariables>;
+export function useGetSetsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetSetsQuery, GetSetsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetSetsQuery, GetSetsQueryVariables>(GetSetsDocument, options);
+        }
+export type GetSetsQueryHookResult = ReturnType<typeof useGetSetsQuery>;
+export type GetSetsLazyQueryHookResult = ReturnType<typeof useGetSetsLazyQuery>;
+export type GetSetsSuspenseQueryHookResult = ReturnType<typeof useGetSetsSuspenseQuery>;
+export type GetSetsQueryResult = Apollo.QueryResult<GetSetsQuery, GetSetsQueryVariables>;
