@@ -130,6 +130,11 @@ export default function AllCardsPage() {
   const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
   const [selectedSets, setSelectedSets] = useState<string[]>([]);
   const [sort, setSort] = useState("none");
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleRaritiesChange = (v: string[]) => { setSelectedRarities(v); scrollToTop(); };
+  const handleSetsChange = (v: string[]) => { setSelectedSets(v); scrollToTop(); };
+  const handleSortChange = (v: string) => { setSort(v); scrollToTop(); };
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useBreakpoint("lg");
 
@@ -208,12 +213,12 @@ export default function AllCardsPage() {
   const filterProps: FilterControlsProps = {
     rarityOptions,
     selectedRarities,
-    onRaritiesChange: setSelectedRarities,
+    onRaritiesChange: handleRaritiesChange,
     setOptions,
     selectedSets,
-    onSetsChange: setSelectedSets,
+    onSetsChange: handleSetsChange,
     sort,
-    onSortChange: setSort,
+    onSortChange: handleSortChange,
   };
 
   return (
