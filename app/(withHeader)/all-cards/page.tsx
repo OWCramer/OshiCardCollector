@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, forwardRef } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
-import { useGetAllCardsQuery } from "@/generated/graphql";
+import {
+  useGetAllCardsQuery,
+  useGetRaritiesQuery,
+  useGetSetsQuery,
+} from "@/generated/graphql";
+import type { GetAllCardsQuery } from "@/generated/graphql";
+import type { Virtualizer } from "@tanstack/react-virtual";
 import { ItemCard, CARD_SIZES } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { Dropdown } from "@/components/Dropdown";
+import type { DropdownItem } from "@/components/Dropdown";
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { useSearch } from "@/hooks/useSearch";
@@ -17,58 +24,81 @@ import { useGridColumns } from "@/hooks/useGridColumns";
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_SIZES["lg"];
 const GAP = 20;
 
-/* ------------------------------------------------------------------ */
-/*  Filter options (static)                                           */
-/* ------------------------------------------------------------------ */
+type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
-const RARITY_OPTIONS = [
-  { value: "all", label: "All" },
-  { value: "common", label: "Common" },
-  { value: "uncommon", label: "Uncommon" },
-  { value: "rare", label: "Rare" },
-];
-
-const SET_OPTIONS = [
-  { value: "all", label: "All" },
-  { value: "set1", label: "Set 1" },
-  { value: "set2", label: "Set 2" },
-  { value: "set3", label: "Set 3" },
-];
+/* ------------------------------------------------------------------ */
+/*  Sort options (static — these are a UI concern, not from the API)  */
+/* ------------------------------------------------------------------ */
 
 const SORT_OPTIONS = [
+  { value: "none", label: "None" },
   { value: "name-asc", label: "Name A-Z" },
   { value: "name-desc", label: "Name Z-A" },
   { value: "id-asc", label: "ID Asc" },
   { value: "id-desc", label: "ID Desc" },
 ];
 
-function FilterControls() {
-  const [rarity, setRarity] = useState("all");
-  const [set, setSet] = useState("all");
-  const [sort, setSort] = useState("name-asc");
+/* ------------------------------------------------------------------ */
+/*  FilterControls                                                    */
+/* ------------------------------------------------------------------ */
 
+interface FilterControlsProps {
+  rarityOptions: DropdownItem[];
+  selectedRarities: string[];
+  onRaritiesChange: (v: string[]) => void;
+  setOptions: DropdownItem[];
+  selectedSets: string[];
+  onSetsChange: (v: string[]) => void;
+  sort: string;
+  onSortChange: (v: string) => void;
+}
+
+function FilterControls({
+  rarityOptions,
+  selectedRarities,
+  onRaritiesChange,
+  setOptions,
+  selectedSets,
+  onSetsChange,
+  sort,
+  onSortChange,
+}: FilterControlsProps) {
   return (
     <div className="flex flex-col gap-3">
       <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
         Rarity
       </label>
-      <Dropdown value={rarity} items={RARITY_OPTIONS} onValueChange={setRarity} className="w-full" />
+      <Dropdown
+        multi
+
+        value={selectedRarities}
+        items={rarityOptions}
+        onValueChange={onRaritiesChange}
+        className="w-full"
+      />
 
       <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
         Set
       </label>
-      <Dropdown value={set} items={SET_OPTIONS} onValueChange={setSet} className="w-full" />
+      <Dropdown
+        multi
+
+        value={selectedSets}
+        items={setOptions}
+        onValueChange={onSetsChange}
+        className="w-full"
+      />
 
       <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
         Sort
       </label>
-      <Dropdown value={sort} items={SORT_OPTIONS} onValueChange={setSort} className="w-full" />
+      <Dropdown value={sort} items={SORT_OPTIONS} onValueChange={onSortChange} className="w-full" />
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  Search bar (renders once, used in both mobile & desktop slots)    */
+/*  SearchBar                                                         */
 /* ------------------------------------------------------------------ */
 
 function SearchBar({
@@ -100,13 +130,62 @@ const SEARCH_OPTIONS = { keys: ["name", "id"], threshold: 0.3 };
 
 export default function AllCardsPage() {
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
+  const { data: raritiesData } = useGetRaritiesQuery();
+  const { data: setsData } = useGetSetsQuery();
+
+  const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
+  const [selectedSets, setSelectedSets] = useState<string[]>([]);
+  const [sort, setSort] = useState("none");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useBreakpoint("lg");
 
-  // Search
-  const cards = data?.cards.nodes ?? [];
+  // Build dropdown options from API data
+  const rarityOptions = useMemo<DropdownItem[]>(
+    () => (raritiesData?.rarities ?? []).map((r) => ({ value: r, label: r })),
+    [raritiesData],
+  );
+  const setOptions = useMemo<DropdownItem[]>(
+    () => (setsData?.sets ?? []).map((s) => ({ value: s, label: s })),
+    [setsData],
+  );
+
+  // Filter + sort pipeline
+  const allCards = data?.cards.nodes ?? [];
+
+  const filteredCards = useMemo(() => {
+    let result = allCards;
+    if (selectedRarities.length > 0) {
+      result = result.filter((c) => selectedRarities.includes(c.rarity));
+    }
+    if (selectedSets.length > 0) {
+      result = result.filter((c) => c.setNames.some((s) => selectedSets.includes(s)));
+    }
+    return result;
+  }, [allCards, selectedRarities, selectedSets]);
+
+  const sortedCards = useMemo(() => {
+    if (sort === "none") return filteredCards;
+    const sorted = [...filteredCards];
+    switch (sort) {
+      case "name-asc":
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "id-asc":
+        sorted.sort((a, b) => a.id - b.id);
+        break;
+      case "id-desc":
+        sorted.sort((a, b) => b.id - a.id);
+        break;
+    }
+    return sorted;
+  }, [filteredCards, sort]);
+
+  // Search (runs on the already-filtered & sorted list)
   const searchOptions = useMemo(() => SEARCH_OPTIONS, []);
-  const { query, setQuery, results } = useSearch(cards, searchOptions);
+  const { query, setQuery, results } = useSearch(sortedCards, searchOptions);
 
   const handleSearch = useCallback(
     (q: string) => {
@@ -130,6 +209,18 @@ export default function AllCardsPage() {
     overscan: 5,
     scrollMargin,
   });
+
+  // Shared filter props for both desktop sidebar and mobile modal
+  const filterProps: FilterControlsProps = {
+    rarityOptions,
+    selectedRarities,
+    onRaritiesChange: setSelectedRarities,
+    setOptions,
+    selectedSets,
+    onSetsChange: setSelectedSets,
+    sort,
+    onSortChange: setSort,
+  };
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
@@ -162,15 +253,13 @@ export default function AllCardsPage() {
         {/* ---- Main content area ---- */}
         {isLg ? (
           <div className="flex gap-6">
-            {/* Sidebar */}
-            <aside className="sticky top-20.25 self-start w-56 shrink-0">
+            <aside className="sticky top-20.25 self-start w-56 shrink-0 z-10">
               <div ref={sidebarSlotRef} style={{ height: 0, overflow: "hidden" }}>
                 <div style={{ height: 36 }} />
               </div>
-              <FilterControls />
+              <FilterControls {...filterProps} />
             </aside>
 
-            {/* Card grid */}
             <div className="flex-1 min-w-0">
               <VirtualGrid
                 ref={gridRef}
@@ -196,7 +285,7 @@ export default function AllCardsPage() {
 
       {/* Mobile filter modal */}
       <Modal isOpen={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
-        <FilterControls />
+        <FilterControls {...filterProps} />
       </Modal>
     </div>
   );
@@ -205,12 +294,6 @@ export default function AllCardsPage() {
 /* ------------------------------------------------------------------ */
 /*  Virtualized card grid                                             */
 /* ------------------------------------------------------------------ */
-
-import { forwardRef } from "react";
-import type { Virtualizer } from "@tanstack/react-virtual";
-import type { GetAllCardsQuery } from "@/generated/graphql";
-
-type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
 const VirtualGrid = forwardRef<
   HTMLDivElement,
