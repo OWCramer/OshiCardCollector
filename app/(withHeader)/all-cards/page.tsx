@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, forwardRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
 import { useGetAllCardsQuery, useGetRaritiesQuery, useGetSetsQuery } from "@/generated/graphql";
@@ -123,18 +124,39 @@ function SearchBar({
 const SEARCH_OPTIONS = { keys: ["name", "id"], threshold: 0.3 };
 
 export default function AllCardsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
   const { data: raritiesData } = useGetRaritiesQuery();
   const { data: setsData } = useGetSetsQuery();
 
-  const [selectedRarities, setSelectedRarities] = useState<string[]>([]);
-  const [selectedSets, setSelectedSets] = useState<string[]>([]);
-  const [sort, setSort] = useState("none");
+  // Read initial state from URL params
+  const selectedRarities = useMemo(() => searchParams.getAll("rarity"), [searchParams]);
+  const selectedSets = useMemo(() => searchParams.getAll("set"), [searchParams]);
+  const sort = searchParams.get("sort") ?? "none";
+  const initialQuery = searchParams.get("q") ?? "";
+
+  const updateParams = useCallback(
+    (updates: Record<string, string | string[] | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        params.delete(key);
+        if (value === null) continue;
+        if (Array.isArray(value)) {
+          value.forEach((v) => params.append(key, v));
+        } else if (value) {
+          params.set(key, value);
+        }
+      }
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-  const handleRaritiesChange = (v: string[]) => { setSelectedRarities(v); scrollToTop(); };
-  const handleSetsChange = (v: string[]) => { setSelectedSets(v); scrollToTop(); };
-  const handleSortChange = (v: string) => { setSort(v); scrollToTop(); };
+  const handleRaritiesChange = (v: string[]) => { updateParams({ rarity: v.length ? v : null }); scrollToTop(); };
+  const handleSetsChange = (v: string[]) => { updateParams({ set: v.length ? v : null }); scrollToTop(); };
+  const handleSortChange = (v: string) => { updateParams({ sort: v === "none" ? null : v }); scrollToTop(); };
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useBreakpoint("lg");
 
@@ -184,14 +206,15 @@ export default function AllCardsPage() {
 
   // Search (runs on the already-filtered & sorted list)
   const searchOptions = useMemo(() => SEARCH_OPTIONS, []);
-  const { query, setQuery, results } = useSearch(sortedCards, searchOptions);
+  const { query, setQuery, results } = useSearch(sortedCards, searchOptions, initialQuery);
 
   const handleSearch = useCallback(
     (q: string) => {
       setQuery(q);
+      updateParams({ q: q || null });
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [setQuery]
+    [setQuery, updateParams],
   );
 
   // Grid measurement
