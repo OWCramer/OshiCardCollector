@@ -37,6 +37,10 @@ export const GET_CARD = gql`
         usageLimit
         effectText
       }
+      qna {
+        question
+        answer
+      }
     }
   }
 `;

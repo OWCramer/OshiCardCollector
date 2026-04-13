@@ -7,6 +7,11 @@ const COLOR_IMAGE_MAP: Record<string, string> = {
   yellow: "/types/type_yellow.png",
 };
 
+const DUAL_COLOR_IMAGE_MAP: Record<string, string> = {
+  "blue_red": "/types/type_blue_red.png",
+  "white_green": "/types/type_white_green.png",
+};
+
 const COST_IMAGE_MAP: Record<string, string> = {
   blue: "/arts/arts_blue.png",
   green: "/arts/arts_green.png",
@@ -16,9 +21,17 @@ const COST_IMAGE_MAP: Record<string, string> = {
   yellow: "/arts/arts_yellow.png",
 };
 
-/** Returns the /types image path for a card's color, or null image if unknown. */
-export function getColorImageSrc(color: string): string {
-  return COLOR_IMAGE_MAP[color.toLowerCase()] ?? "/types/type_null.png";
+/**
+ * Returns an array of /types image paths for a card's color(s).
+ * Accepts a single color string or an array of colors.
+ * For known dual-color combos, returns a single combo icon.
+ * For unknown combos, returns one icon per color.
+ */
+export function getColorImageSrcs(color: string | string[]): string[] {
+  const colors = Array.isArray(color) ? color : [color];
+  const key = colors.map((c) => c.toLowerCase()).join("_");
+  if (DUAL_COLOR_IMAGE_MAP[key]) return [DUAL_COLOR_IMAGE_MAP[key]];
+  return colors.map((c) => COLOR_IMAGE_MAP[c.toLowerCase()] ?? "/types/type_null.png");
 }
 
 /** Returns the /arts image path for a single art cost token, or null image if unknown. */
