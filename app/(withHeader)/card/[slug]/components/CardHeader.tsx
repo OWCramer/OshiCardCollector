@@ -1,5 +1,5 @@
 import { Badge } from "./Badge";
-import { getColorImageSrc } from "@/components/Card";
+import { getColorImageSrcs } from "@/components/Card";
 import Image from "next/image";
 
 interface CardHeaderProps {
@@ -26,14 +26,14 @@ export function CardHeader({
       <p className="text-sm text-zinc-500 dark:text-zinc-400">{cardNumber}</p>
       <div className="flex flex-row gap-1.5 items-center">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{name}</h1>
-        {colors?.map((color) => (
+        {colors && getColorImageSrcs(colors).map((src, i) => (
           <Image
-            key={color}
-            src={getColorImageSrc(color)}
-            alt={color}
+            key={src}
+            src={src}
+            alt={colors[i] ?? ""}
             width={330}
             height={410}
-            title={color}
+            title={colors[i]}
             className="h-7 w-auto"
           />
         ))}

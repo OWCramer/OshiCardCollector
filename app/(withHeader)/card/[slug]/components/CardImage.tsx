@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { animate } from "animejs";
 import Image from "next/image";
 
-const SHINY_RARITIES = new Set(["RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "SY", "S", "P"]);
+const SHINY_RARITIES = new Set(["RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "HR", "SY", "S", "P"]);
 
 interface CardImageProps {
   imageUrl: string;
