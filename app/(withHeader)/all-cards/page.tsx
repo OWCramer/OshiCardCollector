@@ -3,11 +3,7 @@
 import { useState, useMemo, useCallback, forwardRef } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
-import {
-  useGetAllCardsQuery,
-  useGetRaritiesQuery,
-  useGetSetsQuery,
-} from "@/generated/graphql";
+import { useGetAllCardsQuery, useGetRaritiesQuery, useGetSetsQuery } from "@/generated/graphql";
 import type { GetAllCardsQuery } from "@/generated/graphql";
 import type { Virtualizer } from "@tanstack/react-virtual";
 import { ItemCard, CARD_SIZES } from "@/components/Card";
@@ -70,7 +66,6 @@ function FilterControls({
       </label>
       <Dropdown
         multi
-
         value={selectedRarities}
         items={rarityOptions}
         onValueChange={onRaritiesChange}
@@ -82,7 +77,6 @@ function FilterControls({
       </label>
       <Dropdown
         multi
-
         value={selectedSets}
         items={setOptions}
         onValueChange={onSetsChange}
@@ -142,15 +136,15 @@ export default function AllCardsPage() {
   // Build dropdown options from API data
   const rarityOptions = useMemo<DropdownItem[]>(
     () => (raritiesData?.rarities ?? []).map((r) => ({ value: r, label: r })),
-    [raritiesData],
+    [raritiesData]
   );
   const setOptions = useMemo<DropdownItem[]>(
     () => (setsData?.sets ?? []).map((s) => ({ value: s, label: s })),
-    [setsData],
+    [setsData]
   );
 
   // Filter + sort pipeline
-  const allCards = data?.cards.nodes ?? [];
+  const allCards = useMemo(() => data?.cards.nodes ?? [], [data]);
 
   const filteredCards = useMemo(() => {
     let result = allCards;
@@ -192,7 +186,7 @@ export default function AllCardsPage() {
       setQuery(q);
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [setQuery],
+    [setQuery]
   );
 
   // Grid measurement
