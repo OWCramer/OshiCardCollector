@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode } from "react";
+import { useEffect, useRef, useState, useCallback, ReactNode } from "react";
 import { type LucideIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { classes } from "@/lib/classes";
 
@@ -35,6 +35,69 @@ interface MultiProps<T extends string = string> extends BaseProps<T> {
 type DropdownProps<T extends string = string> = SingleProps<T> | MultiProps<T>;
 
 /* ------------------------------------------------------------------ */
+/*  Custom scrollbar hook                                             */
+/* ------------------------------------------------------------------ */
+
+function useCustomScrollbar(open: boolean) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [thumb, setThumb] = useState({ ratio: 1, top: 0 });
+
+  const update = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    if (scrollHeight <= clientHeight) {
+      setThumb({ ratio: 1, top: 0 });
+    } else {
+      const ratio = clientHeight / scrollHeight;
+      const top = (scrollTop / (scrollHeight - clientHeight)) * (1 - ratio) * 100;
+      setThumb({ ratio, top });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    requestAnimationFrame(update);
+  }, [open, update]);
+
+  const onThumbMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      const scrollEl = scrollRef.current;
+      const trackEl = trackRef.current;
+      if (!scrollEl || !trackEl) return;
+
+      const startY = e.clientY;
+      const startScrollTop = scrollEl.scrollTop;
+      const trackHeight = trackEl.clientHeight;
+      const thumbHeight = trackHeight * thumb.ratio;
+      const scrollRange = scrollEl.scrollHeight - scrollEl.clientHeight;
+      const trackRange = trackHeight - thumbHeight;
+
+      function onMouseMove(ev: MouseEvent) {
+        const dy = ev.clientY - startY;
+        const scrollDelta = (dy / trackRange) * scrollRange;
+        scrollEl!.scrollTop = startScrollTop + scrollDelta;
+      }
+
+      function onMouseUp() {
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      }
+
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    },
+    [thumb.ratio],
+  );
+
+  const needsScroll = thumb.ratio < 1;
+
+  return { scrollRef, trackRef, thumb, needsScroll, onScroll: update, onThumbMouseDown };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Component                                                         */
 /* ------------------------------------------------------------------ */
 
@@ -42,6 +105,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   const { items, className, highContrast = true } = props;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } = useCustomScrollbar(open);
 
   // Close on outside click
   useEffect(() => {
@@ -85,7 +149,6 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
         ? props.value.filter((v) => v !== itemValue)
         : [...props.value, itemValue];
       props.onValueChange(next);
-      // Stay open for multi-select
     } else {
       props.onValueChange(itemValue);
       setOpen(false);
@@ -123,36 +186,63 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
       {open && (
         <div
           className={classes(
-            "absolute z-50 mt-1 min-w-full w-max max-h-64 overflow-y-auto overscroll-contain rounded-xl shadow-lg p-1",
+            "absolute z-50 mt-1 min-w-full w-max rounded-xl shadow-lg",
             "bg-white dark:bg-zinc-900",
             "ring-1 ring-inset ring-black/10 dark:ring-white/10",
           )}
         >
-          {items.map((item) => {
-            const selected = isSelected(item.value);
-            return (
-              <button
-                key={item.value}
-                onClick={() => handleItemClick(item.value)}
+          {/* Scroll container — native scrollbar hidden */}
+          <div
+            ref={scrollRef}
+            onScroll={onScroll}
+            className="max-h-64 overflow-y-auto overscroll-contain p-1"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {items.map((item) => {
+              const selected = isSelected(item.value);
+              return (
+                <button
+                  key={item.value}
+                  onClick={() => handleItemClick(item.value)}
+                  className={classes(
+                    "flex items-center gap-2 w-full px-3 min-h-9 py-1.5 rounded-lg text-left transition-colors duration-100 cursor-pointer",
+                    "hover:bg-black/5 dark:hover:bg-white/10",
+                    "text-zinc-800 dark:text-zinc-200",
+                    selected && "font-medium",
+                  )}
+                >
+                  {props.multi ? (
+                    <MultiCheckbox checked={selected} highContrast={highContrast} />
+                  ) : (
+                    item.icon && <item.icon size={16} className="shrink-0 opacity-60" />
+                  )}
+                  <span>{item.label}</span>
+                  {!props.multi && selected && (
+                    <CheckIcon size={14} className="ml-auto shrink-0 opacity-60" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Custom floating scrollbar */}
+          {needsScroll && (
+            <div ref={trackRef} className="absolute top-2 right-1.25 bottom-2 w-1">
+              <div
+                onMouseDown={onThumbMouseDown}
                 className={classes(
-                  "flex items-center gap-2 w-full px-3 min-h-9 py-1.5 rounded-lg text-left transition-colors duration-100 cursor-pointer",
-                  "hover:bg-black/5 dark:hover:bg-white/10",
-                  "text-zinc-800 dark:text-zinc-200",
-                  selected && "font-medium",
+                  "absolute w-full rounded-full cursor-grab active:cursor-grabbing",
+                  highContrast
+                    ? "bg-black/20 hover:bg-black/35 dark:bg-white/20 dark:hover:bg-white/35"
+                    : "bg-white/30 hover:bg-white/50",
                 )}
-              >
-                {props.multi ? (
-                  <MultiCheckbox checked={selected} highContrast={highContrast} />
-                ) : (
-                  item.icon && <item.icon size={16} className="shrink-0 opacity-60" />
-                )}
-                <span>{item.label}</span>
-                {!props.multi && selected && (
-                  <CheckIcon size={14} className="ml-auto shrink-0 opacity-60" />
-                )}
-              </button>
-            );
-          })}
+                style={{
+                  height: `${thumb.ratio * 100}%`,
+                  top: `${thumb.top}%`,
+                }}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -160,8 +250,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Small helpers (avoid importing the full Checkbox component to     */
-/*  keep the dropdown self-contained and visually consistent)         */
+/*  Small helpers                                                     */
 /* ------------------------------------------------------------------ */
 
 function TriggerIcon({ icon: Icon }: { icon: LucideIcon }) {
