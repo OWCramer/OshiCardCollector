@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useMemo, useCallback, forwardRef } from "react";
+import { Suspense, useState, useMemo, useCallback, useEffect, useRef, forwardRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
@@ -161,19 +161,9 @@ function AllCardsContent() {
     [searchParams, router]
   );
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-  const handleRaritiesChange = (v: string[]) => {
-    updateParams({ rarity: v.length ? v : null });
-    scrollToTop();
-  };
-  const handleSetsChange = (v: string[]) => {
-    updateParams({ set: v.length ? v : null });
-    scrollToTop();
-  };
-  const handleSortChange = (v: string) => {
-    updateParams({ sort: v === "none" ? null : v });
-    scrollToTop();
-  };
+  const handleRaritiesChange = (v: string[]) => updateParams({ rarity: v.length ? v : null });
+  const handleSetsChange = (v: string[]) => updateParams({ set: v.length ? v : null });
+  const handleSortChange = (v: string) => updateParams({ sort: v === "none" ? null : v });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useBreakpoint("lg");
 
@@ -229,10 +219,19 @@ function AllCardsContent() {
     (q: string) => {
       setQuery(q);
       updateParams({ q: q || null });
-      window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [setQuery, updateParams]
+    [setQuery, updateParams],
   );
+
+  // Scroll to top when filtered/sorted/searched results change
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [results]);
 
   // Grid measurement
   const { ref: gridRef, columns, scrollMargin } = useGridColumns(CARD_WIDTH, GAP);
