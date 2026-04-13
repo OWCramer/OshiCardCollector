@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, forwardRef } from "react";
+import { Suspense, useState, useMemo, useCallback, forwardRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { SlidersHorizontalIcon } from "lucide-react";
@@ -124,6 +124,14 @@ function SearchBar({
 const SEARCH_OPTIONS = { keys: ["name", "id"], threshold: 0.3 };
 
 export default function AllCardsPage() {
+  return (
+    <Suspense>
+      <AllCardsContent />
+    </Suspense>
+  );
+}
+
+function AllCardsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
