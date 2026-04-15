@@ -1,406 +1,170 @@
 "use client";
 
-import { Suspense, useState, useMemo, useCallback, useEffect, useRef, forwardRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { SlidersHorizontalIcon } from "lucide-react";
 import { useGetAllCardsQuery, useGetRaritiesQuery, useGetSetsQuery } from "@/generated/graphql";
-import type { GetAllCardsQuery } from "@/generated/graphql";
-import type { Virtualizer } from "@tanstack/react-virtual";
-import { ItemCard, CARD_SIZES } from "@/components/Card";
-import { Input } from "@/components/Input";
 import { Dropdown } from "@/components/Dropdown";
-import type { DropdownItem } from "@/components/Dropdown";
-import { Button } from "@/components/Button";
-import { Modal } from "@/components/Modal";
-import { useSearch } from "@/hooks/useSearch";
+import { CARD_SIZES, ItemCard } from "@/components/Card";
+import { Input } from "@/components/Input";
 import { useBreakpoint } from "@/lib/useBreakpoint";
-import { useScrollLinkedSearch } from "@/hooks/useScrollLinkedSearch";
-import { useGridColumns } from "@/hooks/useGridColumns";
+import { Button } from "@/components/Button";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useRef, useMemo, useEffect, useState } from "react";
+import { useSearch } from "@/hooks/useSearch";
+import { FilterIcon, Loader2Icon } from "lucide-react";
 
-const { width: CARD_WIDTH, height: CARD_HEIGHT } = CARD_SIZES["lg"];
-const GAP = 20;
+// Card dimensions (must match rendered size)
+const GAP = 16; // gap-4 = 1rem = 16px
 
-type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
-
-/* ------------------------------------------------------------------ */
-/*  Sort options (static — these are a UI concern, not from the API)  */
-/* ------------------------------------------------------------------ */
-
-const SORT_OPTIONS = [
-  { value: "none", label: "None" },
-  { value: "name-asc", label: "Name A-Z" },
-  { value: "name-desc", label: "Name Z-A" },
-  { value: "id-asc", label: "ID Asc" },
-  { value: "id-desc", label: "ID Desc" },
-];
-
-/* ------------------------------------------------------------------ */
-/*  FilterControls                                                    */
-/* ------------------------------------------------------------------ */
-
-interface FilterControlsProps {
-  rarityOptions: DropdownItem[];
-  selectedRarities: string[];
-  onRaritiesChange: (v: string[]) => void;
-  setOptions: DropdownItem[];
-  selectedSets: string[];
-  onSetsChange: (v: string[]) => void;
-  sort: string;
-  onSortChange: (v: string) => void;
-}
-
-function FilterControls({
-  rarityOptions,
-  selectedRarities,
-  onRaritiesChange,
-  setOptions,
-  selectedSets,
-  onSetsChange,
-  sort,
-  onSortChange,
-}: FilterControlsProps) {
-  return (
-    <div className="flex flex-col gap-3">
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-        Rarity
-      </label>
-      <Dropdown
-        multi
-        value={selectedRarities}
-        items={rarityOptions}
-        onValueChange={onRaritiesChange}
-        className="w-full"
-      />
-
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
-        Set
-      </label>
-      <Dropdown
-        multi
-        value={selectedSets}
-        items={setOptions}
-        onValueChange={onSetsChange}
-        className="w-full"
-      />
-
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
-        Sort
-      </label>
-      <Dropdown value={sort} items={SORT_OPTIONS} onValueChange={onSortChange} className="w-full" />
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  SearchBar                                                         */
-/* ------------------------------------------------------------------ */
-
-function SearchBar({
-  query,
-  setQuery,
-  ref,
-}: {
-  query: string;
-  setQuery: (q: string) => void;
-  ref?: React.Ref<HTMLDivElement>;
-}) {
-  return (
-    <div ref={ref}>
-      <Input
-        placeholder="Search cards..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="w-full"
-      />
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Page                                                              */
-/* ------------------------------------------------------------------ */
-
-const SEARCH_OPTIONS = { keys: ["name", "id"], threshold: 0.3 };
-
-export default function AllCardsPage() {
-  return (
-    <Suspense>
-      <AllCardsContent />
-    </Suspense>
-  );
-}
-
-function AllCardsContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function AllCardsContent() {
   const { data, loading } = useGetAllCardsQuery({ variables: { pageSize: 0 } });
+  const isMedium = useBreakpoint("md");
+  const isSmall = !useBreakpoint("sm");
+
+  const { width: CARD_WIDTH, height: CARD_HEIGHT } = useMemo(() => {
+    if (isSmall) return CARD_SIZES["sm"];
+
+    return CARD_SIZES["lg"];
+  }, [isSmall]);
+
   const { data: raritiesData } = useGetRaritiesQuery();
   const { data: setsData } = useGetSetsQuery();
 
-  // Read initial state from URL params
-  const selectedRarities = useMemo(() => searchParams.getAll("rarity"), [searchParams]);
-  const selectedSets = useMemo(() => searchParams.getAll("set"), [searchParams]);
-  const sort = searchParams.get("sort") ?? "none";
-  const initialQuery = searchParams.get("q") ?? "";
+  const rarities = useMemo(() => {
+    if (!raritiesData) return [];
+    return raritiesData.rarities.map((rarity) => ({
+      value: rarity,
+      label: rarity,
+    }));
+  }, [raritiesData]);
 
-  const updateParams = useCallback(
-    (updates: Record<string, string | string[] | null>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      for (const [key, value] of Object.entries(updates)) {
-        params.delete(key);
-        if (value === null) continue;
-        if (Array.isArray(value)) {
-          value.forEach((v) => params.append(key, v));
-        } else if (value) {
-          params.set(key, value);
-        }
-      }
-      router.replace(`?${params.toString()}`, { scroll: false });
-    },
-    [searchParams, router]
+  const sets = useMemo(() => {
+    if (!setsData) return [];
+    return setsData.sets.map((set) => ({
+      value: set,
+      label: set,
+    }));
+  }, [setsData]);
+
+  const [raritiesFilter, setRaritiesFilter] = useState<Array<string>>([]);
+  const [setsFilter, setSetsFilter] = useState<Array<string>>([]);
+
+  const allCards = useMemo(() => data?.cards?.nodes ?? [], [data?.cards?.nodes]);
+
+  const { query: searchFilter, setQuery: setSearchFilter, results: filteredCards } = useSearch(
+    allCards,
+    { keys: ["name", "setNames"], threshold: 0.3 },
   );
 
-  const handleRaritiesChange = (v: string[]) => updateParams({ rarity: v.length ? v : null });
-  const handleSetsChange = (v: string[]) => updateParams({ set: v.length ? v : null });
-  const handleSortChange = (v: string) => updateParams({ sort: v === "none" ? null : v });
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const isLg = useBreakpoint("lg");
+  // Measure main container width to compute columns per row
+  const mainRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [scrollMargin, setScrollMargin] = useState(0);
 
-  // Build dropdown options from API data
-  const rarityOptions = useMemo<DropdownItem[]>(
-    () => (raritiesData?.rarities ?? []).map((r) => ({ value: r, label: r })),
-    [raritiesData]
-  );
-  const setOptions = useMemo<DropdownItem[]>(
-    () => (setsData?.sets ?? []).map((s) => ({ value: s, label: s })),
-    [setsData]
-  );
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerWidth(entry.contentRect.width);
+      setScrollMargin(el.offsetTop);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
-  // Filter + sort pipeline
-  const allCards = useMemo(() => data?.cards.nodes ?? [], [data]);
+  // How many cards fit per row (minimum 1)
+  const columns = useMemo(() => {
+    if (containerWidth === 0) return 1;
+    return Math.max(1, Math.floor((containerWidth + GAP) / (CARD_WIDTH + GAP)));
+  }, [CARD_WIDTH, containerWidth]);
 
-  const filteredCards = useMemo(() => {
-    let result = allCards;
-    if (selectedRarities.length > 0) {
-      result = result.filter((c) => selectedRarities.includes(c.rarity));
-    }
-    if (selectedSets.length > 0) {
-      result = result.filter((c) => c.setNames.some((s) => selectedSets.includes(s)));
+  // Chunk cards into rows
+  const rows = useMemo(() => {
+    const result: (typeof filteredCards)[number][][] = [];
+    for (let i = 0; i < filteredCards.length; i += columns) {
+      result.push(filteredCards.slice(i, i + columns));
     }
     return result;
-  }, [allCards, selectedRarities, selectedSets]);
+  }, [filteredCards, columns]);
 
-  const sortedCards = useMemo(() => {
-    if (sort === "none") return filteredCards;
-    const sorted = [...filteredCards];
-    switch (sort) {
-      case "name-asc":
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-desc":
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case "id-asc":
-        sorted.sort((a, b) => a.id - b.id);
-        break;
-      case "id-desc":
-        sorted.sort((a, b) => b.id - a.id);
-        break;
-    }
-    return sorted;
-  }, [filteredCards, sort]);
+  const rowHeight = CARD_HEIGHT + GAP;
 
-  // Search (runs on the already-filtered & sorted list)
-  const searchOptions = useMemo(() => SEARCH_OPTIONS, []);
-  const { query, setQuery, results } = useSearch(sortedCards, searchOptions, initialQuery);
-
-  const handleSearch = useCallback(
-    (q: string) => {
-      setQuery(q);
-      updateParams({ q: q || null });
-    },
-    [setQuery, updateParams],
-  );
-
-  // Scroll to top when filtered/sorted/searched results change
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [results]);
-
-  // Grid measurement
-  const { ref: gridRef, columns, scrollMargin } = useGridColumns(CARD_WIDTH, GAP);
-
-  // Scroll-linked search bar animation (desktop only)
-  const { searchRef, topSlotRef, sidebarSlotRef } = useScrollLinkedSearch(isLg);
-
-  // Virtualizer
-  const rowCount = Math.ceil(results.length / columns);
-  const rowVirtualizer = useWindowVirtualizer({
-    count: rowCount,
-    estimateSize: () => CARD_HEIGHT + GAP,
-    overscan: 5,
+  const virtualizer = useWindowVirtualizer({
+    count: rows.length,
+    estimateSize: () => rowHeight,
+    overscan: 3,
     scrollMargin,
   });
 
-  // Shared filter props for both desktop sidebar and mobile modal
-  const filterProps: FilterControlsProps = {
-    rarityOptions,
-    selectedRarities,
-    onRaritiesChange: handleRaritiesChange,
-    setOptions,
-    selectedSets,
-    onSetsChange: handleSetsChange,
-    sort,
-    onSortChange: handleSortChange,
-  };
+  const virtualRows = virtualizer.getVirtualItems();
+  const totalHeight = virtualizer.getTotalSize();
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black">
-      <main className="flex-1 p-6">
-        {/* ---- Desktop: search bar in top slot ---- */}
-        {isLg && (
-          <div className="mb-4" ref={topSlotRef} style={{ minHeight: 36 }}>
-            <SearchBar ref={searchRef} query={query} setQuery={handleSearch} />
-          </div>
-        )}
-
-        {/* ---- Mobile: sticky search bar + filter toggle ---- */}
-        {!isLg && (
-          <div className="sticky top-15.25 z-30 -mx-6 -mt-6 mb-4 flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-black/80 backdrop-blur-md px-6 py-3">
-            <Input
-              placeholder="Search cards..."
-              value={query}
-              onChange={(e) => handleSearch(e.target.value)}
-              className="flex-1"
+    <div className="flex flex-col-reverse md:flex-row gap-4 w-full h-full p-8 justify-start">
+      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4">
+        <Input
+          className="w-full"
+          placeholder="Search"
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+        />
+        {isMedium ? (
+          <div className="flex flex-col gap-4 z-50">
+            <Dropdown
+              multi
+              label="Rarity"
+              className="w-full"
+              value={raritiesFilter}
+              onValueChange={setRaritiesFilter}
+              items={rarities}
             />
-            <Button
-              icon={SlidersHorizontalIcon}
-              variant="transparent"
-              highContrast
-              onClick={() => setFiltersOpen(true)}
+            <Dropdown
+              label="Set"
+              multi
+              className="w-full"
+              value={setsFilter}
+              onValueChange={setSetsFilter}
+              items={sets}
             />
           </div>
+        ) : (
+          <Button variant="transparent" highContrast icon={FilterIcon} />
         )}
-
-        {/* ---- Main content area ---- */}
-        {isLg ? (
-          <div className="flex gap-6">
-            <aside className="sticky top-20.25 self-start w-56 shrink-0 z-10">
-              <div ref={sidebarSlotRef} style={{ height: 0, overflow: "hidden" }}>
-                <div style={{ height: 36 }} />
-              </div>
-              <FilterControls {...filterProps} />
-            </aside>
-
-            <div className="flex-1 min-w-0">
-              {!loading && results.length === 0 ? (
-                <EmptyState ref={gridRef} />
-              ) : (
-                <VirtualGrid
-                  ref={gridRef}
-                  virtualizer={rowVirtualizer}
-                  results={results}
-                  columns={columns}
-                />
-              )}
-              {loading && <Spinner />}
-            </div>
+      </aside>
+      <main ref={mainRef} className="flex-1 -z-10">
+        {loading ? (
+          <div className="flex justify-center items-center w-full">
+            <Loader2Icon className="h-8 w-8 animate-spin" />
           </div>
         ) : (
           <>
-            {!loading && results.length === 0 ? (
-              <EmptyState ref={gridRef} />
-            ) : (
-              <VirtualGrid
-                ref={gridRef}
-                virtualizer={rowVirtualizer}
-                results={results}
-                columns={columns}
-              />
-            )}
-            {loading && <Spinner />}
+            {/* Total height spacer so the page scrollbar is correct */}
+            <div style={{ height: totalHeight, position: "relative" }}>
+              {virtualRows.map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                return (
+                  <div
+                    key={virtualRow.key}
+                    data-index={virtualRow.index}
+                    ref={virtualizer.measureElement}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+                    }}
+                  >
+                    <div className="flex flex-row gap-4 justify-center items-center pb-4">
+                      {row.map((card) => (
+                        <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </>
         )}
       </main>
-
-      {/* Mobile filter modal */}
-      <Modal isOpen={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
-        <FilterControls {...filterProps} />
-      </Modal>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Virtualized card grid                                             */
-/* ------------------------------------------------------------------ */
-
-const VirtualGrid = forwardRef<
-  HTMLDivElement,
-  {
-    virtualizer: Virtualizer<Window, Element>;
-    results: CardNode[];
-    columns: number;
-  }
->(function VirtualGrid({ virtualizer, results, columns }, ref) {
-  return (
-    <div ref={ref} style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
-      {virtualizer.getVirtualItems().map((virtualRow) => {
-        const start = virtualRow.index * columns;
-        const rowCards = results.slice(start, start + columns);
-        return (
-          <div
-            key={virtualRow.key}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: virtualRow.size,
-              transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-            }}
-          >
-            <div className="flex gap-5 justify-center">
-              {rowCards.map((card) => (
-                <ItemCard key={card.id} card={card} />
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Empty state                                                       */
-/* ------------------------------------------------------------------ */
-
-const EmptyState = forwardRef<HTMLDivElement>(function EmptyState(_, ref) {
-  return (
-    <div ref={ref} className="flex flex-col items-center justify-center py-24 text-center">
-      <p className="text-lg font-medium text-zinc-400 dark:text-zinc-500">No cards found</p>
-      <p className="mt-1 text-sm text-zinc-400/70 dark:text-zinc-500/70">
-        Try adjusting your filters or search query
-      </p>
-    </div>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Loading spinner                                                   */
-/* ------------------------------------------------------------------ */
-
-function Spinner() {
-  return (
-    <div className="flex justify-center py-4">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900 dark:border-zinc-700 dark:border-t-zinc-100" />
     </div>
   );
 }

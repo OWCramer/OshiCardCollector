@@ -17,6 +17,7 @@ export type DropdownItem<T extends string = string> = {
 interface BaseProps<T extends string = string> {
   items: DropdownItem<T>[];
   className?: string;
+  label?: string;
   highContrast?: boolean;
 }
 
@@ -89,7 +90,7 @@ function useCustomScrollbar(open: boolean) {
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     },
-    [thumb.ratio],
+    [thumb.ratio]
   );
 
   const needsScroll = thumb.ratio < 1;
@@ -102,10 +103,11 @@ function useCustomScrollbar(open: boolean) {
 /* ------------------------------------------------------------------ */
 
 export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
-  const { items, className, highContrast = true } = props;
+  const { items, className, highContrast = true, label } = props;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } = useCustomScrollbar(open);
+  const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } =
+    useCustomScrollbar(open);
 
   // Close on outside click
   useEffect(() => {
@@ -156,7 +158,8 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   }
 
   return (
-    <div className={classes("relative w-48", className)} ref={ref}>
+    <div className={classes("relative w-48 flex flex-col gap-2", className)} ref={ref}>
+      {label && <label className="text-sm opacity-75">{label}</label>}
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
@@ -166,7 +169,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
           "ring-1 ring-inset active:scale-[0.97]",
           highContrast
             ? "bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 text-zinc-900 dark:text-white ring-black/15 dark:ring-white/15"
-            : "bg-white/10 hover:bg-white/20 text-white ring-white/20",
+            : "bg-white/10 hover:bg-white/20 text-white ring-white/20"
         )}
       >
         <span className="flex items-center gap-2 min-w-0">
@@ -177,7 +180,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
           size={14}
           className={classes(
             "shrink-0 opacity-50 transition-transform duration-150",
-            open && "rotate-180",
+            open && "rotate-180"
           )}
         />
       </button>
@@ -186,9 +189,10 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
       {open && (
         <div
           className={classes(
-            "absolute z-50 mt-1 min-w-full w-max rounded-xl shadow-lg",
+            "absolute z-50 mt-1 min-w-full w-max rounded-xl shadow-lg top-9",
             "bg-white dark:bg-zinc-900",
             "ring-1 ring-inset ring-black/10 dark:ring-white/10",
+            label && "top-16"
           )}
         >
           {/* Scroll container — native scrollbar hidden */}
@@ -208,7 +212,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
                     "flex items-center gap-2 w-full px-3 min-h-9 py-1.5 rounded-lg text-left transition-colors duration-100 cursor-pointer",
                     "hover:bg-black/5 dark:hover:bg-white/10",
                     "text-zinc-800 dark:text-zinc-200",
-                    selected && "font-medium",
+                    selected && "font-medium"
                   )}
                 >
                   {props.multi ? (
@@ -234,7 +238,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
                   "absolute w-full rounded-full cursor-grab active:cursor-grabbing",
                   highContrast
                     ? "bg-black/20 hover:bg-black/35 dark:bg-white/20 dark:hover:bg-white/35"
-                    : "bg-white/30 hover:bg-white/50",
+                    : "bg-white/30 hover:bg-white/50"
                 )}
                 style={{
                   height: `${thumb.ratio * 100}%`,
@@ -257,13 +261,7 @@ function TriggerIcon({ icon: Icon }: { icon: LucideIcon }) {
   return <Icon size={16} className="shrink-0" />;
 }
 
-function MultiCheckbox({
-  checked,
-  highContrast,
-}: {
-  checked: boolean;
-  highContrast: boolean;
-}) {
+function MultiCheckbox({ checked, highContrast }: { checked: boolean; highContrast: boolean }) {
   return (
     <div
       className={classes(
@@ -275,7 +273,7 @@ function MultiCheckbox({
             : "bg-black/5 dark:bg-white/5 ring-black/20 dark:ring-white/20"
           : checked
             ? "bg-white ring-white"
-            : "bg-white/10 ring-white/30",
+            : "bg-white/10 ring-white/30"
       )}
     >
       {checked && (
