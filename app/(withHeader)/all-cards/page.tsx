@@ -10,6 +10,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useMemo, useEffect, useState } from "react";
 import { useSearch } from "@/hooks/useSearch";
 import { FilterIcon, Loader2Icon } from "lucide-react";
+import { Modal } from "@/components/Modal";
 
 // Card dimensions (must match rendered size)
 const GAP = 16; // gap-4 = 1rem = 16px
@@ -24,6 +25,8 @@ export default function AllCardsContent() {
 
     return CARD_SIZES["lg"];
   }, [isSmall]);
+
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const { data: raritiesData } = useGetRaritiesQuery();
   const { data: setsData } = useGetSetsQuery();
@@ -49,10 +52,18 @@ export default function AllCardsContent() {
 
   const allCards = useMemo(() => data?.cards?.nodes ?? [], [data?.cards?.nodes]);
 
-  const { query: searchFilter, setQuery: setSearchFilter, results: filteredCards } = useSearch(
-    allCards,
-    { keys: ["name", "setNames"], threshold: 0.3 },
-  );
+  const {
+    query: searchFilter,
+    setQuery: setSearchFilter,
+    results: searchResults,
+  } = useSearch(allCards, { keys: ["name", "setNames"], threshold: 0.3 });
+
+  const filteredCards = useMemo(() => {
+    return searchResults.filter((card) => {
+      if (raritiesFilter.length > 0 && !raritiesFilter.includes(card.rarity)) return false;
+      return !(setsFilter.length > 0 && !setsFilter.some((set) => card.setNames.includes(set)));
+    });
+  }, [searchResults, raritiesFilter, setsFilter]);
 
   // Measure main container width to compute columns per row
   const mainRef = useRef<HTMLDivElement>(null);
@@ -99,7 +110,7 @@ export default function AllCardsContent() {
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 w-full h-full p-8 justify-start">
-      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4">
+      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"
           placeholder="Search"
@@ -126,10 +137,15 @@ export default function AllCardsContent() {
             />
           </div>
         ) : (
-          <Button variant="transparent" highContrast icon={FilterIcon} />
+          <Button
+            variant="transparent"
+            highContrast
+            icon={FilterIcon}
+            onClick={() => setShowMobileFilters(true)}
+          />
         )}
       </aside>
-      <main ref={mainRef} className="flex-1 -z-10">
+      <main ref={mainRef} className="flex-1">
         {loading ? (
           <div className="flex justify-center items-center w-full">
             <Loader2Icon className="h-8 w-8 animate-spin" />
@@ -153,7 +169,7 @@ export default function AllCardsContent() {
                       transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                     }}
                   >
-                    <div className="flex flex-row gap-4 justify-center items-center pb-4">
+                    <div className="flex flex-row gap-4 justify-start items-center pb-4">
                       {row.map((card) => (
                         <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
                       ))}
@@ -165,6 +181,32 @@ export default function AllCardsContent() {
           </>
         )}
       </main>
+      <Modal
+        title="Filters"
+        isOpen={showMobileFilters}
+        onClose={() => {
+          setShowMobileFilters(false);
+        }}
+      >
+        <div className="flex flex-col gap-4">
+          <Dropdown
+            multi
+            label="Rarity"
+            className="w-full"
+            value={raritiesFilter}
+            onValueChange={setRaritiesFilter}
+            items={rarities}
+          />
+          <Dropdown
+            label="Set"
+            multi
+            className="w-full"
+            value={setsFilter}
+            onValueChange={setSetsFilter}
+            items={sets}
+          />
+        </div>
+      </Modal>
     </div>
   );
 }
