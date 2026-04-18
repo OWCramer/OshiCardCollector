@@ -102,14 +102,22 @@ export function useCardFilters(allCards: CardNode[]) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // ── read params ──────────────────────────────────────────────────────────
+  // ── read params — memoized so references are stable between unrelated renders ──
   const search = searchParams.get("search") ?? "";
-  const rarityFilter = parseList(searchParams.get("rarity"));
-  const cardTypeFilter = parseList(searchParams.get("cardType"));
-  const colorsFilter = parseList(searchParams.get("colors"));
-  const bloomLevelFilter = parseList(searchParams.get("bloomLevel"));
-  const setsFilter = parseList(searchParams.get("sets"));
-  const tagsFilter = parseList(searchParams.get("tags"));
+  const rarityRaw = searchParams.get("rarity");
+  const cardTypeRaw = searchParams.get("cardType");
+  const colorsRaw = searchParams.get("colors");
+  const bloomLevelRaw = searchParams.get("bloomLevel");
+  const setsRaw = searchParams.get("sets");
+  const tagsRaw = searchParams.get("tags");
+
+  const rarityFilter = useMemo(() => parseList(rarityRaw), [rarityRaw]);
+  const cardTypeFilter = useMemo(() => parseList(cardTypeRaw), [cardTypeRaw]);
+  const colorsFilter = useMemo(() => parseList(colorsRaw), [colorsRaw]);
+  const bloomLevelFilter = useMemo(() => parseList(bloomLevelRaw), [bloomLevelRaw]);
+  const setsFilter = useMemo(() => parseList(setsRaw), [setsRaw]);
+  const tagsFilter = useMemo(() => parseList(tagsRaw), [tagsRaw]);
+
   const isLimitedFilter = searchParams.get("isLimited") === "true" ? true : null;
   const isBuzzFilter = searchParams.get("isBuzz") === "true" ? true : null;
   const minHp = parseNumber(searchParams.get("minHp"));

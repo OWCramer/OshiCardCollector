@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from "react";
 import {
   useGetAllCardsQuery,
   useGetRaritiesQuery,
@@ -16,8 +15,8 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useMemo, useEffect, useState } from "react";
-import { useCardFilters, type SortField, type SortOrder } from "@/hooks/useCardFilters";
+import { useRef, useMemo, useEffect, useState, Suspense } from "react";
+import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
 import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { Modal } from "@/components/Modal";
 
@@ -135,6 +134,10 @@ function AllCardsContent() {
     hasActiveFilters,
     clearFilters,
   } = useCardFilters(allCards);
+
+  useEffect(() => {
+    globalThis.scrollTo({ top: 0, behavior: "smooth" });
+  }, [filteredCards]);
 
   // ── virtualizer setup ────────────────────────────────────────────────────
   const mainRef = useRef<HTMLDivElement>(null);
@@ -334,9 +337,7 @@ function AllCardsContent() {
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center opacity-50">
             <span className="text-4xl">🔍</span>
             <p className="text-lg font-medium">No cards found</p>
-            {hasActiveFilters && (
-              <p className="text-sm">Try adjusting your filters</p>
-            )}
+            {hasActiveFilters && <p className="text-sm">Try adjusting your filters</p>}
           </div>
         ) : (
           <div style={{ height: totalHeight, position: "relative" }}>
