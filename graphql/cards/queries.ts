@@ -49,11 +49,20 @@ export const GET_ALL_CARDS = gql`
   query GetAllCards($filters: CardFilter, $pageSize: Int) {
     cards(filter: $filters, pageSize: $pageSize) {
       nodes {
-        name
         id
-        imageUrl
+        name
+        cardNumber
+        cardType
+        colors
         rarity
+        imageUrl
+        hp
+        bloomLevel
+        isBuzz
+        isLimited
         setNames
+        tags
+        releaseDate
       }
     }
   }
@@ -68,5 +77,17 @@ export const GET_RARITIES = gql`
 export const GET_SETS = gql`
   query GetSets {
     sets
+  }
+`;
+
+export const GET_COLORS = gql`
+  query GetColors {
+    colors
+  }
+`;
+
+export const GET_TAGS = gql`
+  query GetTags {
+    tags
   }
 `;
