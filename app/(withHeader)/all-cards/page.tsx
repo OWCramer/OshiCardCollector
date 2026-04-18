@@ -307,6 +307,56 @@ function AllCardsContent() {
     </div>
   );
 
+  const mainContent = useMemo(() => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center w-full">
+          <Loader2Icon className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+    if (filteredCards.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-24 text-center opacity-50">
+          <span className="text-4xl">
+            <SearchIcon />
+          </span>
+          <p className="text-lg font-medium">No cards found</p>
+          {hasActiveFilters && <p className="text-sm">Try adjusting your filters</p>}
+        </div>
+      );
+    }
+    return (
+      <div style={{ height: totalHeight, position: "relative" }}>
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index];
+          return (
+            <div
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
+              }}
+            >
+              <div
+                className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}
+              >
+                {row.map((card) => (
+                  <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }, [loading, filteredCards, hasActiveFilters, totalHeight, virtualRows, rows, isMedium, isSmall, virtualizer.measureElement, virtualizer.options.scrollMargin]);
+
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
       <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:static md:sticky md:top-23.25 md:self-start h-fit md:max-h-[calc(100dvh-6.5rem)] md:overflow-y-auto md:overscroll-contain bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
@@ -329,47 +379,7 @@ function AllCardsContent() {
       </aside>
 
       <main ref={mainRef} className="flex-1 pb-24 md:pb-0">
-        {loading ? (
-          <div className="flex justify-center items-center w-full">
-            <Loader2Icon className="h-8 w-8 animate-spin" />
-          </div>
-        ) : filteredCards.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-24 text-center opacity-50">
-            <span className="text-4xl">
-              <SearchIcon />
-            </span>
-            <p className="text-lg font-medium">No cards found</p>
-            {hasActiveFilters && <p className="text-sm">Try adjusting your filters</p>}
-          </div>
-        ) : (
-          <div style={{ height: totalHeight, position: "relative" }}>
-            {virtualRows.map((virtualRow) => {
-              const row = rows[virtualRow.index];
-              return (
-                <div
-                  key={virtualRow.key}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
-                  }}
-                >
-                  <div
-                    className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}
-                  >
-                    {row.map((card) => (
-                      <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        {mainContent}
       </main>
 
       <Modal title="Filters" isOpen={showMobileFilters} onClose={() => setShowMobileFilters(false)}>
