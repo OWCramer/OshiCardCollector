@@ -3,6 +3,7 @@ import { getColorImageSrcs } from "@/components/Card";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+
 interface CardHeaderProps {
   cardNumber: string;
   name: string;
