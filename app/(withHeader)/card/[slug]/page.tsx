@@ -43,13 +43,13 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             src={card.imageUrl}
             alt=""
             fill
-            className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-20 dark:opacity-15"
+            className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-35 dark:opacity-25"
           />
           {/* Fade to bg at the bottom so content stays readable */}
           <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-zinc-50 dark:to-black" />
         </div>
       )}
-      <div className="relative z-999 flex items-center justify-between px-4 pt-2 mt-2 mb-2 xl:mb-0">
+      <div className="relative z-20 flex items-center justify-between px-4 pt-2 mt-2 mb-2 xl:mb-0">
         <Button
           variant="transparent"
           highContrast

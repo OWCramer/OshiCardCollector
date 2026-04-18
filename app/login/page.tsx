@@ -32,10 +32,10 @@ export default function LoginPage() {
       </div>
       <div className="w-full max-w-sm space-y-8 px-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl font-bold tracking-tight">
             Oshi Card Collector
           </h1>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">Sign in to manage your collection</p>
+          <p className="mt-2 opacity-65">Sign in to manage your collection</p>
         </div>
 
         <Button

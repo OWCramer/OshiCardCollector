@@ -38,8 +38,8 @@ export function Tabs<T extends string = string>({
             className={classes(
               "flex items-center gap-2 px-4 h-7 rounded-lg text-sm transition-all duration-150 cursor-pointer select-none",
               active
-                ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm ring-1 ring-inset ring-black/10 dark:ring-white/10"
-                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                ? "bg-white dark:bg-zinc-700 shadow-sm ring-1 ring-inset ring-black/10 dark:ring-white/10"
+                : "opacity-50 hover:opacity-80"
             )}
           >
             {tab.icon && <tab.icon size={14} className="shrink-0" />}

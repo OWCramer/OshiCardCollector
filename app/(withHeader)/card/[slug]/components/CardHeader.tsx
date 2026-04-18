@@ -30,7 +30,7 @@ export function CardHeader({
     <div>
       <p className="text-sm opacity-65">{cardNumber}</p>
       <div className="flex flex-row gap-1.5 items-center">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{name}</h1>
+        <h1 className="text-2xl font-bold">{name}</h1>
         {colors &&
           getColorImageSrcs(colors).map((src, i) => (
             <Image
