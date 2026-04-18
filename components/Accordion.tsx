@@ -39,7 +39,7 @@ export function Accordion({ items, allowMultiple = false, className }: Accordion
           <div key={i} className="bg-black/5 dark:bg-white/5">
             <button
               onClick={() => toggle(i)}
-              className="w-full flex items-center justify-between gap-4 px-3 py-2.5 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left"
+              className="w-full flex items-center cursor-pointer justify-between gap-4 px-3 py-2.5 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left"
               aria-expanded={isOpen}
             >
               <span>{item.title}</span>
