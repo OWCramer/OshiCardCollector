@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/lib/auth-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import ApolloClientProvider from "@/lib/apollo-provider";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import {ReactNode} from "react";
+import { ReactNode } from "react";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Oshi Card Collector",
@@ -28,7 +31,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col">
+      <body className={`min-h-screen flex flex-col ${inter.variable}`}>
         <ApolloClientProvider>
           <ThemeProvider>
             <AuthProvider>
