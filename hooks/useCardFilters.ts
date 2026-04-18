@@ -82,9 +82,12 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       break;
     }
     case "releaseDate": {
-      const da = a.releaseDate ?? "";
-      const db = b.releaseDate ?? "";
-      result = da.localeCompare(db);
+      const da = a.releaseDate;
+      const db = b.releaseDate;
+      if (!da && !db) result = 0;
+      else if (!da) result = 1;
+      else if (!db) result = -1;
+      else result = da.localeCompare(db);
       break;
     }
   }
@@ -111,7 +114,7 @@ export function useCardFilters(allCards: CardNode[]) {
   const isBuzzFilter = searchParams.get("isBuzz") === "true" ? true : null;
   const minHp = parseNumber(searchParams.get("minHp"));
   const maxHp = parseNumber(searchParams.get("maxHp"));
-  const sortField = (searchParams.get("sortField") as SortField | null) ?? "name";
+  const sortField = (searchParams.get("sortField") as SortField | null) ?? "releaseDate";
   const sortOrder = (searchParams.get("sortOrder") as SortOrder | null) ?? "asc";
 
   // ── setters ──────────────────────────────────────────────────────────────

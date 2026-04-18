@@ -330,6 +330,14 @@ function AllCardsContent() {
           <div className="flex justify-center items-center w-full">
             <Loader2Icon className="h-8 w-8 animate-spin" />
           </div>
+        ) : filteredCards.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-24 text-center opacity-50">
+            <span className="text-4xl">🔍</span>
+            <p className="text-lg font-medium">No cards found</p>
+            {hasActiveFilters && (
+              <p className="text-sm">Try adjusting your filters</p>
+            )}
+          </div>
         ) : (
           <div style={{ height: totalHeight, position: "relative" }}>
             {virtualRows.map((virtualRow) => {
