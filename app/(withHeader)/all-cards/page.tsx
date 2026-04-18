@@ -306,7 +306,7 @@ function AllCardsContent() {
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
-      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 md:self-start bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
+      <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:static md:sticky md:top-23.25 md:self-start h-fit bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"
           placeholder="Search"
@@ -325,7 +325,7 @@ function AllCardsContent() {
         )}
       </aside>
 
-      <main ref={mainRef} className="flex-1">
+      <main ref={mainRef} className="flex-1 pb-24 md:pb-0">
         {loading ? (
           <div className="flex justify-center items-center w-full">
             <Loader2Icon className="h-8 w-8 animate-spin" />
