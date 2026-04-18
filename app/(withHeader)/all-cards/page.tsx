@@ -334,7 +334,7 @@ function AllCardsContent() {
                     transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                   }}
                 >
-                  <div className="flex flex-row gap-4 justify-start items-center pb-4">
+                  <div className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}>
                     {row.map((card) => (
                       <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
                     ))}
