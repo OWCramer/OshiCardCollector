@@ -1,15 +1,16 @@
 interface CardMetaProps {
   illustrator?: string | null;
   releaseDate?: string | null;
-  setNames: string[];
+  setNames?: string[];
+  className?: string;
 }
 
-export function CardMeta({ illustrator, releaseDate, setNames }: CardMetaProps) {
+export function CardMeta({ illustrator, releaseDate, setNames, className }: CardMetaProps) {
   return (
-    <div className="flex flex-col gap-1 mt-auto pt-2 border-t border-black/10 dark:border-white/10">
-      {illustrator && <p className="text-xs text-zinc-400">Illustrator: {illustrator}</p>}
-      {releaseDate && <p className="text-xs text-zinc-400">Released: {releaseDate}</p>}
-      {setNames.length > 0 && <p className="text-xs text-zinc-400">Sets: {setNames.join(", ")}</p>}
+    <div className={`flex flex-col gap-1 pt-2 border-t border-black/10 dark:border-white/10 ${className ?? ""}`}>
+      {illustrator && <p className="text-xs opacity-65">Illustrator: {illustrator}</p>}
+      {releaseDate && <p className="text-xs opacity-65">First Available: {releaseDate}</p>}
+      {setNames && setNames.length > 0 && <p className="text-xs opacity-65">Sets: {setNames.join(", ")}</p>}
     </div>
   );
 }

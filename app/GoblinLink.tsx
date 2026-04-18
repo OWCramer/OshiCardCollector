@@ -10,7 +10,7 @@ export function GoblinLink() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="underline underline-offset-2 decoration-dotted hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+        className="underline underline-offset-2 decoration-dotted opacity-75 hover:opacity-100 transition-opacity"
       >
         goblin
       </button>

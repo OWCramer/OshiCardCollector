@@ -17,7 +17,7 @@ export function CardStats({ hp, life, bloomLevel, batonPass }: CardStatsProps) {
       {bloomLevel && <Stat label="Bloom Level" value={bloomLevel} />}
       {batonPass && batonPass.length > 0 && (
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-zinc-500 dark:text-zinc-400 w-24 shrink-0">Baton Pass</span>
+          <span className="opacity-65 w-24 shrink-0">Baton Pass</span>
           <div className="flex gap-1">
             {batonPass.map((c, i) => (
               <Image key={i} src={getArtCostImageSrc(c)} alt={c} width={145} height={145} title={c} className="w-5 h-5" />

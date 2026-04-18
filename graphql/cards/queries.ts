@@ -29,6 +29,10 @@ export const GET_CARD = gql`
         damage
         cost
         effectText
+        damageBonuses {
+          amount
+          colors
+        }
       }
       oshiSkills {
         name

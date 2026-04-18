@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, ReactNode } from "react";
-import { type LucideIcon, CheckIcon } from "lucide-react";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import { CheckIcon, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/Button";
 import { classes } from "@/lib/classes";
 
@@ -110,7 +110,7 @@ export function Menu({
       {open && (
         <div
           className={classes(
-            "absolute flex flex-col z-50 mt-1 w-36 rounded-xl shadow-lg p-1",
+            "absolute flex flex-col z-9999 mt-1 w-36 rounded-xl shadow-lg p-1",
             menuClassName,
             "bg-white dark:bg-zinc-900 ring-black/10 dark:ring-white/10",
             "ring-1 ring-inset",
@@ -121,9 +121,7 @@ export function Menu({
             <div key={si}>
               {si > 0 && <div className="my-1 border-t border-black/10 dark:border-white/10" />}
               {section.label && (
-                <p className="px-3 pt-1 pb-0.5 text-xs text-zinc-400 dark:text-zinc-500">
-                  {section.label}
-                </p>
+                <p className="px-3 pt-1 pb-0.5 text-xs opacity-45">{section.label}</p>
               )}
               <div className="flex flex-col gap-0.5">{section.items.map(renderItem)}</div>
             </div>

@@ -2,10 +2,26 @@ interface OshiSkill {
   name: string;
   skillType: string;
   effectText?: string | null;
+  cost?: string | null;
+  usageLimit?: string | null;
 }
 
 interface OshiSkillsListProps {
   oshiSkills: OshiSkill[];
+}
+
+function SPOshiBadge(){
+  return (
+    <p className="w-fit px-2 py-0.5 flex items-center rounded-full bg-linear-to-r from-purple-500 via-blue-400 to-pink-500 text-white text-xs font-medium">
+      SP Oshi
+    </p>
+  );
+}
+
+function OshiBadge() {
+  return (
+    <p className="w-fit px-2 py-0.5 flex items-center rounded-full bg-pink-400 text-white text-xs font-medium">Oshi</p>
+  );
 }
 
 export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
@@ -13,15 +29,23 @@ export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Oshi Skills</h2>
+      <h2 className="text-sm font-semibold opacity-80">Oshi Skills</h2>
       {oshiSkills.map((skill, i) => (
-        <div key={i} className="rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
-          <p className="font-medium text-zinc-900 dark:text-white">
-            {skill.name}{" "}
-            <span className="text-xs text-zinc-400">({skill.skillType})</span>
-          </p>
+        <div
+          key={i}
+          className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm"
+        >
+          <div className="font-medium flex flex-row gap-1 items-center">
+            <div>{skill.skillType == "OSHI" ? <OshiBadge /> : <SPOshiBadge />}</div>
+            <p className="flex flex-row gap-2 justify-between flex-1">
+              <span>{skill.name}</span>
+              <span>[holo Power: {skill.cost}]</span>
+            </p>
+          </div>
           {skill.effectText && (
-            <p className="text-zinc-600 dark:text-zinc-400 mt-1">{skill.effectText}</p>
+            <p className="opacity-75">
+              [{skill.usageLimit}] {skill.effectText}
+            </p>
           )}
         </div>
       ))}

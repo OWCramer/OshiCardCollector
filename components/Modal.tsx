@@ -67,7 +67,7 @@ export function Modal({ isOpen, onClose, onOpen, children, className, title }: M
           )}
         >
           {title && (
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-white">{title}</h2>
+            <h2 className="text-base font-semibold">{title}</h2>
           )}
           <Button icon={XIcon} variant="transparent" highContrast onClick={onClose} />
         </div>

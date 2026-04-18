@@ -48,10 +48,10 @@ export default async function NotFound() {
         )}
 
         <div className="flex flex-col gap-1 mt-2">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-2xl font-bold tracking-tight">
             Page not found
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400">
+          <p className="opacity-60">
             The <GoblinLink /> must have stolen this card.
           </p>
         </div>
