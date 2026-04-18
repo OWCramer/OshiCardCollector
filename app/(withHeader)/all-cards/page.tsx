@@ -327,7 +327,7 @@ function AllCardsContent() {
       );
     }
     return (
-      <div style={{ height: totalHeight, position: "relative" }}>
+      <div style={{ height: totalHeight + (isMedium ? 0 : 96), position: "relative" }}>
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index];
           return (
@@ -389,7 +389,7 @@ function AllCardsContent() {
         )}
       </aside>
 
-      <main ref={mainRef} className="flex-1 pb-24 md:pb-0">
+      <main ref={mainRef} className="flex-1">
         {mainContent}
       </main>
 
