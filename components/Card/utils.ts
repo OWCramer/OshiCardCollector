@@ -12,6 +12,15 @@ const DUAL_COLOR_IMAGE_MAP: Record<string, string> = {
   "white_green": "/types/type_white_green.png",
 };
 
+const DAMAGE_BONUS_IMAGE_MAP: Record<string, string> = {
+  blue: "/arts_bonus/tokkou_50_blue.png",
+  green: "/arts_bonus/tokkou_50_green.png",
+  purple: "/arts_bonus/tokkou_50_purple.png",
+  red: "/arts_bonus/tokkou_50_red.png",
+  white: "/arts_bonus/tokkou_50_white.png",
+  yellow: "/arts_bonus/tokkou_50_yellow.png",
+};
+
 const COST_IMAGE_MAP: Record<string, string> = {
   blue: "/arts/arts_blue.png",
   green: "/arts/arts_green.png",
@@ -37,4 +46,9 @@ export function getColorImageSrcs(color: string | string[]): string[] {
 /** Returns the /arts image path for a single art cost token, or null image if unknown. */
 export function getArtCostImageSrc(cost: string): string {
   return COST_IMAGE_MAP[cost.toLowerCase()] ?? "/arts/arts_null.png";
+}
+
+/** Returns the /arts_bonus image path for a damage bonus color. */
+export function getDamageBonusImageSrc(color: string): string {
+  return DAMAGE_BONUS_IMAGE_MAP[color.toLowerCase()] ?? null;
 }
