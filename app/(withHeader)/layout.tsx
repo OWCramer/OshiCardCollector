@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 
 export default function WithHeaderLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="h-dvh w-full">
+    <div className="min-h-dvh w-full">
       <nav>
         <GlobalHeader />
       </nav>

@@ -355,11 +355,22 @@ function AllCardsContent() {
         })}
       </div>
     );
-  }, [loading, filteredCards, hasActiveFilters, totalHeight, virtualRows, rows, isMedium, isSmall, virtualizer.measureElement, virtualizer.options.scrollMargin]);
+  }, [
+    loading,
+    filteredCards,
+    hasActiveFilters,
+    totalHeight,
+    virtualRows,
+    rows,
+    isMedium,
+    isSmall,
+    virtualizer.measureElement,
+    virtualizer.options.scrollMargin,
+  ]);
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
-      <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:static md:sticky md:top-23.25 md:self-start h-fit md:max-h-[calc(100dvh-6.5rem)] md:overflow-y-auto md:overscroll-contain bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
+      <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:sticky md:top-23.25 md:self-start h-fit md:max-h-[calc(100dvh-6.5rem)] md:overflow-y-auto md:overscroll-contain bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"
           placeholder="Search"
