@@ -54,7 +54,7 @@ export default function AllCardsPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex justify-center items-center w-full h-full p-8">
+        <div className="flex justify-center items-center w-full p-8">
           <Loader2Icon className="h-8 w-8 animate-spin" />
         </div>
       }
@@ -105,19 +105,32 @@ function AllCardsContent() {
   const allCards = useMemo(() => data?.cards?.nodes ?? [], [data?.cards?.nodes]);
 
   const {
-    search, setSearch,
-    rarityFilter, setRarityFilter,
-    cardTypeFilter, setCardTypeFilter,
-    colorsFilter, setColorsFilter,
-    bloomLevelFilter, setBloomLevelFilter,
-    setsFilter, setSetsFilter,
-    tagsFilter, setTagsFilter,
-    isLimitedFilter, setIsLimitedFilter,
-    isBuzzFilter, setIsBuzzFilter,
-    minHp, setMinHp,
-    maxHp, setMaxHp,
-    sortField, setSortField,
-    sortOrder, setSortOrder,
+    search,
+    setSearch,
+    rarityFilter,
+    setRarityFilter,
+    cardTypeFilter,
+    setCardTypeFilter,
+    colorsFilter,
+    setColorsFilter,
+    bloomLevelFilter,
+    setBloomLevelFilter,
+    setsFilter,
+    setSetsFilter,
+    tagsFilter,
+    setTagsFilter,
+    isLimitedFilter,
+    setIsLimitedFilter,
+    isBuzzFilter,
+    setIsBuzzFilter,
+    minHp,
+    setMinHp,
+    maxHp,
+    setMaxHp,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
     filteredCards,
     hasActiveFilters,
     clearFilters,
@@ -292,8 +305,8 @@ function AllCardsContent() {
   );
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-4 w-full h-full p-8 justify-start">
-      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
+    <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
+      <aside className="flex flex-row md:flex-col gap-4 w-full md:max-w-48 xl:max-w-64 sticky bottom-6 h-fit md:top-23.25 md:self-start bg-white/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"
           placeholder="Search"
@@ -334,7 +347,9 @@ function AllCardsContent() {
                     transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
                   }}
                 >
-                  <div className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}>
+                  <div
+                    className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}
+                  >
                     {row.map((card) => (
                       <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
                     ))}
@@ -346,11 +361,7 @@ function AllCardsContent() {
         )}
       </main>
 
-      <Modal
-        title="Filters"
-        isOpen={showMobileFilters}
-        onClose={() => setShowMobileFilters(false)}
-      >
+      <Modal title="Filters" isOpen={showMobileFilters} onClose={() => setShowMobileFilters(false)}>
         {filterPanel}
       </Modal>
     </div>

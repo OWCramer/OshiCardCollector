@@ -73,7 +73,7 @@ export function GlobalHeader() {
   );
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
+    <header className="fixed w-full h-15.25 z-40 flex items-center justify-between border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
       <Link
         href={user ? "/all-cards" : "/"}
         className="text-lg font-semibold hover:opacity-80 transition-opacity"
