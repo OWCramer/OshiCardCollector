@@ -109,6 +109,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; width: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } =
     useCustomScrollbar(open);
 
@@ -116,7 +117,10 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      if (
+        ref.current && !ref.current.contains(e.target as Node) &&
+        menuRef.current && !menuRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -208,6 +212,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
       {/* Menu — portalled to body so overflow:auto ancestors don't clip it */}
       {open && menuStyle && createPortal(
         <div
+          ref={menuRef}
           style={{ position: "fixed", top: menuStyle.top, left: menuStyle.left, minWidth: menuStyle.width, zIndex: 9999 }}
           className={classes(
             "w-max rounded-xl shadow-lg",

@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useMemo, useEffect, useState, Suspense } from "react";
 import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
-import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
 import { Modal } from "@/components/Modal";
 
 // Card dimensions (must match rendered size)
@@ -335,7 +335,9 @@ function AllCardsContent() {
           </div>
         ) : filteredCards.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center opacity-50">
-            <span className="text-4xl">🔍</span>
+            <span className="text-4xl">
+              <SearchIcon />
+            </span>
             <p className="text-lg font-medium">No cards found</p>
             {hasActiveFilters && <p className="text-sm">Try adjusting your filters</p>}
           </div>
