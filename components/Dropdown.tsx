@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { type LucideIcon, CheckIcon, ChevronDownIcon } from "lucide-react";
 import { classes } from "@/lib/classes";
 
@@ -105,11 +106,13 @@ function useCustomScrollbar(open: boolean) {
 export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   const { items, className, highContrast = true, label } = props;
   const [open, setOpen] = useState(false);
+  const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; width: number } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } =
     useCustomScrollbar(open);
 
-  // Close on outside click
+  // Close on outside click or scroll
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(e: MouseEvent) {
@@ -117,8 +120,17 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
         setOpen(false);
       }
     }
+    function handleScroll() {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      setMenuStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
   }, [open]);
 
   // Trigger label
@@ -162,7 +174,15 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
       {label && <label className="text-sm opacity-75">{label}</label>}
       {/* Trigger */}
       <button
-        onClick={() => setOpen(!open)}
+        ref={triggerRef}
+        onClick={() => {
+          const next = !open;
+          if (next && triggerRef.current) {
+            const rect = triggerRef.current.getBoundingClientRect();
+            setMenuStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+          }
+          setOpen(next);
+        }}
         className={classes(
           "flex items-center justify-between gap-4 h-9 px-4 w-full rounded-xl transition-all duration-150 cursor-pointer",
           "backdrop-blur-md backdrop-saturate-150",
@@ -185,14 +205,14 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
         />
       </button>
 
-      {/* Menu */}
-      {open && (
+      {/* Menu — portalled to body so overflow:auto ancestors don't clip it */}
+      {open && menuStyle && createPortal(
         <div
+          style={{ position: "fixed", top: menuStyle.top, left: menuStyle.left, minWidth: menuStyle.width, zIndex: 9999 }}
           className={classes(
-            "absolute z-50 mt-1 min-w-full w-max rounded-xl shadow-lg top-9",
+            "w-max rounded-xl shadow-lg",
             "bg-white dark:bg-zinc-900",
             "ring-1 ring-inset ring-black/10 dark:ring-white/10",
-            label && "top-16"
           )}
         >
           {/* Scroll container — native scrollbar hidden */}
@@ -248,7 +268,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
             </div>
           )}
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
