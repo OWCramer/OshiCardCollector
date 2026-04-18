@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useGetCardQuery } from "@/generated/graphql";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import { CardImage } from "./components/CardImage";
 import { CardHeader } from "./components/CardHeader";
@@ -10,12 +10,18 @@ import { CardStats } from "./components/CardStats";
 import { ArtsList } from "./components/ArtsList";
 import { OshiSkillsList } from "./components/OshiSkillsList";
 import { QnaList } from "./components/QnaList";
+import { SetList } from "./components/SetList";
 import { CardMeta } from "./components/CardMeta";
+import { CardActions } from "./components/CardActions";
+import { Button } from "@/components/Button";
+import { ArrowLeftIcon } from "lucide-react";
 
 export default function CardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const id = Number.parseInt(slug);
   const { data, loading, error } = useGetCardQuery({ variables: { id } });
+
+  const router = useRouter();
 
   if (loading)
     return (
@@ -29,7 +35,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   const card = data.card;
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black relative overflow-hidden">
+    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black relative">
       {/* Blurred card image backdrop */}
       {card.imageUrl && (
         <div className="fixed inset-0 z-0 scale-110" aria-hidden>
@@ -37,19 +43,31 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             src={card.imageUrl}
             alt=""
             fill
-            className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-20 dark:opacity-15"
+            className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-35 dark:opacity-25"
           />
           {/* Fade to bg at the bottom so content stays readable */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-50 dark:to-black" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-zinc-50 dark:to-black" />
         </div>
       )}
-      <main className="relative z-10 flex-1 p-8 max-w-4xl mx-auto w-full flex flex-col gap-4">
-        <div className="flex flex-col items-center sm:flex-row sm:items-start gap-10">
+      <div className="relative z-20 flex items-center justify-between px-4 pt-2 mt-2 mb-2 xl:mb-0">
+        <Button
+          variant="transparent"
+          highContrast
+          onClick={() => router.back()}
+          icon={ArrowLeftIcon}
+          className="xl:absolute xl:top-2 xl:left-4"
+        >
+          Back
+        </Button>
+        <CardActions className="xl:absolute xl:top-2 xl:right-4" />
+      </div>
+      <main className="relative z-10 flex-1 pb-8 xl:pt-4 pt-2 px-4 max-w-4xl mx-auto w-full flex flex-col gap-5">
+        <div className="flex flex-col items-center sm:flex-row sm:items-start sm:gap-8 gap-5">
           {card.imageUrl && (
             <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
           )}
 
-          <div className="flex flex-col gap-4 min-w-0">
+          <div className="flex flex-col gap-4 min-w-0 self-stretch">
             <CardHeader
               cardNumber={card.cardNumber}
               name={card.name}
@@ -58,6 +76,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               rarity={card.rarity}
               isBuzz={card.isBuzz}
               isLimited={card.isLimited}
+              tags={card.tags}
             />
 
             <CardStats
@@ -67,22 +86,21 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               batonPass={card.batonPass}
             />
 
-            {card.extraText && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 italic">{card.extraText}</p>
-            )}
-            {card.specialText && (
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">{card.specialText}</p>
-            )}
+            {card.specialText && <p className="text-sm opacity-75">{card.specialText}</p>}
+
+            {card.extraText && <p className="text-sm opacity-75 italic">Extra: {card.extraText}</p>}
 
             <ArtsList arts={card.arts} />
             <OshiSkillsList oshiSkills={card.oshiSkills} />
             <CardMeta
+              className="mt-auto"
               illustrator={card.illustrator}
               releaseDate={card.releaseDate}
               setNames={card.setNames}
             />
           </div>
         </div>
+        <SetList setNames={card.setNames} />
         <QnaList qna={card.qna ?? []} />
       </main>
     </div>

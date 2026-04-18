@@ -23,7 +23,10 @@ export type Art = {
   __typename?: 'Art';
   /** Cost as array of colors (RED, GREEN, BLUE, WHITE, PURPLE, YELLOW, COLORLESS) */
   cost?: Maybe<Array<Scalars['String']['output']>>;
-  damage?: Maybe<Scalars['Int']['output']>;
+  /** Damage value as string to preserve modifiers like "100+"  */
+  damage?: Maybe<Scalars['String']['output']>;
+  /** Bonus damage against specific colors (e.g. +50 vs WHITE) */
+  damageBonuses: Array<DamageBonus>;
   effectText?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
 };
@@ -132,6 +135,14 @@ export enum Color {
   Yellow = 'YELLOW'
 }
 
+export type DamageBonus = {
+  __typename?: 'DamageBonus';
+  /** Bonus amount as string (e.g. "+50") */
+  amount: Scalars['String']['output'];
+  /** Colors that trigger the bonus */
+  colors: Array<Scalars['String']['output']>;
+};
+
 export type OshiSkill = {
   __typename?: 'OshiSkill';
   cost?: Maybe<Scalars['String']['output']>;
@@ -210,7 +221,7 @@ export type GetCardQueryVariables = Exact<{
 }>;
 
 
-export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: number | null, cost?: Array<string> | null, effectText?: string | null }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }> } | null };
+export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }> } | null };
 
 export type GetAllCardsQueryVariables = Exact<{
   filters?: InputMaybe<CardFilter>;
@@ -260,6 +271,10 @@ export const GetCardDocument = gql`
       damage
       cost
       effectText
+      damageBonuses {
+        amount
+        colors
+      }
     }
     oshiSkills {
       name

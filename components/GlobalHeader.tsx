@@ -65,7 +65,7 @@ export function GlobalHeader() {
         <div className="h-7 w-7 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
       )}
       {user?.displayName ? (
-        <span className="text-sm text-zinc-700 dark:text-zinc-300">{user.displayName}</span>
+        <span className="text-sm">{user.displayName}</span>
       ) : (
         <div className="h-3.5 w-24 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
       )}
@@ -76,7 +76,7 @@ export function GlobalHeader() {
     <header className="sticky top-0 z-40 flex items-center justify-between border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
       <Link
         href={user ? "/all-cards" : "/"}
-        className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 hover:opacity-80 transition-opacity"
+        className="text-lg font-semibold hover:opacity-80 transition-opacity"
       >
         oshi.cards
       </Link>

@@ -62,7 +62,7 @@ function FilterControls({
 }: FilterControlsProps) {
   return (
     <div className="flex flex-col gap-3">
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+      <label className="text-xs font-medium opacity-55 uppercase tracking-wider">
         Rarity
       </label>
       <Dropdown
@@ -73,7 +73,7 @@ function FilterControls({
         className="w-full"
       />
 
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
+      <label className="text-xs font-medium opacity-55 uppercase tracking-wider mt-2">
         Set
       </label>
       <Dropdown
@@ -84,7 +84,7 @@ function FilterControls({
         className="w-full"
       />
 
-      <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mt-2">
+      <label className="text-xs font-medium opacity-55 uppercase tracking-wider mt-2">
         Sort
       </label>
       <Dropdown value={sort} items={SORT_OPTIONS} onValueChange={onSortChange} className="w-full" />
@@ -385,8 +385,8 @@ const VirtualGrid = forwardRef<
 const EmptyState = forwardRef<HTMLDivElement>(function EmptyState(_, ref) {
   return (
     <div ref={ref} className="flex flex-col items-center justify-center py-24 text-center">
-      <p className="text-lg font-medium text-zinc-400 dark:text-zinc-500">No cards found</p>
-      <p className="mt-1 text-sm text-zinc-400/70 dark:text-zinc-500/70">
+      <p className="text-lg font-medium opacity-45">No cards found</p>
+      <p className="mt-1 text-sm opacity-30">
         Try adjusting your filters or search query
       </p>
     </div>
