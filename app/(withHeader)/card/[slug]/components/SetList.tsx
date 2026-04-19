@@ -14,7 +14,11 @@ export function SetList({ setNames }: SetListProps) {
     <Accordion
       items={[
         {
-          title: <span className="font-semibold opacity-80">Available in</span>,
+          title: (
+            <span className="font-semibold opacity-80">
+              Available in {setNames.length} {setNames.length === 1 ? "set" : "sets"}
+            </span>
+          ),
           content: (
             <div className="flex flex-col">
               {setNames.map((name) => (

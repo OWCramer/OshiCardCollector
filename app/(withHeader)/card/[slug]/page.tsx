@@ -9,6 +9,7 @@ import { CardHeader } from "./components/CardHeader";
 import { CardStats } from "./components/CardStats";
 import { ArtsList } from "./components/ArtsList";
 import { OshiSkillsList } from "./components/OshiSkillsList";
+import { KeywordsList } from "./components/KeywordsList";
 import { QnaList } from "./components/QnaList";
 import { SetList } from "./components/SetList";
 import { CardMeta } from "./components/CardMeta";
@@ -67,10 +68,10 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         >
           Back
         </Button>
-        <CardActions className="xl:absolute xl:top-2 xl:right-4" />
+        <CardActions cardId={card.id} className="xl:absolute xl:top-2 xl:right-4" />
       </div>
       <main className="relative z-10 flex-1 pb-8 xl:pt-4 pt-2 px-4 max-w-4xl mx-auto w-full flex flex-col gap-5">
-        <div className="flex flex-col items-center sm:flex-row sm:items-start sm:gap-8 gap-5">
+        <div className="flex flex-col items-center md:flex-row md:items-start md:gap-8 gap-5">
           {card.imageUrl && (
             <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
           )}
@@ -103,14 +104,20 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               </p>
             )}
 
-            {card.extraText && (
-              <p aria-label="Extra Text" className="text-sm opacity-75 italic whitespace-pre-wrap">
-                Extra: <LinkedCardText text={card.extraText} />
-              </p>
-            )}
-
+            <KeywordsList keywords={card.keywords} />
             <ArtsList arts={card.arts} />
             <OshiSkillsList oshiSkills={card.oshiSkills} />
+
+            {card.extraText && (
+              <div className="flex flex-col gap-2">
+                <h2 className="text-sm font-semibold opacity-80">Extra</h2>
+                <div className="rounded-xl bg-black/5 dark:bg-white/5 p-3">
+                  <p className="text-sm opacity-75 whitespace-pre-wrap">
+                    <LinkedCardText text={card.extraText} />
+                  </p>
+                </div>
+              </div>
+            )}
             <CardMeta
               className="mt-auto"
               illustrator={card.illustrator}
