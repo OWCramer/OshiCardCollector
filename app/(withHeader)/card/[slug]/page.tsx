@@ -95,13 +95,16 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             />
 
             {card.specialText && (
-              <p aria-label="Special/Ability Text" className="text-sm opacity-75">
+              <p
+                aria-label="Special/Ability Text"
+                className="text-sm opacity-75 whitespace-pre-wrap"
+              >
                 <LinkedCardText text={card.specialText} />
               </p>
             )}
 
             {card.extraText && (
-              <p aria-label="Extra Text" className="text-sm opacity-75 italic">
+              <p aria-label="Extra Text" className="text-sm opacity-75 italic whitespace-pre-wrap">
                 Extra: <LinkedCardText text={card.extraText} />
               </p>
             )}
