@@ -1,3 +1,5 @@
+import { LinkedCardText } from "@/components/LinkedCardText";
+
 interface OshiSkill {
   name: string;
   skillType: string;
@@ -44,7 +46,7 @@ export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
           </div>
           {skill.effectText && (
             <p className="opacity-75">
-              [{skill.usageLimit}] {skill.effectText}
+              [{skill.usageLimit}] <LinkedCardText text={skill.effectText} />
             </p>
           )}
         </div>

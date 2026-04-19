@@ -15,6 +15,7 @@ import { CardMeta } from "./components/CardMeta";
 import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
 import { ArrowLeftIcon } from "lucide-react";
+import { LinkedCardText } from "@/components/LinkedCardText";
 
 export default function CardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -95,13 +96,13 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
 
             {card.specialText && (
               <p aria-label="Special/Ability Text" className="text-sm opacity-75">
-                {card.specialText}
+                <LinkedCardText text={card.specialText} />
               </p>
             )}
 
             {card.extraText && (
               <p aria-label="Extra Text" className="text-sm opacity-75 italic">
-                Extra: {card.extraText}
+                Extra: <LinkedCardText text={card.extraText} />
               </p>
             )}
 
