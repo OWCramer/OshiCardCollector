@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { animate } from "animejs";
 import Image from "next/image";
 import type { GetAllCardsQuery } from "@/generated/graphql";
@@ -23,11 +23,10 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ card, size = "lg" }: ItemCardProps) {
-  const cardRef = useRef<HTMLButtonElement>(null);
-  const router = useRouter();
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const { width, height } = CARD_SIZES[size];
 
-  function handleMouseMove(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
     const el = cardRef.current;
     if (!el) return;
     const { left, top, width: w, height: h } = el.getBoundingClientRect();
@@ -44,13 +43,13 @@ export function ItemCard({ card, size = "lg" }: ItemCardProps) {
 
   return (
     <div style={{ perspective: "600px", width, height }}>
-      <button
+      <Link
         ref={cardRef}
+        href={`/card/${card.id}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        onClick={() => router.push(`/card/${card.id}`)}
         style={{ transformStyle: "preserve-3d", willChange: "transform" }}
-        className="rounded-lg overflow-hidden cursor-pointer"
+        className="rounded-lg overflow-hidden cursor-pointer block"
       >
         {card.imageUrl && (
           <Image
@@ -61,7 +60,7 @@ export function ItemCard({ card, size = "lg" }: ItemCardProps) {
             height={height}
           />
         )}
-      </button>
+      </Link>
     </div>
   );
 }

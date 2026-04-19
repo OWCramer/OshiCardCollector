@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Fuse from "fuse.js";
 import { type GetAllCardsQuery } from "@/generated/graphql";
 
-export type CardNode = NonNullable<GetAllCardsQuery["cards"]["nodes"][number]>;
+export type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
 export type SortField =
   | "name"
@@ -39,11 +39,6 @@ const RARITY_ORDER: Record<string, number> = {
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-function getInitialParams(): URLSearchParams {
-  if (typeof globalThis.location === "undefined") return new URLSearchParams();
-  return new URLSearchParams(globalThis.location.search);
-}
-
 function parseList(value: string | null): string[] {
   if (!value) return [];
   return value.split(",").filter(Boolean);
@@ -51,8 +46,8 @@ function parseList(value: string | null): string[] {
 
 function parseNumber(value: string | null): number | undefined {
   if (!value) return undefined;
-  const n = Number.parseInt(value, 10);
-  return Number.isNaN(n) ? undefined : n;
+  const n = parseInt(value, 10);
+  return isNaN(n) ? undefined : n;
 }
 
 function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder): number {
@@ -71,7 +66,7 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
     case "rarity": {
       const ra = RARITY_ORDER[a.rarity] ?? 99;
       const rb = RARITY_ORDER[b.rarity] ?? 99;
-      result = ra === rb ? a.rarity.localeCompare(b.rarity) : ra - rb;
+      result = ra !== rb ? ra - rb : a.rarity.localeCompare(b.rarity);
       break;
     }
     case "hp": {
@@ -81,8 +76,8 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       break;
     }
     case "bloomLevel": {
-      const ba = a.bloomLevel == null ? 99 : (BLOOM_ORDER[a.bloomLevel] ?? 99);
-      const bb = b.bloomLevel == null ? 99 : (BLOOM_ORDER[b.bloomLevel] ?? 99);
+      const ba = a.bloomLevel != null ? (BLOOM_ORDER[a.bloomLevel] ?? 99) : 99;
+      const bb = b.bloomLevel != null ? (BLOOM_ORDER[b.bloomLevel] ?? 99) : 99;
       result = ba - bb;
       break;
     }
@@ -91,11 +86,8 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       const db = b.releaseDate;
       if (!da && !db) result = 0;
       else if (!da) result = 1;
-      else if (db) {
-        result = da.localeCompare(db);
-      } else {
-        result = -1;
-      }
+      else if (!db) result = -1;
+      else result = da.localeCompare(db);
       break;
     }
   }
@@ -107,50 +99,169 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
 
 export function useCardFilters(allCards: CardNode[]) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const init = getInitialParams();
+  // Snapshot searchParams for this render — only the lazy initializers below
+  // actually use it, and those run once on mount.
+  const initial = searchParams;
 
-  const [search, setSearch] = useState(() => init.get("search") ?? "");
-  const [rarityFilter, setRarityFilter] = useState(() => parseList(init.get("rarity")));
-  const [cardTypeFilter, setCardTypeFilter] = useState(() => parseList(init.get("cardType")));
-  const [colorsFilter, setColorsFilter] = useState(() => parseList(init.get("colors")));
-  const [bloomLevelFilter, setBloomLevelFilter] = useState(() => parseList(init.get("bloomLevel")));
-  const [setsFilter, setSetsFilter] = useState(() => parseList(init.get("sets")));
-  const [tagsFilter, setTagsFilter] = useState(() => parseList(init.get("tags")));
-  const [isLimitedFilter, setIsLimitedFilter] = useState<true | null>(() => init.get("isLimited") === "true" ? true : null);
-  const [isBuzzFilter, setIsBuzzFilter] = useState<true | null>(() => init.get("isBuzz") === "true" ? true : null);
-  const [minHp, setMinHp] = useState<number | undefined>(() => parseNumber(init.get("minHp")));
-  const [maxHp, setMaxHp] = useState<number | undefined>(() => parseNumber(init.get("maxHp")));
-  const [sortField, setSortField] = useState<SortField>(() => (init.get("sortField") as SortField) ?? "releaseDate");
-  const [sortOrder, setSortOrder] = useState<SortOrder>(() => (init.get("sortOrder") as SortOrder) ?? "asc");
+  // ── state — initialized once from the URL on mount ──────────────────────
+  const [search, setSearch] = useState(() => initial.get("search") ?? "");
+  const [rarityFilter, setRarityFilter] = useState(() => parseList(initial.get("rarity")));
+  const [cardTypeFilter, setCardTypeFilter] = useState(() => parseList(initial.get("cardType")));
+  const [colorsFilter, setColorsFilter] = useState(() => parseList(initial.get("colors")));
+  const [bloomLevelFilter, setBloomLevelFilter] = useState(() =>
+    parseList(initial.get("bloomLevel"))
+  );
+  const [setsFilter, setSetsFilter] = useState(() => parseList(initial.get("sets")));
+  const [tagsFilter, setTagsFilter] = useState(() => parseList(initial.get("tags")));
+  const [isLimitedFilter, setIsLimitedFilter] = useState<true | null>(() =>
+    initial.get("isLimited") === "true" ? true : null
+  );
+  const [isBuzzFilter, setIsBuzzFilter] = useState<true | null>(() =>
+    initial.get("isBuzz") === "true" ? true : null
+  );
+  const [minHp, setMinHp] = useState<number | undefined>(() => parseNumber(initial.get("minHp")));
+  const [maxHp, setMaxHp] = useState<number | undefined>(() => parseNumber(initial.get("maxHp")));
+  const [sortField, setSortField] = useState<SortField>(
+    () => (initial.get("sortField") as SortField) ?? "releaseDate"
+  );
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    () => (initial.get("sortOrder") as SortOrder) ?? "asc"
+  );
 
-  const updateUrl = useCallback((key: string, value: string | null) => {
-    const params = new URLSearchParams(globalThis.location.search);
-    if (value == null || value === "") {
-      params.delete(key);
-    } else {
-      params.set(key, value);
+  // Sync state from URL on browser back/forward (popstate fires only on history nav, not router.replace)
+  useEffect(() => {
+    function syncFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      setSearch(params.get("search") ?? "");
+      setRarityFilter(parseList(params.get("rarity")));
+      setCardTypeFilter(parseList(params.get("cardType")));
+      setColorsFilter(parseList(params.get("colors")));
+      setBloomLevelFilter(parseList(params.get("bloomLevel")));
+      setSetsFilter(parseList(params.get("sets")));
+      setTagsFilter(parseList(params.get("tags")));
+      setIsLimitedFilter(params.get("isLimited") === "true" ? true : null);
+      setIsBuzzFilter(params.get("isBuzz") === "true" ? true : null);
+      setMinHp(parseNumber(params.get("minHp")));
+      setMaxHp(parseNumber(params.get("maxHp")));
+      setSortField((params.get("sortField") as SortField) ?? "releaseDate");
+      setSortOrder((params.get("sortOrder") as SortOrder) ?? "asc");
     }
-    const qs = params.toString();
-    router.replace(`${globalThis.location.pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-  }, [router]);
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
 
-  const updateSearch = useCallback((v: string) => { setSearch(v); updateUrl("search", v || null); }, [updateUrl]);
-  const updateRarityFilter = useCallback((v: string[]) => { setRarityFilter(v); updateUrl("rarity", v.join(",") || null); }, [updateUrl]);
-  const updateCardTypeFilter = useCallback((v: string[]) => { setCardTypeFilter(v); updateUrl("cardType", v.join(",") || null); }, [updateUrl]);
-  const updateColorsFilter = useCallback((v: string[]) => { setColorsFilter(v); updateUrl("colors", v.join(",") || null); }, [updateUrl]);
-  const updateBloomLevelFilter = useCallback((v: string[]) => { setBloomLevelFilter(v); updateUrl("bloomLevel", v.join(",") || null); }, [updateUrl]);
-  const updateSetsFilter = useCallback((v: string[]) => { setSetsFilter(v); updateUrl("sets", v.join(",") || null); }, [updateUrl]);
-  const updateTagsFilter = useCallback((v: string[]) => { setTagsFilter(v); updateUrl("tags", v.join(",") || null); }, [updateUrl]);
-  const updateIsLimitedFilter = useCallback((v: true | null) => { setIsLimitedFilter(v); updateUrl("isLimited", v ? "true" : null); }, [updateUrl]);
-  const updateIsBuzzFilter = useCallback((v: true | null) => { setIsBuzzFilter(v); updateUrl("isBuzz", v ? "true" : null); }, [updateUrl]);
-  const updateMinHp = useCallback((v: number | undefined) => { setMinHp(v); updateUrl("minHp", v != null ? String(v) : null); }, [updateUrl]);
-  const updateMaxHp = useCallback((v: number | undefined) => { setMaxHp(v); updateUrl("maxHp", v != null ? String(v) : null); }, [updateUrl]);
-  const updateSortField = useCallback((v: SortField) => { setSortField(v); updateUrl("sortField", v); }, [updateUrl]);
-  const updateSortOrder = useCallback((v: SortOrder) => { setSortOrder(v); updateUrl("sortOrder", v); }, [updateUrl]);
+  // ── URL writer — updates the URL without reading the subscription ────────
+  const updateUrl = useCallback(
+    (key: string, value: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value == null || value === "") {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+      const qs = params.toString();
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
+
+  // ── update* — set state + sync URL ──────────────────────────────────────
+  const updateSearch = useCallback(
+    (v: string) => {
+      setSearch(v);
+      updateUrl("search", v || null);
+    },
+    [updateUrl]
+  );
+  const updateRarityFilter = useCallback(
+    (v: string[]) => {
+      setRarityFilter(v);
+      updateUrl("rarity", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateCardTypeFilter = useCallback(
+    (v: string[]) => {
+      setCardTypeFilter(v);
+      updateUrl("cardType", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateColorsFilter = useCallback(
+    (v: string[]) => {
+      setColorsFilter(v);
+      updateUrl("colors", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateBloomLevelFilter = useCallback(
+    (v: string[]) => {
+      setBloomLevelFilter(v);
+      updateUrl("bloomLevel", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateSetsFilter = useCallback(
+    (v: string[]) => {
+      setSetsFilter(v);
+      updateUrl("sets", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateTagsFilter = useCallback(
+    (v: string[]) => {
+      setTagsFilter(v);
+      updateUrl("tags", v.join(",") || null);
+    },
+    [updateUrl]
+  );
+  const updateIsLimitedFilter = useCallback(
+    (v: true | null) => {
+      setIsLimitedFilter(v);
+      updateUrl("isLimited", v ? "true" : null);
+    },
+    [updateUrl]
+  );
+  const updateIsBuzzFilter = useCallback(
+    (v: true | null) => {
+      setIsBuzzFilter(v);
+      updateUrl("isBuzz", v ? "true" : null);
+    },
+    [updateUrl]
+  );
+  const updateMinHp = useCallback(
+    (v: number | undefined) => {
+      setMinHp(v);
+      updateUrl("minHp", v != null ? String(v) : null);
+    },
+    [updateUrl]
+  );
+  const updateMaxHp = useCallback(
+    (v: number | undefined) => {
+      setMaxHp(v);
+      updateUrl("maxHp", v != null ? String(v) : null);
+    },
+    [updateUrl]
+  );
+  const updateSortField = useCallback(
+    (v: SortField) => {
+      setSortField(v);
+      updateUrl("sortField", v);
+    },
+    [updateUrl]
+  );
+  const updateSortOrder = useCallback(
+    (v: SortOrder) => {
+      setSortOrder(v);
+      updateUrl("sortOrder", v);
+    },
+    [updateUrl]
+  );
 
   // ── derived ──────────────────────────────────────────────────────────────
-
   const hasActiveFilters =
     !!search ||
     rarityFilter.length > 0 ||
@@ -176,17 +287,24 @@ export function useCardFilters(allCards: CardNode[]) {
     setIsBuzzFilter(null);
     setMinHp(undefined);
     setMaxHp(undefined);
-    const params = new URLSearchParams(globalThis.location.search);
-    for (const key of ["search", "rarity", "cardType", "colors", "bloomLevel", "sets", "tags", "isLimited", "isBuzz", "minHp", "maxHp"]) {
-      params.delete(key);
-    }
+  }, []);
+
+  // URL preserving only sorting params — used by the Clear filters Link
+  const clearFiltersHref = useMemo(() => {
+    const params = new URLSearchParams();
+    if (sortField !== "releaseDate") params.set("sortField", sortField);
+    if (sortOrder !== "asc") params.set("sortOrder", sortOrder);
     const qs = params.toString();
-    router.replace(`${globalThis.location.pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
-  }, [router]);
+    return `${pathname}${qs ? `?${qs}` : ""}`;
+  }, [pathname, sortField, sortOrder]);
 
   // ── fuzzy search ─────────────────────────────────────────────────────────
   const fuse = useMemo(
-    () => new Fuse(allCards, { keys: ["name", "setNames", "tags"], threshold: 0.3 }),
+    () =>
+      new Fuse(allCards, {
+        keys: ["name", "setNames", "tags", "specialText", "extraText"],
+        threshold: 0.3,
+      }),
     [allCards]
   );
 
@@ -210,8 +328,8 @@ export function useCardFilters(allCards: CardNode[]) {
       if (isLimitedFilter === true && !card.isLimited) return false;
       if (isBuzzFilter === true && !card.isBuzz) return false;
       if (minHp !== undefined && (card.hp == null || card.hp < minHp)) return false;
-      return !(maxHp !== undefined && (card.hp == null || card.hp > maxHp));
-
+      if (maxHp !== undefined && (card.hp == null || card.hp > maxHp)) return false;
+      return true;
     });
   }, [
     afterSearch,
@@ -247,7 +365,7 @@ export function useCardFilters(allCards: CardNode[]) {
     maxHp,
     sortField,
     sortOrder,
-    // updaters
+    // updaters (set state + URL)
     setSearch: updateSearch,
     setRarityFilter: updateRarityFilter,
     setCardTypeFilter: updateCardTypeFilter,
@@ -265,5 +383,6 @@ export function useCardFilters(allCards: CardNode[]) {
     filteredCards,
     hasActiveFilters,
     clearFilters,
+    clearFiltersHref,
   };
 }

@@ -58,6 +58,8 @@ export type Card = {
   isBuzz: Scalars['Boolean']['output'];
   /** Whether this is a LIMITED card */
   isLimited: Scalars['Boolean']['output'];
+  /** Structured keywords (Gift, Collab Effect, Bloom Effect, ...) */
+  keywords: Array<Keyword>;
   /** Life for oshi cards */
   life?: Maybe<Scalars['Int']['output']>;
   name: Scalars['String']['output'];
@@ -143,6 +145,16 @@ export type DamageBonus = {
   colors: Array<Scalars['String']['output']>;
 };
 
+export type Keyword = {
+  __typename?: 'Keyword';
+  /** Keyword description / effect text */
+  description: Scalars['String']['output'];
+  /** Keyword title (e.g. "Bodyguard", "Not! Nin-Nin!!") */
+  title: Scalars['String']['output'];
+  /** Keyword type (GIFT, COLLAB, BLOOM, or other uppercase identifier) */
+  type: Scalars['String']['output'];
+};
+
 export type OshiSkill = {
   __typename?: 'OshiSkill';
   cost?: Maybe<Scalars['String']['output']>;
@@ -221,7 +233,7 @@ export type GetCardQueryVariables = Exact<{
 }>;
 
 
-export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }> } | null };
+export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }> } | null };
 
 export type GetAllCardsQueryVariables = Exact<{
   filters?: InputMaybe<CardFilter>;
@@ -229,7 +241,7 @@ export type GetAllCardsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, setNames: Array<string>, tags: Array<string>, releaseDate?: string | null }> } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, setNames: Array<string>, tags: Array<string>, extraText?: string | null, specialText?: string | null, releaseDate?: string | null }> } };
 
 export type GetRaritiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -240,6 +252,16 @@ export type GetSetsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetSetsQuery = { __typename?: 'Query', sets: Array<string> };
+
+export type GetColorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetColorsQuery = { __typename?: 'Query', colors: Array<string> };
+
+export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTagsQuery = { __typename?: 'Query', tags: Array<string> };
 
 
 export const GetCardDocument = gql`
@@ -343,6 +365,8 @@ export const GetAllCardsDocument = gql`
       isLimited
       setNames
       tags
+      extraText
+      specialText
       releaseDate
     }
   }
@@ -465,21 +489,27 @@ export type GetSetsQueryHookResult = ReturnType<typeof useGetSetsQuery>;
 export type GetSetsLazyQueryHookResult = ReturnType<typeof useGetSetsLazyQuery>;
 export type GetSetsSuspenseQueryHookResult = ReturnType<typeof useGetSetsSuspenseQuery>;
 export type GetSetsQueryResult = Apollo.QueryResult<GetSetsQuery, GetSetsQueryVariables>;
-
-export type GetColorsQueryVariables = Exact<{ [key: string]: never; }>;
-
-export type GetColorsQuery = { __typename?: 'Query', colors: Array<string> };
-
-export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
-
-export type GetTagsQuery = { __typename?: 'Query', tags: Array<string> };
-
 export const GetColorsDocument = gql`
     query GetColors {
   colors
 }
     `;
 
+/**
+ * __useGetColorsQuery__
+ *
+ * To run a query within a React component, call `useGetColorsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetColorsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetColorsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
 export function useGetColorsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetColorsQuery, GetColorsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return ApolloReactHooks.useQuery<GetColorsQuery, GetColorsQueryVariables>(GetColorsDocument, options);
@@ -488,16 +518,38 @@ export function useGetColorsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHo
           const options = {...defaultOptions, ...baseOptions}
           return ApolloReactHooks.useLazyQuery<GetColorsQuery, GetColorsQueryVariables>(GetColorsDocument, options);
         }
+// @ts-ignore
+export function useGetColorsSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetColorsQuery, GetColorsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetColorsQuery, GetColorsQueryVariables>;
+export function useGetColorsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetColorsQuery, GetColorsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetColorsQuery | undefined, GetColorsQueryVariables>;
+export function useGetColorsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetColorsQuery, GetColorsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetColorsQuery, GetColorsQueryVariables>(GetColorsDocument, options);
+        }
 export type GetColorsQueryHookResult = ReturnType<typeof useGetColorsQuery>;
 export type GetColorsLazyQueryHookResult = ReturnType<typeof useGetColorsLazyQuery>;
+export type GetColorsSuspenseQueryHookResult = ReturnType<typeof useGetColorsSuspenseQuery>;
 export type GetColorsQueryResult = Apollo.QueryResult<GetColorsQuery, GetColorsQueryVariables>;
-
 export const GetTagsDocument = gql`
     query GetTags {
   tags
 }
     `;
 
+/**
+ * __useGetTagsQuery__
+ *
+ * To run a query within a React component, call `useGetTagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTagsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
 export function useGetTagsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return ApolloReactHooks.useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
@@ -506,6 +558,14 @@ export function useGetTagsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHook
           const options = {...defaultOptions, ...baseOptions}
           return ApolloReactHooks.useLazyQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
         }
+// @ts-ignore
+export function useGetTagsSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTagsQuery, GetTagsQueryVariables>;
+export function useGetTagsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTagsQuery | undefined, GetTagsQueryVariables>;
+export function useGetTagsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
+        }
 export type GetTagsQueryHookResult = ReturnType<typeof useGetTagsQuery>;
 export type GetTagsLazyQueryHookResult = ReturnType<typeof useGetTagsLazyQuery>;
+export type GetTagsSuspenseQueryHookResult = ReturnType<typeof useGetTagsSuspenseQuery>;
 export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVariables>;
