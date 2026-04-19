@@ -12,6 +12,7 @@ import { Button } from "@/components/Button";
 import {
   ChevronDownIcon,
   HeartIcon,
+  LayersIcon,
   LibraryIcon,
   LogOutIcon,
   MenuIcon,
@@ -62,6 +63,9 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
       <nav className="flex flex-col gap-1 px-4 py-4">
         <button onClick={() => navigate("/all-cards")} className={MOBILE_NAV_ITEM_CLASS}>
           <PlaySquareIcon size={18} /> All Cards
+        </button>
+        <button onClick={() => navigate("/sets")} className={MOBILE_NAV_ITEM_CLASS}>
+          <LayersIcon size={18} /> Sets
         </button>
 
         <div className="mt-2 px-4 pb-1 text-xs font-semibold uppercase tracking-wider opacity-40">
@@ -175,6 +179,7 @@ export function GlobalHeader() {
         {/* Desktop nav */}
         <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2">
           <Button href="/all-cards" variant="transparent" highContrast>Cards</Button>
+          <Button href="/sets" variant="transparent" highContrast>Sets</Button>
           <CollectionMenu />
         </nav>
 
