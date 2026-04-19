@@ -66,7 +66,7 @@ export function ArtsList({ arts }: ArtsListProps) {
           </div>
 
           {art.effectText && (
-            <p className="text-sm opacity-75 mt-1">
+            <p className="text-sm opacity-75 mt-1 whitespace-pre-wrap">
               <LinkedCardText text={art.effectText} />
             </p>
           )}

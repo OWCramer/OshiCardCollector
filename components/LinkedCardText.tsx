@@ -6,9 +6,6 @@ interface LinkedCardTextProps {
   className?: string;
 }
 
-// Matches text surrounded by 〈...〉 (rendered as ⟨...⟩)
-const BRACKET_REGEX = /〈([^〉]+)〉/g;
-
 /**
  * Renders text, converting any 〈tag〉 segments into <Link>s that navigate to
  * /all-cards with the bracketed text pre-filled into the search filter.
@@ -16,25 +13,25 @@ const BRACKET_REGEX = /〈([^〉]+)〉/g;
 export function LinkedCardText({ text, className }: LinkedCardTextProps) {
   if (!text) return null;
 
+  // Fresh regex each call — no shared mutable state
+  const matches = Array.from(text.matchAll(/〈([^〉]+)〉/g));
+
+  if (matches.length === 0) return <span className={className}>{text}</span>;
+
   const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
+  let cursor = 0;
 
-  // Reset state for global regex
-  BRACKET_REGEX.lastIndex = 0;
-
-  while ((match = BRACKET_REGEX.exec(text)) !== null) {
-    const [full, inner] = match;
+  matches.forEach((match, i) => {
+    const inner = match[1];
     const start = match.index;
-    const end = start + full.length;
+    const end = start + match[0].length;
 
-    if (start > lastIndex) {
-      parts.push(<Fragment key={key++}>{text.slice(lastIndex, start)}</Fragment>);
+    if (start > cursor) {
+      parts.push(<Fragment key={`t-${i}`}>{text.slice(cursor, start)}</Fragment>);
     }
 
     parts.push(
-      <Fragment key={key++}>
+      <Fragment key={`l-${i}`}>
         <span className="font-bold">⟨</span>
         <Link
           href={`/all-cards?search=${encodeURIComponent(inner)}`}
@@ -46,11 +43,11 @@ export function LinkedCardText({ text, className }: LinkedCardTextProps) {
       </Fragment>
     );
 
-    lastIndex = end;
-  }
+    cursor = end;
+  });
 
-  if (lastIndex < text.length) {
-    parts.push(<Fragment key={key++}>{text.slice(lastIndex)}</Fragment>);
+  if (cursor < text.length) {
+    parts.push(<Fragment key="tail">{text.slice(cursor)}</Fragment>);
   }
 
   return <span className={className}>{parts}</span>;

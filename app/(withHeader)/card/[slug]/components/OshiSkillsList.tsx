@@ -12,7 +12,7 @@ interface OshiSkillsListProps {
   oshiSkills: OshiSkill[];
 }
 
-function SPOshiBadge(){
+function SPOshiBadge() {
   return (
     <p className="w-fit px-2 py-0.5 flex items-center rounded-full bg-linear-to-r from-purple-500 via-blue-400 to-pink-500 text-white text-xs font-medium">
       SP Oshi
@@ -22,7 +22,9 @@ function SPOshiBadge(){
 
 function OshiBadge() {
   return (
-    <p className="w-fit px-2 py-0.5 flex items-center rounded-full bg-pink-400 text-white text-xs font-medium">Oshi</p>
+    <p className="w-fit px-2 py-0.5 flex items-center rounded-full bg-pink-400 text-white text-xs font-medium">
+      Oshi
+    </p>
   );
 }
 
@@ -45,7 +47,7 @@ export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
             </p>
           </div>
           {skill.effectText && (
-            <p className="opacity-75">
+            <p className="opacity-75 whitespace-pre-wrap">
               [{skill.usageLimit}] <LinkedCardText text={skill.effectText} />
             </p>
           )}
