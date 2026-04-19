@@ -5,6 +5,7 @@ import ApolloClientProvider from "@/lib/apollo-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           </ThemeProvider>
         </ApolloClientProvider>
         <div id="modal-root" />
+        <SpeedInsights />
       </body>
     </html>
   );
