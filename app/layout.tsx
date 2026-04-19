@@ -31,7 +31,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`min-h-screen flex flex-col ${inter.variable}`}>
+      <body className={`flex flex-col ${inter.variable}`}>
         <ApolloClientProvider>
           <ThemeProvider>
             <AuthProvider>

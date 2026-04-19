@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["minami.local"],
   images: {
     minimumCacheTTL: 2592000, // 30 days — card images never change
     remotePatterns: [

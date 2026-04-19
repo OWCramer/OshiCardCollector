@@ -3,9 +3,13 @@ import { ReactNode } from "react";
 
 export default function WithHeaderLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col min-h-screen">
-      <GlobalHeader />
-      <div className="flex flex-col flex-1">{children}</div>
+    <div className="min-h-dvh w-full">
+      <nav>
+        <GlobalHeader />
+      </nav>
+      <main className="mt-15.25">
+        <div className="flex flex-col w-full max-w-full grow">{children}</div>
+      </main>
     </div>
   );
 }

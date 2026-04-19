@@ -229,7 +229,7 @@ export type GetAllCardsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', name: string, id: number, imageUrl?: string | null, rarity: string, setNames: Array<string> }> } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, setNames: Array<string>, tags: Array<string>, releaseDate?: string | null }> } };
 
 export type GetRaritiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -330,11 +330,20 @@ export const GetAllCardsDocument = gql`
     query GetAllCards($filters: CardFilter, $pageSize: Int) {
   cards(filter: $filters, pageSize: $pageSize) {
     nodes {
-      name
       id
-      imageUrl
+      name
+      cardNumber
+      cardType
+      colors
       rarity
+      imageUrl
+      hp
+      bloomLevel
+      isBuzz
+      isLimited
       setNames
+      tags
+      releaseDate
     }
   }
 }
@@ -456,3 +465,47 @@ export type GetSetsQueryHookResult = ReturnType<typeof useGetSetsQuery>;
 export type GetSetsLazyQueryHookResult = ReturnType<typeof useGetSetsLazyQuery>;
 export type GetSetsSuspenseQueryHookResult = ReturnType<typeof useGetSetsSuspenseQuery>;
 export type GetSetsQueryResult = Apollo.QueryResult<GetSetsQuery, GetSetsQueryVariables>;
+
+export type GetColorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+export type GetColorsQuery = { __typename?: 'Query', colors: Array<string> };
+
+export type GetTagsQueryVariables = Exact<{ [key: string]: never; }>;
+
+export type GetTagsQuery = { __typename?: 'Query', tags: Array<string> };
+
+export const GetColorsDocument = gql`
+    query GetColors {
+  colors
+}
+    `;
+
+export function useGetColorsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetColorsQuery, GetColorsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetColorsQuery, GetColorsQueryVariables>(GetColorsDocument, options);
+      }
+export function useGetColorsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetColorsQuery, GetColorsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetColorsQuery, GetColorsQueryVariables>(GetColorsDocument, options);
+        }
+export type GetColorsQueryHookResult = ReturnType<typeof useGetColorsQuery>;
+export type GetColorsLazyQueryHookResult = ReturnType<typeof useGetColorsLazyQuery>;
+export type GetColorsQueryResult = Apollo.QueryResult<GetColorsQuery, GetColorsQueryVariables>;
+
+export const GetTagsDocument = gql`
+    query GetTags {
+  tags
+}
+    `;
+
+export function useGetTagsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
+      }
+export function useGetTagsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetTagsQuery, GetTagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetTagsQuery, GetTagsQueryVariables>(GetTagsDocument, options);
+        }
+export type GetTagsQueryHookResult = ReturnType<typeof useGetTagsQuery>;
+export type GetTagsLazyQueryHookResult = ReturnType<typeof useGetTagsLazyQuery>;
+export type GetTagsQueryResult = Apollo.QueryResult<GetTagsQuery, GetTagsQueryVariables>;
