@@ -1,7 +1,7 @@
 import { Badge } from "@/components/Badge";
 import { getColorImageSrcs } from "@/components/Card";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 interface CardHeaderProps {
@@ -25,13 +25,16 @@ export function CardHeader({
   isLimited,
   tags,
 }: CardHeaderProps) {
-  const router = useRouter();
-
   return (
     <div>
       <p className="text-sm opacity-65">{cardNumber}</p>
       <div className="flex flex-row gap-1.5 items-center">
-        <h1 className="text-2xl font-bold">{name}</h1>
+        <Link
+          href={`/all-cards?search=${encodeURIComponent(name)}`}
+          className="text-2xl font-bold hover:opacity-75 transition-opacity"
+        >
+          <h1>{name}</h1>
+        </Link>
         {colors &&
           getColorImageSrcs(colors).map((src, i) => (
             <Image
@@ -46,13 +49,15 @@ export function CardHeader({
           ))}
       </div>
       <div className="flex gap-2 mt-1 flex-wrap items-center">
-        <Badge>{cardType}</Badge>
-        <Badge onClick={() => router.push(`/all-cards?rarity=${rarity}`)}>{rarity}</Badge>
-        {isBuzz && <Badge>Buzz</Badge>}
-        {isLimited && <Badge>Limited</Badge>}
-        {tags?.map((tag) => {
-          return <Badge key={tag}>{tag}</Badge>;
-        })}
+        <Badge href={`/all-cards?cardType=${encodeURIComponent(cardType)}`}>{cardType}</Badge>
+        <Badge href={`/all-cards?rarity=${encodeURIComponent(rarity)}`}>{rarity}</Badge>
+        {isBuzz && <Badge href="/all-cards?isBuzz=true">Buzz</Badge>}
+        {isLimited && <Badge href="/all-cards?isLimited=true">Limited</Badge>}
+        {tags?.map((tag) => (
+          <Badge key={tag} href={`/all-cards?tags=${encodeURIComponent(tag)}`}>
+            {tag}
+          </Badge>
+        ))}
       </div>
     </div>
   );

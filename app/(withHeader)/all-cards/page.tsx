@@ -16,6 +16,7 @@ import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useMemo, useEffect, useState, Suspense } from "react";
+import Link from "next/link";
 import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
 import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
 import { Modal } from "@/components/Modal";
@@ -133,6 +134,7 @@ function AllCardsContent() {
     filteredCards,
     hasActiveFilters,
     clearFilters,
+    clearFiltersHref,
   } = useCardFilters(allCards);
 
   useEffect(() => {
@@ -300,9 +302,11 @@ function AllCardsContent() {
 
       {/* Clear filters */}
       {hasActiveFilters && (
-        <Button variant="transparent" highContrast onClick={clearFilters} className="w-full">
-          Clear filters
-        </Button>
+        <Link href={clearFiltersHref} onClick={clearFilters} className="w-full">
+          <Button variant="transparent" highContrast className="w-full">
+            Clear filters
+          </Button>
+        </Link>
       )}
     </div>
   );

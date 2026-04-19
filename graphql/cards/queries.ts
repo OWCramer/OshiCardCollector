@@ -66,6 +66,8 @@ export const GET_ALL_CARDS = gql`
         isLimited
         setNames
         tags
+        extraText
+        specialText
         releaseDate
       }
     }
