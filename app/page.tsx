@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/Button";
 
 export default function Home() {
@@ -9,6 +10,9 @@ export default function Home() {
           Track and manage your card collection in one place.
         </p>
         <Button href="/all-cards">Get Started</Button>
+        <Link href="/privacy-policy" className="text-sm opacity-50 hover:opacity-75">
+          Privacy Policy
+        </Link>
       </main>
     </div>
   );
