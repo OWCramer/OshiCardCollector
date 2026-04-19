@@ -45,6 +45,11 @@ export const GET_CARD = gql`
         question
         answer
       }
+      keywords {
+        description
+        title
+        type
+      }
     }
   }
 `;

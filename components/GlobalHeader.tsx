@@ -8,7 +8,7 @@ import { signOutUser } from "@/lib/firebase";
 import Image from "next/image";
 import { Menu, type MenuSection } from "@/components/Menu";
 import { Button } from "@/components/Button";
-import { LogOutIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
+import { HeartIcon, LibraryIcon, LogOutIcon, MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 
 export function GlobalHeader() {
   const { user } = useAuth();
@@ -81,9 +81,17 @@ export function GlobalHeader() {
         oshi.cards
       </Link>
       {user ? (
-        <Menu sections={sections} align="right" menuClassName="w-44">
-          {triggerNode}
-        </Menu>
+        <div className="flex items-center gap-1">
+          <Button href="/favorites" variant="transparent" highContrast icon={HeartIcon}>
+            Favorites
+          </Button>
+          <Button href="/library" variant="transparent" highContrast icon={LibraryIcon}>
+            Library
+          </Button>
+          <Menu sections={sections} align="right" menuClassName="w-44">
+            {triggerNode}
+          </Menu>
+        </div>
       ) : (
         <Button href="/login" variant="transparent" highContrast>
           Sign in
