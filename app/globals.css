@@ -19,8 +19,11 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-body {
+html {
   background: var(--background);
+}
+
+body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
   scrollbar-gutter: stable;
