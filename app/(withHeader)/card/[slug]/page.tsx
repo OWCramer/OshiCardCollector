@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useCallback } from "react";
 import { useGetCardQuery } from "@/generated/graphql";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -22,6 +22,13 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   const { data, loading, error } = useGetCardQuery({ variables: { id } });
 
   const router = useRouter();
+
+  const handleBackPress = useCallback(() => {
+    if (globalThis.history.length === 1) {
+      return router.push("/all-cards");
+    }
+    router.back();
+  }, [router]);
 
   if (loading)
     return (
@@ -53,7 +60,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         <Button
           variant="transparent"
           highContrast
-          onClick={() => router.back()}
+          onClick={handleBackPress}
           icon={ArrowLeftIcon}
           className="xl:absolute xl:top-2 xl:left-4"
         >
