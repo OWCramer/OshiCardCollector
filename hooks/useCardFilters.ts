@@ -303,7 +303,11 @@ export function useCardFilters(allCards: CardNode[]) {
     () =>
       new Fuse(allCards, {
         keys: ["name", "setNames", "tags", "specialText", "extraText"],
-        threshold: 0.3,
+        threshold: 0.35,
+        ignoreLocation: true,
+        ignoreDiacritics: true,
+        shouldSort: false,
+        useExtendedSearch: true,
       }),
     [allCards]
   );

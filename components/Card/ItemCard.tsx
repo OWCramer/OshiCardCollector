@@ -44,6 +44,7 @@ export function ItemCard({ card, size = "lg" }: ItemCardProps) {
   return (
     <div style={{ perspective: "600px", width, height }}>
       <Link
+        aria-label={`Card: ${card.name} - #${card.cardNumber}`}
         ref={cardRef}
         href={`/card/${card.id}`}
         onMouseMove={handleMouseMove}

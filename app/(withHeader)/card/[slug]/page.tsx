@@ -86,9 +86,17 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               batonPass={card.batonPass}
             />
 
-            {card.specialText && <p className="text-sm opacity-75">{card.specialText}</p>}
+            {card.specialText && (
+              <p aria-label="Special/Ability Text" className="text-sm opacity-75">
+                {card.specialText}
+              </p>
+            )}
 
-            {card.extraText && <p className="text-sm opacity-75 italic">Extra: {card.extraText}</p>}
+            {card.extraText && (
+              <p aria-label="Extra Text" className="text-sm opacity-75 italic">
+                Extra: {card.extraText}
+              </p>
+            )}
 
             <ArtsList arts={card.arts} />
             <OshiSkillsList oshiSkills={card.oshiSkills} />
