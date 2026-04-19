@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getArtCostImageSrc, getDamageBonusImageSrc } from "@/components/Card";
+import { LinkedCardText } from "@/components/LinkedCardText";
 
 interface DamageBonus {
   amount?: string | null;
@@ -64,7 +65,11 @@ export function ArtsList({ arts }: ArtsListProps) {
             </div>
           </div>
 
-          {art.effectText && <p className="text-sm opacity-75 mt-1">{art.effectText}</p>}
+          {art.effectText && (
+            <p className="text-sm opacity-75 mt-1">
+              <LinkedCardText text={art.effectText} />
+            </p>
+          )}
         </div>
       ))}
     </div>
