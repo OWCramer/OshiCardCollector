@@ -35,7 +35,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
   const card = data.card;
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 dark:bg-black relative">
+    <div className="flex flex-1 flex-col relative">
       {/* Blurred card image backdrop */}
       {card.imageUrl && (
         <div className="fixed inset-0 z-0 scale-110" aria-hidden>
