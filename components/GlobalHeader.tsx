@@ -20,6 +20,7 @@ import {
   PlaySquareIcon,
   SunIcon,
   SunMoonIcon,
+  UserIcon,
   XIcon,
 } from "lucide-react";
 
@@ -144,7 +145,10 @@ export function GlobalHeader() {
     },
     {
       label: "Account",
-      items: [{ label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut }],
+      items: [
+        { label: "Profile", icon: UserIcon, onClick: () => router.push("/user") },
+        { label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut },
+      ],
     },
   ];
 

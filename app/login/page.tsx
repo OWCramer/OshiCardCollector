@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/user");
+      router.push("/all-cards");
     }
   }, [user, loading, router]);
 

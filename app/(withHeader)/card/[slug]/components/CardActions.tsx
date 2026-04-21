@@ -6,7 +6,6 @@ import { useLibrary } from "@/lib/library-context";
 import { useFavorites } from "@/lib/favorites-context";
 import { useAuth } from "@/lib/auth-context";
 import { addCardToLibrary, setCardQuantity } from "@/api/library";
-import { addFavorite, removeFavorite } from "@/api/favorites";
 import { useRouter } from "next/navigation";
 
 const DEBOUNCE_MS = 800;
@@ -32,64 +31,78 @@ function ActionButton({ icon: Icon, label, onClick, active }: ActionButtonProps)
 
 function FavoriteButton({ cardId }: { cardId: number }) {
   const { user } = useAuth();
-  const { isFavorite } = useFavorites();
+  const { lists, isInList, isInAnyList, addToList, removeFromList } = useFavorites();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const remoteFavorited = isFavorite(cardId);
-  const [localFavorited, setLocalFavorited] = useState(remoteFavorited);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasPendingWrite = useRef(false);
+  const favorited = isInAnyList(cardId);
 
   useEffect(() => {
-    if (!hasPendingWrite.current) setLocalFavorited(remoteFavorited);
-  }, [remoteFavorited]);
+    if (!open) return;
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
 
-  function scheduleWrite(next: boolean) {
-    hasPendingWrite.current = true;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      if (user) next ? addFavorite(user.uid, cardId) : removeFavorite(user.uid, cardId);
-      hasPendingWrite.current = false;
-      debounceRef.current = null;
-    }, DEBOUNCE_MS);
+  function handleHeartClick() {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    setOpen((prev) => !prev);
   }
 
-  function flush() {
-    if (!debounceRef.current || !user) return;
-    clearTimeout(debounceRef.current);
-    localFavorited ? addFavorite(user.uid, cardId) : removeFavorite(user.uid, cardId);
-    hasPendingWrite.current = false;
-    debounceRef.current = null;
+  async function toggleList(listId: string) {
+    if (!user) return;
+    if (isInList(listId, cardId)) {
+      await removeFromList(listId, cardId);
+    } else {
+      await addToList(listId, cardId);
+    }
   }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(
-    () => () => {
-      flush();
-    },
-    [user]
-  );
-  useEffect(() => {
-    window.addEventListener("beforeunload", flush);
-    return () => window.removeEventListener("beforeunload", flush);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   return (
-    <ActionButton
-      icon={HeartIcon}
-      label={localFavorited ? "Unfavorite" : "Favourite"}
-      active={localFavorited}
-      onClick={() => {
-        if (!user) {
-          router.push("/login");
-          return;
-        }
-        const next = !localFavorited;
-        setLocalFavorited(next);
-        scheduleWrite(next);
-      }}
-    />
+    <div className="relative" ref={containerRef}>
+      <ActionButton
+        icon={HeartIcon}
+        label={favorited ? "Manage favorites" : "Add to favorites"}
+        active={favorited}
+        onClick={handleHeartClick}
+      />
+      {open && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 bg-white dark:bg-zinc-900 rounded-xl shadow-xl ring-1 ring-black/10 dark:ring-white/15 py-1.5 min-w-[168px]">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400 px-3 pb-1 pt-0.5">
+            Save to list
+          </p>
+          {lists.map((list) => {
+            const inList = isInList(list.id, cardId);
+            return (
+              <button
+                key={list.id}
+                onClick={() => toggleList(list.id)}
+                className="flex items-center gap-2.5 w-full px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm text-left transition-colors"
+              >
+                <span
+                  className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                    inList
+                      ? "bg-rose-500 border-rose-500"
+                      : "border-zinc-300 dark:border-zinc-600"
+                  }`}
+                >
+                  {inList && <CheckIcon size={9} className="text-white" strokeWidth={3} />}
+                </span>
+                <span className="truncate flex-1">{list.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFavorites } from "@/lib/favorites-context";
 import { useAuth } from "@/lib/auth-context";
@@ -39,12 +39,25 @@ function FavoriteCardItem({ cardId }: { cardId: number }) {
 
 export default function FavoritesPage() {
   const { user, loading: authLoading } = useAuth();
-  const { favorites, loading: favoritesLoading } = useFavorites();
+  const { lists, cardsByList, loading: favoritesLoading } = useFavorites();
   const router = useRouter();
+  const [activeListId, setActiveListId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
   }, [authLoading, user, router]);
+
+  // Default to first list
+  useEffect(() => {
+    if (!activeListId && lists.length > 0) setActiveListId(lists[0].id);
+  }, [lists, activeListId]);
+
+  // If active list was deleted, fall back to first
+  useEffect(() => {
+    if (activeListId && lists.length > 0 && !lists.find((l) => l.id === activeListId)) {
+      setActiveListId(lists[0].id);
+    }
+  }, [lists, activeListId]);
 
   if (authLoading || favoritesLoading) {
     return (
@@ -56,35 +69,64 @@ export default function FavoritesPage() {
 
   if (!user) return null;
 
-  const entries = Object.values(favorites);
-
-  if (entries.length === 0) {
-    return (
-      <div className="flex flex-1 items-center justify-center text-center px-4">
-        <div>
-          <p className="text-lg font-semibold">No favorites yet</p>
-          <p className="text-sm text-zinc-500 mt-1">
-            <Link href="/all-cards" className="underline underline-offset-2">
-              Browse cards
-            </Link>{" "}
-            and hit ♥ to save them here.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const currentList = lists.find((l) => l.id === activeListId) ?? lists[0];
+  const entries = currentList ? Object.values(cardsByList[currentList.id] ?? {}) : [];
 
   return (
     <main className="flex-1 px-4 py-6 max-w-6xl mx-auto w-full">
-      <h1 className="text-xl font-semibold mb-1">Favorites</h1>
-      <p className="text-sm text-zinc-500 mb-6">
-        {entries.length} card{entries.length !== 1 ? "s" : ""}
-      </p>
-      <div className="flex flex-wrap gap-4">
-        {entries.map((entry) => (
-          <FavoriteCardItem key={entry.cardId} cardId={entry.cardId} />
-        ))}
-      </div>
+      <h1 className="text-xl font-semibold mb-4">Lists</h1>
+
+      {lists.length > 0 && (
+        <div className="flex gap-3 mb-6 flex-wrap">
+          {lists.map((list) => {
+            const isActive = list.id === (currentList?.id ?? null);
+            const count = Object.keys(cardsByList[list.id] ?? {}).length;
+            return (
+              <button
+                key={list.id}
+                onClick={() => setActiveListId(list.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                }`}
+              >
+                {list.name}
+                <span
+                  className={`text-xs tabular-nums ${isActive ? "opacity-60" : "text-zinc-400"}`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {entries.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center text-center py-16">
+          <div>
+            <p className="text-lg font-semibold">No cards in this list</p>
+            <p className="text-sm text-zinc-500 mt-1">
+              <Link href="/all-cards" className="underline underline-offset-2">
+                Browse cards
+              </Link>{" "}
+              and hit ♥ to save them here.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-zinc-500 mb-4">
+            {entries.length} card{entries.length === 1 ? "" : "s"}
+          </p>
+          <div className="flex flex-wrap gap-4">
+            {entries.map((entry) => (
+              <FavoriteCardItem key={entry.cardId} cardId={entry.cardId} />
+            ))}
+          </div>
+        </>
+      )}
     </main>
   );
 }
