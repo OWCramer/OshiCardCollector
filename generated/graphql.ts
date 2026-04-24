@@ -65,6 +65,8 @@ export type Card = {
   name: Scalars['String']['output'];
   /** Skills for oshi cards */
   oshiSkills: Array<OshiSkill>;
+  /** Historical pricing data from TCGPlayer */
+  pricingData?: Maybe<PricingData>;
   /** Q&A entries from the official site */
   qna: Array<Qa>;
   rarity: Scalars['String']['output'];
@@ -76,6 +78,8 @@ export type Card = {
   /** Support subtype (Item, Staff, Mascot, Fan, Event, Tool) — only for support cards */
   supportType?: Maybe<Scalars['String']['output']>;
   tags: Array<Scalars['String']['output']>;
+  /** TCGPlayer product ID */
+  tcgId?: Maybe<Scalars['Int']['output']>;
 };
 
 export type CardConnection = {
@@ -137,6 +141,16 @@ export enum Color {
   Yellow = 'YELLOW'
 }
 
+export type DailyPrice = {
+  __typename?: 'DailyPrice';
+  date: Scalars['String']['output'];
+  directLowPrice?: Maybe<Scalars['Float']['output']>;
+  highPrice?: Maybe<Scalars['Float']['output']>;
+  lowPrice?: Maybe<Scalars['Float']['output']>;
+  marketPrice?: Maybe<Scalars['Float']['output']>;
+  midPrice?: Maybe<Scalars['Float']['output']>;
+};
+
 export type DamageBonus = {
   __typename?: 'DamageBonus';
   /** Bonus amount as string (e.g. "+50") */
@@ -153,6 +167,16 @@ export type Keyword = {
   title: Scalars['String']['output'];
   /** Keyword type (GIFT, COLLAB, BLOOM, or other uppercase identifier) */
   type: Scalars['String']['output'];
+};
+
+export type MonthlyPrice = {
+  __typename?: 'MonthlyPrice';
+  date: Scalars['String']['output'];
+  directLowPrice?: Maybe<Scalars['Float']['output']>;
+  highPrice?: Maybe<Scalars['Float']['output']>;
+  lowPrice?: Maybe<Scalars['Float']['output']>;
+  marketPrice?: Maybe<Scalars['Float']['output']>;
+  midPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 export type OshiSkill = {
@@ -174,6 +198,12 @@ export type PageInfo = {
   currentPage: Scalars['Int']['output'];
   hasNextPage: Scalars['Boolean']['output'];
   totalPages: Scalars['Int']['output'];
+};
+
+export type PricingData = {
+  __typename?: 'PricingData';
+  dailyPrices: Array<DailyPrice>;
+  monthlyPrices: Array<MonthlyPrice>;
 };
 
 export type Qa = {
@@ -234,6 +264,13 @@ export type GetCardQueryVariables = Exact<{
 
 
 export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> } | null };
+
+export type GetCardPricingQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetCardPricingQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, tcgId?: number | null, pricingData?: { __typename?: 'PricingData', monthlyPrices: Array<{ __typename?: 'MonthlyPrice', date: string, lowPrice?: number | null, midPrice?: number | null, highPrice?: number | null }>, dailyPrices: Array<{ __typename?: 'DailyPrice', date: string, highPrice?: number | null, midPrice?: number | null, lowPrice?: number | null }> } | null } | null };
 
 export type GetAllCardsQueryVariables = Exact<{
   filters?: InputMaybe<CardFilter>;
@@ -353,6 +390,64 @@ export type GetCardQueryHookResult = ReturnType<typeof useGetCardQuery>;
 export type GetCardLazyQueryHookResult = ReturnType<typeof useGetCardLazyQuery>;
 export type GetCardSuspenseQueryHookResult = ReturnType<typeof useGetCardSuspenseQuery>;
 export type GetCardQueryResult = Apollo.QueryResult<GetCardQuery, GetCardQueryVariables>;
+export const GetCardPricingDocument = gql`
+    query GetCardPricing($id: Int!) {
+  card(id: $id) {
+    id
+    tcgId
+    pricingData {
+      monthlyPrices {
+        date
+        lowPrice
+        midPrice
+        highPrice
+      }
+      dailyPrices {
+        date
+        highPrice
+        midPrice
+        lowPrice
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetCardPricingQuery__
+ *
+ * To run a query within a React component, call `useGetCardPricingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCardPricingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCardPricingQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCardPricingQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetCardPricingQuery, GetCardPricingQueryVariables> & ({ variables: GetCardPricingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetCardPricingQuery, GetCardPricingQueryVariables>(GetCardPricingDocument, options);
+      }
+export function useGetCardPricingLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetCardPricingQuery, GetCardPricingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetCardPricingQuery, GetCardPricingQueryVariables>(GetCardPricingDocument, options);
+        }
+// @ts-ignore
+export function useGetCardPricingSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetCardPricingQuery, GetCardPricingQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetCardPricingQuery, GetCardPricingQueryVariables>;
+export function useGetCardPricingSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetCardPricingQuery, GetCardPricingQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetCardPricingQuery | undefined, GetCardPricingQueryVariables>;
+export function useGetCardPricingSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetCardPricingQuery, GetCardPricingQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetCardPricingQuery, GetCardPricingQueryVariables>(GetCardPricingDocument, options);
+        }
+export type GetCardPricingQueryHookResult = ReturnType<typeof useGetCardPricingQuery>;
+export type GetCardPricingLazyQueryHookResult = ReturnType<typeof useGetCardPricingLazyQuery>;
+export type GetCardPricingSuspenseQueryHookResult = ReturnType<typeof useGetCardPricingSuspenseQuery>;
+export type GetCardPricingQueryResult = Apollo.QueryResult<GetCardPricingQuery, GetCardPricingQueryVariables>;
 export const GetAllCardsDocument = gql`
     query GetAllCards($filters: CardFilter, $pageSize: Int) {
   cards(filter: $filters, pageSize: $pageSize) {
