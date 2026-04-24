@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useCallback } from "react";
-import { useGetCardQuery } from "@/generated/graphql";
+import { useGetCardPricingQuery, useGetCardQuery } from "@/generated/graphql";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import { CardImage } from "./components/CardImage";
@@ -17,6 +17,7 @@ import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
 import { ArrowLeftIcon } from "lucide-react";
 import { LinkedCardText } from "@/components/LinkedCardText";
+import { PricingCharts } from "@/app/(withHeader)/card/[slug]/components/PricingCharts";
 
 export default function CardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -128,6 +129,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         </div>
         <SetList setNames={card.setNames} />
         <QnaList qna={card.qna ?? []} />
+        <PricingCharts cardId={card.id} />
       </main>
     </div>
   );

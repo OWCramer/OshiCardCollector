@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { type LucideIcon } from "lucide-react";
+import { ExternalLinkIcon, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { classes } from "@/lib/classes";
 
@@ -13,6 +13,7 @@ interface ButtonProps {
   highContrast?: boolean;
   href?: string;
   disabled?: boolean;
+  external?: boolean;
 }
 
 export function Button({
@@ -25,6 +26,7 @@ export function Button({
   highContrast = false,
   href,
   disabled,
+  external,
 }: ButtonProps) {
   const iconOnly = !!Icon && !children;
 
@@ -37,8 +39,11 @@ export function Button({
     variant === "primary" && "bg-blue-400/15 hover:bg-blue-400/25",
     variant === "secondary" && "bg-white/10 hover:bg-white/20",
     variant === "transparent" && "hover:dark:bg-white/10 hover:bg-black/10",
-    variant === "destructive" && "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50",
-    variant !== "destructive" && highContrast && "ring-black/10 dark:ring-white/15 text-black dark:text-white",
+    variant === "destructive" &&
+      "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50",
+    variant !== "destructive" &&
+      highContrast &&
+      "ring-black/10 dark:ring-white/15 text-black dark:text-white",
     disabled && "opacity-50 cursor-not-allowed pointer-events-none",
     className
   );
@@ -47,11 +52,16 @@ export function Button({
     <>
       {Icon && <Icon size={iconSize} className="shrink-0" />}
       {children}
+      {href && external && <ExternalLinkIcon size={iconSize} className="shrink-0" />}
     </>
   );
 
   if (href) {
-    return <Link href={href} className={resolvedClass}>{content}</Link>;
+    return (
+      <Link target={external ? "_blank" : undefined} href={href} className={resolvedClass}>
+        {content}
+      </Link>
+    );
   }
 
   return (
