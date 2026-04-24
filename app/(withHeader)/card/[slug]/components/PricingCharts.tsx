@@ -25,6 +25,7 @@ export function PricingCharts({ cardId }: { cardId: number }) {
           Current pricing data as of {new Date(newestPricing.date)?.toLocaleDateString()}
         </h2>
         <Button
+          highContrast
           className="text-sm"
           href={`https://www.tcgplayer.com/product/${data.card?.tcgId}`}
           external
@@ -34,27 +35,27 @@ export function PricingCharts({ cardId }: { cardId: number }) {
         </Button>
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <div className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
+        <div className="@container flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
           <h3>Low price</h3>
-          <p className="text-2xl font-semibold">
+          <p className="text-2xl @max-[142px]:text-xl @max-[120px]:text-base font-semibold">
             {newestPricing.lowPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })}
           </p>
         </div>
-        <div className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
+        <div className="@container flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
           <h3>Mid price</h3>
-          <p className="text-2xl font-semibold">
+          <p className="text-2xl @max-[142px]:text-xl @max-[120px]:text-base font-semibold">
             {newestPricing.midPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })}
           </p>
         </div>
-        <div className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
+        <div className="@container flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
           <h3>High price</h3>
-          <p className="text-2xl font-semibold">
+          <p className="text-2xl @max-[142px]:text-xl @max-[120px]:text-base font-semibold">
             {newestPricing.highPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
