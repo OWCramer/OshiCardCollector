@@ -54,6 +54,29 @@ export const GET_CARD = gql`
   }
 `;
 
+export const GET_CARD_PRICING = gql`
+  query GetCardPricing($id: Int!) {
+    card(id: $id) {
+      id
+      tcgId
+      pricingData {
+        monthlyPrices {
+          date
+          lowPrice
+          midPrice
+          highPrice
+        }
+        dailyPrices {
+          date
+          highPrice
+          midPrice
+          lowPrice
+        }
+      }
+    }
+  }
+`;
+
 export const GET_ALL_CARDS = gql`
   query GetAllCards($filters: CardFilter, $pageSize: Int) {
     cards(filter: $filters, pageSize: $pageSize) {
