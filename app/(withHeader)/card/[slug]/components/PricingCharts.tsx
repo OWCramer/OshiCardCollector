@@ -1,12 +1,12 @@
-import {Card, useGetCardPricingQuery} from "@/generated/graphql";
-import {useEffect, useMemo, useState} from "react";
-import {Button} from "@/components/Button";
-import {Divider} from "@/components/Divider";
-import {classes} from "@/lib/classes";
-import {Line, LineChart, Tooltip, XAxis, YAxis} from "recharts";
-import {getSwatchesSync} from "colorthief";
-import {useTheme} from "@/lib/theme-context";
-import {useBreakpoint} from "@/lib/useBreakpoint";
+import { Card, useGetCardPricingQuery } from "@/generated/graphql";
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/Button";
+import { Divider } from "@/components/Divider";
+import { classes } from "@/lib/classes";
+import { Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import { getSwatchesSync } from "colorthief";
+import { useTheme } from "@/lib/theme-context";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 
 function PriceCard({
   title,
@@ -286,7 +286,7 @@ export function PricingCharts({ card }: { card: Card }) {
         </div>
         <div className="flex flex-col gap-2.5">
           <h2 className="font-semibold opacity-80">Current listing prices</h2>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="flex flex-col sm:grid grid-cols-3 gap-2.5">
             <PriceCard title="Low price" price={newestPricing.lowPrice} />
             <PriceCard title="Mid price" price={newestPricing.midPrice} />
             <PriceCard title="High price" price={newestPricing.highPrice} />
