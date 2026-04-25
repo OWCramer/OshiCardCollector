@@ -70,17 +70,13 @@ export function PricingCharts({ card }: { card: Card }) {
     if (currentView === "day") {
       if (!data?.card?.pricingData?.dailyPrices?.some((item) => item.marketPrice !== null))
         return [];
-      return (
-        [...(data?.card?.pricingData?.dailyPrices as ChartData)].sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-        ) ?? []
+      return [...(data?.card?.pricingData?.dailyPrices as ChartData)].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
     }
 
-    return (
-      [...(data?.card?.pricingData?.monthlyPrices as ChartData)].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      ) ?? []
+    return [...(data?.card?.pricingData?.monthlyPrices as ChartData)].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
   }, [data, currentView]);
 
