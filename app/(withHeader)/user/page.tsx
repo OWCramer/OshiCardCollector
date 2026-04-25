@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon, PencilIcon, PlusIcon, TrashIcon, XIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { classes } from "@/lib/classes";
 import { useFavorites } from "@/lib/favorites-context";
 
 function ListRow({
@@ -79,11 +80,12 @@ function ListRow({
           onClick={() => canDelete && onDelete(id)}
           disabled={!canDelete}
           title={canDelete ? "Delete list" : "Can't delete your only list"}
-          className={`p-1 rounded transition-colors ${
+          className={classes(
+            "p-1 rounded transition-colors",
             canDelete
               ? "hover:bg-red-50 dark:hover:bg-red-900/20 text-zinc-400 hover:text-red-500"
               : "opacity-30 cursor-not-allowed text-zinc-400"
-          }`}
+          )}
           aria-label="Delete list"
         >
           <TrashIcon size={14} />

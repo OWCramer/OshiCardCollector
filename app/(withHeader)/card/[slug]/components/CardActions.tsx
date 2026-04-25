@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon, CopyIcon, HeartIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { useLibrary } from "@/lib/library-context";
+import { classes } from "@/lib/classes";
 import { useFavorites } from "@/lib/favorites-context";
 import { useAuth } from "@/lib/auth-context";
 import { addCardToLibrary, setCardQuantity } from "@/api/library";
@@ -88,11 +89,10 @@ function FavoriteButton({ cardId }: { cardId: number }) {
                 className="flex items-center gap-2.5 w-full px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm text-left transition-colors"
               >
                 <span
-                  className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                    inList
-                      ? "bg-rose-500 border-rose-500"
-                      : "border-zinc-300 dark:border-zinc-600"
-                  }`}
+                  className={classes(
+                    "w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 transition-colors",
+                    inList ? "bg-rose-500 border-rose-500" : "border-zinc-300 dark:border-zinc-600"
+                  )}
                 >
                   {inList && <CheckIcon size={9} className="text-white" strokeWidth={3} />}
                 </span>
@@ -216,7 +216,7 @@ export function CardActions({ cardId, className }: { cardId: number; className?:
 
   return (
     <div
-      className={`flex items-center h-9 px-1 gap-0.5 rounded-xl backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 text-black dark:text-white ${className ?? ""}`}
+      className={classes("flex items-center h-9 px-1 gap-0.5 rounded-xl backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 text-black dark:text-white", className)}
     >
       <FavoriteButton cardId={cardId} />
       <div className="w-px h-5 bg-black/10 dark:bg-white/10" />

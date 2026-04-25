@@ -19,6 +19,7 @@ import { useRef, useMemo, useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
 import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
+import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 // Card dimensions (must match rendered size)
@@ -348,7 +349,7 @@ function AllCardsContent() {
               }}
             >
               <div
-                className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}
+                className={classes("flex gap-4 items-center pb-4", isMedium ? "justify-start" : "justify-center")}
               >
                 {row.map((card) => (
                   <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
@@ -373,7 +374,7 @@ function AllCardsContent() {
   ]);
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
+    <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 relative">
       <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:sticky md:top-23.25 md:self-start h-fit md:max-h-[calc(100dvh-6.5rem)] md:overflow-y-auto md:overscroll-contain bg-white/50 dark:bg-black/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"

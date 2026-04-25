@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useFavorites } from "@/lib/favorites-context";
 import { useAuth } from "@/lib/auth-context";
 import { useGetCardQuery } from "@/generated/graphql";
+import { classes } from "@/lib/classes";
 
 function FavoriteCardItem({ cardId }: { cardId: number }) {
   const { data, loading } = useGetCardQuery({ variables: { id: cardId } });
@@ -85,15 +86,16 @@ export default function FavoritesPage() {
               <button
                 key={list.id}
                 onClick={() => setActiveListId(list.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                className={classes(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
                     ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
                     : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                }`}
+                )}
               >
                 {list.name}
                 <span
-                  className={`text-xs tabular-nums ${isActive ? "opacity-60" : "text-zinc-400"}`}
+                  className={classes("text-xs tabular-nums", isActive ? "opacity-60" : "text-zinc-400")}
                 >
                   {count}
                 </span>

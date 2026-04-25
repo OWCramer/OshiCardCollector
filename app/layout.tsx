@@ -7,6 +7,7 @@ import ApolloClientProvider from "@/lib/apollo-provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReactNode } from "react";
+import { classes } from "@/lib/classes";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -31,7 +32,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`flex flex-col ${inter.variable}`}>
+      <body className={classes("flex flex-col min-h-dvh", inter.variable)}>
         <ApolloClientProvider>
           <ThemeProvider>
             <AuthProvider>

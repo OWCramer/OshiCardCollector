@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetAllCardsQuery } from "@/generated/graphql";
 import { Button } from "@/components/Button";
+import { PageContainer } from "@/components/PageContainer";
 import { ArrowLeftIcon } from "lucide-react";
 
 export default function SetPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -20,16 +21,13 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
   const cards = data?.cards?.nodes ?? [];
 
   return (
-    <main className="flex-1 px-4 py-6 max-w-5xl mx-auto w-full">
-      <Button
-        variant="transparent"
-        highContrast
-        icon={ArrowLeftIcon}
-        onClick={() => router.back()}
-        className="mb-4"
-      >
-        Sets
-      </Button>
+    <PageContainer
+      leading={
+        <Button variant="transparent" highContrast icon={ArrowLeftIcon} onClick={() => router.back()}>
+          Sets
+        </Button>
+      }
+    >
 
       <h1 className="text-xl font-semibold mb-1">{setName}</h1>
       <p className="text-sm text-zinc-500 mb-6">
@@ -56,6 +54,6 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
           ))}
         </div>
       )}
-    </main>
+    </PageContainer>
   );
 }

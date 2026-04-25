@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useGetSetsQuery } from "@/generated/graphql";
+import { PageContainer } from "@/components/PageContainer";
 
 export default function SetsPage() {
   const { data, loading } = useGetSetsQuery();
@@ -17,7 +18,7 @@ export default function SetsPage() {
   const sets = data?.sets ?? [];
 
   return (
-    <main className="flex-1 px-4 py-6 max-w-4xl mx-auto w-full">
+    <PageContainer>
       <h1 className="text-xl font-semibold mb-1">Sets</h1>
       <p className="text-sm text-zinc-500 mb-6">{sets.length} set{sets.length !== 1 ? "s" : ""}</p>
       <div className="flex flex-col gap-2">
@@ -32,6 +33,6 @@ export default function SetsPage() {
           </Link>
         ))}
       </div>
-    </main>
+    </PageContainer>
   );
 }

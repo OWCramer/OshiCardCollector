@@ -9,6 +9,7 @@ import { signOutUser } from "@/lib/firebase";
 import Image from "next/image";
 import { Menu, type MenuSection } from "@/components/Menu";
 import { Button } from "@/components/Button";
+import { classes } from "@/lib/classes";
 import {
   ChevronDownIcon,
   HeartIcon,
@@ -106,7 +107,7 @@ function CollectionMenu() {
         className="flex shrink-0 items-center gap-2 h-9 px-4 rounded-xl text-black dark:text-white backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.97] transition-all duration-150 cursor-pointer select-none"
       >
         Collection
-        <ChevronDownIcon size={13} className={`opacity-60 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+        <ChevronDownIcon size={13} className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (

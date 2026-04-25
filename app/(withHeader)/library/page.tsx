@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useLibrary } from "@/lib/library-context";
 import { useAuth } from "@/lib/auth-context";
 import { useGetCardQuery } from "@/generated/graphql";
+import { PageContainer } from "@/components/PageContainer";
 
 function LibraryCardItem({ cardId, quantity }: { cardId: number; quantity: number }) {
   const { data, loading } = useGetCardQuery({ variables: { id: cardId } });
@@ -71,7 +72,7 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="flex-1 px-4 py-6 max-w-6xl mx-auto w-full">
+    <PageContainer className="max-w-6xl">
       <h1 className="text-xl font-semibold mb-1">Library</h1>
       <p className="text-sm text-zinc-500 mb-6">{entries.length} card{entries.length !== 1 ? "s" : ""}</p>
       <div className="flex flex-wrap gap-4">
@@ -79,6 +80,6 @@ export default function LibraryPage() {
           <LibraryCardItem key={entry.cardId} cardId={entry.cardId} quantity={entry.quantity} />
         ))}
       </div>
-    </main>
+    </PageContainer>
   );
 }
