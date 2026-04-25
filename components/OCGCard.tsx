@@ -7,35 +7,36 @@ import { classes } from "@/lib/classes";
 import { animate } from "animejs";
 
 export const OCG_CARD_SIZES = {
-  sm:     { width: 160, height: 224 },
-  lg:     { width: 240, height: 335 },
+  sm: { width: 160, height: 224 },
+  lg: { width: 240, height: 335 },
   detail: { width: 370, height: 517 },
 } as const;
 
 export type OCGCardSize = keyof typeof OCG_CARD_SIZES;
 export type OCGCardParallaxStrength = "low" | "med" | "high";
 
-const SHINY_RARITIES = new Set([
-  "RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "HR", "SY", "S", "P",
-]);
+const SHINY_RARITIES = new Set(["RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "HR", "SY", "S", "P"]);
 
 // Parallax intensity per strength level per size.
 // "detail" cards are always more subtle relative to their physical size on screen.
-const PARALLAX_CONFIG: Record<OCGCardParallaxStrength, Record<OCGCardSize, { rotate: number; scale: number }>> = {
+const PARALLAX_CONFIG: Record<
+  OCGCardParallaxStrength,
+  Record<OCGCardSize, { rotate: number; scale: number }>
+> = {
   high: {
-    sm:     { rotate: 24,  scale: 1.05  },
-    lg:     { rotate: 24,  scale: 1.05  },
-    detail: { rotate: 14,  scale: 1.02  },
+    sm: { rotate: 24, scale: 1.05 },
+    lg: { rotate: 24, scale: 1.05 },
+    detail: { rotate: 14, scale: 1.02 },
   },
   med: {
-    sm:     { rotate: 14,  scale: 1.03  },
-    lg:     { rotate: 14,  scale: 1.03  },
-    detail: { rotate: 8,   scale: 1.015 },
+    sm: { rotate: 14, scale: 1.03 },
+    lg: { rotate: 14, scale: 1.03 },
+    detail: { rotate: 8, scale: 1.015 },
   },
   low: {
-    sm:     { rotate: 7,   scale: 1.015 },
-    lg:     { rotate: 7,   scale: 1.015 },
-    detail: { rotate: 4,   scale: 1.008 },
+    sm: { rotate: 7, scale: 1.015 },
+    lg: { rotate: 7, scale: 1.015 },
+    detail: { rotate: 4, scale: 1.008 },
   },
 };
 
@@ -78,7 +79,13 @@ export function OCGCard({
     const { left, top, width: w, height: h } = el.getBoundingClientRect();
     const x = (e.clientX - left) / w - 0.5;
     const y = (e.clientY - top) / h - 0.5;
-    animate(el, { rotateX: -y * rotate, rotateY: x * rotate, scale, duration: 150, ease: "out(2)" });
+    animate(el, {
+      rotateX: -y * rotate,
+      rotateY: x * rotate,
+      scale,
+      duration: 150,
+      ease: "out(2)",
+    });
 
     if (isShiny && shineRef.current) {
       const xPct = (x + 0.5) * 100;
@@ -111,18 +118,9 @@ export function OCGCard({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ transformStyle: "preserve-3d", willChange: "transform", width, height }}
-        className={classes(
-          "overflow-hidden relative",
-          (onClick || href) && "cursor-pointer"
-        )}
+        className={classes("overflow-hidden relative", (onClick || href) && "cursor-pointer")}
       >
-        <Image
-          src={imageUrl}
-          alt={name}
-          width={width}
-          height={height}
-          className="block"
-        />
+        <Image src={imageUrl} alt={name} width={width} height={height} className="block" />
         {isShiny && (
           <div
             ref={shineRef}
