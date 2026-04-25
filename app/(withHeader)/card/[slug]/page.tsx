@@ -15,6 +15,7 @@ import { SetList } from "./components/SetList";
 import { CardMeta } from "./components/CardMeta";
 import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
+import { PageContainer } from "@/components/PageContainer";
 import { ArrowLeftIcon } from "lucide-react";
 import { LinkedCardText } from "@/components/LinkedCardText";
 import { PricingCharts } from "@/app/(withHeader)/card/[slug]/components/PricingCharts";
@@ -60,19 +61,15 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
           <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-zinc-50 dark:to-black" />
         </div>
       )}
-      <div className="relative z-20 flex items-center justify-between px-4 pt-2 mt-2 mb-2 xl:mb-0">
-        <Button
-          variant="transparent"
-          highContrast
-          onClick={handleBackPress}
-          icon={ArrowLeftIcon}
-          className="xl:absolute xl:top-2 xl:left-4"
-        >
-          Back
-        </Button>
-        <CardActions cardId={card.id} className="xl:absolute xl:top-2 xl:right-4" />
-      </div>
-      <main className="relative z-10 flex-1 pb-8 xl:pt-4 pt-2 px-4 max-w-4xl mx-auto w-full flex flex-col gap-5">
+      <PageContainer
+        leading={
+          <Button variant="transparent" highContrast onClick={handleBackPress} icon={ArrowLeftIcon}>
+            Back
+          </Button>
+        }
+        trailing={<CardActions cardId={card.id} />}
+        className="relative z-10 flex flex-col gap-5"
+      >
         <div className="flex flex-col items-center md:flex-row md:items-start md:gap-8 gap-5">
           {card.imageUrl && (
             <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
@@ -131,7 +128,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         <SetList setNames={card.setNames} />
         <QnaList qna={card.qna ?? []} />
         <PricingCharts card={card} />
-      </main>
+      </PageContainer>
     </div>
   );
 }
