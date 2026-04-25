@@ -15,6 +15,7 @@ import { SetList } from "./components/SetList";
 import { CardMeta } from "./components/CardMeta";
 import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
+import { CardContainer } from "@/components/CardContainer";
 import { PageContainer } from "@/components/PageContainer";
 import { ArrowLeftIcon } from "lucide-react";
 import { LinkedCardText } from "@/components/LinkedCardText";
@@ -49,7 +50,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     <div className="flex flex-1 flex-col relative">
       {/* Blurred card image backdrop */}
       {card.imageUrl && (
-        <div className="fixed inset-0 z-0 scale-110" aria-hidden>
+        <div className="fixed inset-0 z-0 scale-110 select-none pointer-events-none" aria-hidden>
           <Image
             src={card.imageUrl}
             alt={`${card.name} - ${card.cardNumber} image`}
@@ -58,7 +59,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-35 dark:opacity-25"
           />
           {/* Fade to bg at the bottom so content stays readable */}
-          <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-zinc-50 dark:to-black" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-background" />
         </div>
       )}
       <PageContainer
@@ -75,7 +76,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
           )}
 
-          <div className="flex flex-col gap-4 min-w-0 self-stretch">
+          <div className="flex flex-col gap-4 min-w-0 self-stretch flex-1">
             <CardHeader
               cardNumber={card.cardNumber}
               name={card.name}
@@ -110,11 +111,11 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             {card.extraText && (
               <div className="flex flex-col gap-2">
                 <h2 className="text-sm font-semibold opacity-80">Extra</h2>
-                <div className="rounded-xl bg-black/5 dark:bg-white/5 p-3">
+                <CardContainer>
                   <p className="text-sm opacity-75 whitespace-pre-wrap">
                     <LinkedCardText text={card.extraText} />
                   </p>
-                </div>
+                </CardContainer>
               </div>
             )}
             <CardMeta

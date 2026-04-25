@@ -1,6 +1,7 @@
 import { Card, useGetCardPricingQuery } from "@/generated/graphql";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/Button";
+import { CardContainer } from "@/components/CardContainer";
 import { Divider } from "@/components/Divider";
 import { classes } from "@/lib/classes";
 import { Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
@@ -18,12 +19,7 @@ function PriceCard({
   className?: string;
 }) {
   return (
-    <div
-      className={classes(
-        "@container flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm w-full h-20",
-        className
-      )}
-    >
+    <CardContainer className={classes("@container flex flex-col gap-1 text-sm w-full h-20", className)}>
       <h3>{title}</h3>
       <p className="text-2xl @max-[142px]:text-xl @max-[120px]:text-base font-semibold">
         {price?.toLocaleString("en-US", {
@@ -31,7 +27,7 @@ function PriceCard({
           currency: "USD",
         }) ?? "N/A"}
       </p>
-    </div>
+    </CardContainer>
   );
 }
 
@@ -169,7 +165,7 @@ export function PricingCharts({ card }: { card: Card }) {
         <div className="flex flex-col sm:grid grid-cols-3 gap-2.5 w-full">
           <div className="grid grid-cols-1 sm:grid-cols-3 sm:flex flex-col gap-2.5">
             <PriceCard title="Market price" price={newestPricing.marketPrice} />
-            <div className="flex flex-col gap-2 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm w-full h-31">
+            <CardContainer className="flex flex-col gap-2 text-sm w-full h-31">
               <h3>Market price stats</h3>
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between">
@@ -187,7 +183,7 @@ export function PricingCharts({ card }: { card: Card }) {
                   <p className="font-semibold">{marketPriceStats.allTimeLow}</p>
                 </div>
               </div>
-            </div>
+            </CardContainer>
             <div className="grid-cols-2 gap-2.5 hidden sm:grid">
               <Button
                 highContrast={!isDarkMode}
@@ -207,7 +203,7 @@ export function PricingCharts({ card }: { card: Card }) {
               </Button>
             </div>
           </div>
-          <div className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm w-full col-span-2 h-50 sm:h-65">
+          <CardContainer className="flex flex-col gap-1 text-sm w-full col-span-2 h-50 sm:h-65">
             {chartData.length > 0 ? (
               <LineChart
                 style={{
@@ -268,7 +264,7 @@ export function PricingCharts({ card }: { card: Card }) {
                 No data available :(
               </div>
             )}
-          </div>
+          </CardContainer>
           <div className="grid-cols-2 gap-2.5 grid sm:hidden">
             <Button
               highContrast={!isDarkMode}
