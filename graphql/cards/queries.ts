@@ -65,12 +65,14 @@ export const GET_CARD_PRICING = gql`
           lowPrice
           midPrice
           highPrice
+          marketPrice
         }
         dailyPrices {
           date
           highPrice
           midPrice
           lowPrice
+          marketPrice
         }
       }
     }
