@@ -156,12 +156,12 @@ export function PricingCharts({ card }: { card: Card }) {
           className="text-sm"
           href={`https://www.tcgplayer.com/product/${data.card?.tcgId}`}
           external
-          variant="primary"
+          variant="transparent"
         >
           See in TCGPlayer
         </Button>
       </div>
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col sm:grid grid-cols-3 gap-2.5 w-full">
           <div className="grid grid-cols-1 sm:grid-cols-3 sm:flex flex-col gap-2.5">
             <PriceCard title="Market price" price={newestPricing.marketPrice} />
@@ -285,7 +285,7 @@ export function PricingCharts({ card }: { card: Card }) {
           </div>
         </div>
         <div className="flex flex-col gap-2.5">
-          <h2 className="font-semibold opacity-80">Current listing prices</h2>
+          <h2 className="font-semibold opacity-80">Current TCGPlayer listing prices</h2>
           <div className="flex flex-col sm:grid grid-cols-3 gap-2.5">
             <PriceCard title="Low price" price={newestPricing.lowPrice} />
             <PriceCard title="Mid price" price={newestPricing.midPrice} />
