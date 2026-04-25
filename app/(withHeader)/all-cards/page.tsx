@@ -15,7 +15,7 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useMemo, useEffect, useState, Suspense } from "react";
+import { useRef, useMemo, useEffect, useLayoutEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
 import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
@@ -147,7 +147,7 @@ function AllCardsContent() {
   const [containerWidth, setContainerWidth] = useState(0);
   const [scrollMargin, setScrollMargin] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = mainRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
