@@ -270,7 +270,7 @@ export type GetCardPricingQueryVariables = Exact<{
 }>;
 
 
-export type GetCardPricingQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, tcgId?: number | null, pricingData?: { __typename?: 'PricingData', monthlyPrices: Array<{ __typename?: 'MonthlyPrice', date: string, lowPrice?: number | null, midPrice?: number | null, highPrice?: number | null }>, dailyPrices: Array<{ __typename?: 'DailyPrice', date: string, highPrice?: number | null, midPrice?: number | null, lowPrice?: number | null }> } | null } | null };
+export type GetCardPricingQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, tcgId?: number | null, pricingData?: { __typename?: 'PricingData', monthlyPrices: Array<{ __typename?: 'MonthlyPrice', date: string, lowPrice?: number | null, midPrice?: number | null, highPrice?: number | null, marketPrice?: number | null }>, dailyPrices: Array<{ __typename?: 'DailyPrice', date: string, highPrice?: number | null, midPrice?: number | null, lowPrice?: number | null, marketPrice?: number | null }> } | null } | null };
 
 export type GetAllCardsQueryVariables = Exact<{
   filters?: InputMaybe<CardFilter>;
@@ -401,12 +401,14 @@ export const GetCardPricingDocument = gql`
         lowPrice
         midPrice
         highPrice
+        marketPrice
       }
       dailyPrices {
         date
         highPrice
         midPrice
         lowPrice
+        marketPrice
       }
     }
   }

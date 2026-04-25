@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useCallback } from "react";
-import { useGetCardPricingQuery, useGetCardQuery } from "@/generated/graphql";
+import { useGetCardQuery } from "@/generated/graphql";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
 import { CardImage } from "./components/CardImage";
@@ -51,7 +51,8 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         <div className="fixed inset-0 z-0 scale-110" aria-hidden>
           <Image
             src={card.imageUrl}
-            alt=""
+            alt={`${card.name} - ${card.cardNumber} image`}
+            id={`${card.cardNumber}-image`}
             fill
             className="object-cover object-top sm:object-center blur-3xl saturate-150 opacity-35 dark:opacity-25"
           />
@@ -129,7 +130,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         </div>
         <SetList setNames={card.setNames} />
         <QnaList qna={card.qna ?? []} />
-        <PricingCharts cardId={card.id} />
+        <PricingCharts card={card} />
       </main>
     </div>
   );
