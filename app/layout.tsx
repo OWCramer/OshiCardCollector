@@ -38,9 +38,9 @@ export default function RootLayout({
             <AuthProvider>
               <LibraryProvider>
                 <FavoritesProvider>
-                  <div id="app-root" className="flex flex-col flex-1">
+                  <main id="app-root" className="flex flex-col flex-1">
                     {children}
-                  </div>
+                  </main>
                 </FavoritesProvider>
               </LibraryProvider>
             </AuthProvider>

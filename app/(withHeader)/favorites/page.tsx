@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { OCGCard } from "@/components/OCGCard";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFavorites } from "@/lib/favorites-context";
@@ -19,22 +19,14 @@ function FavoriteCardItem({ cardId }: { cardId: number }) {
   const card = data.card;
 
   return (
-    <Link href={`/card/${cardId}`} className="w-40 shrink-0">
-      <div className="relative rounded-lg overflow-hidden">
-        {card.imageUrl ? (
-          <Image
-            src={card.imageUrl}
-            alt={card.name}
-            width={160}
-            height={224}
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
-        )}
-      </div>
-      <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate">{card.name}</p>
-    </Link>
+    <div className="shrink-0">
+      {card.imageUrl ? (
+        <OCGCard href={`/card/${cardId}`} imageUrl={card.imageUrl} name={card.name} size="sm" />
+      ) : (
+        <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+      )}
+      <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">{card.name}</p>
+    </div>
   );
 }
 
@@ -74,7 +66,7 @@ export default function FavoritesPage() {
   const entries = currentList ? Object.values(cardsByList[currentList.id] ?? {}) : [];
 
   return (
-    <main className="flex-1 px-4 py-6 max-w-6xl mx-auto w-full">
+    <div className="flex-1 px-4 py-6 max-w-6xl mx-auto w-full">
       <h1 className="text-xl font-semibold mb-4">Lists</h1>
 
       {lists.length > 0 && (
@@ -129,6 +121,6 @@ export default function FavoritesPage() {
           </div>
         </>
       )}
-    </main>
+    </div>
   );
 }

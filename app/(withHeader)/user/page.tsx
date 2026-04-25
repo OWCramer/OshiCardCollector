@@ -117,7 +117,7 @@ export default function UserPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <main className="flex-1 p-6 max-w-lg">
+      <div className="flex-1 p-6 max-w-lg">
         <p className="opacity-65 mb-8">
           Welcome, {user?.displayName}. Your collection dashboard is ready.
         </p>
@@ -175,7 +175,7 @@ export default function UserPage() {
             )}
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

@@ -1,12 +1,11 @@
 "use client";
 
 import { use } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useGetAllCardsQuery } from "@/generated/graphql";
 import { Button } from "@/components/Button";
 import { PageContainer } from "@/components/PageContainer";
+import { OCGCard } from "@/components/OCGCard";
 import { ArrowLeftIcon } from "lucide-react";
 
 export default function SetPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -41,16 +40,14 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
       ) : (
         <div className="flex flex-wrap gap-4">
           {cards.map((card) => (
-            <Link key={card.id} href={`/card/${card.id}`} className="w-32 shrink-0">
-              <div className="rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                {card.imageUrl ? (
-                  <Image src={card.imageUrl} alt={card.name} width={128} height={179} className="object-cover" />
-                ) : (
-                  <div className="w-32 h-[179px]" />
-                )}
-              </div>
-              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400 truncate">{card.name}</p>
-            </Link>
+            <div key={card.id} className="shrink-0">
+              {card.imageUrl ? (
+                <OCGCard href={`/card/${card.id}`} imageUrl={card.imageUrl} name={card.name} size="sm" />
+              ) : (
+                <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+              )}
+              <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">{card.name}</p>
+            </div>
           ))}
         </div>
       )}

@@ -26,7 +26,7 @@ export default async function NotFound() {
 
   return (
     <PageContainer className="flex flex-col items-center justify-center">
-      <main className="flex flex-col items-center gap-6 px-6 text-center">
+      <div className="flex flex-col items-center gap-6 px-6 text-center">
         <p className="text-8xl font-bold tracking-tight text-zinc-200 dark:text-zinc-800 select-none">
           404
         </p>
@@ -58,7 +58,7 @@ export default async function NotFound() {
         <Button href="/all-cards" variant="transparent" highContrast>
           Back to cards
         </Button>
-      </main>
+      </div>
     </PageContainer>
   );
 }

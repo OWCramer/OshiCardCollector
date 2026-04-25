@@ -4,7 +4,7 @@ import { use, useCallback } from "react";
 import { useGetCardQuery } from "@/generated/graphql";
 import { notFound, useRouter } from "next/navigation";
 import Image from "next/image";
-import { CardImage } from "./components/CardImage";
+import { OCGCard } from "@/components/OCGCard";
 import { CardHeader } from "./components/CardHeader";
 import { CardStats } from "./components/CardStats";
 import { ArtsList } from "./components/ArtsList";
@@ -73,7 +73,14 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
       >
         <div className="flex flex-col items-center md:flex-row md:items-start md:gap-8 gap-5">
           {card.imageUrl && (
-            <CardImage imageUrl={card.imageUrl} name={card.name} rarity={card.rarity} />
+            <OCGCard
+              imageUrl={card.imageUrl}
+              name={card.name}
+              rarity={card.rarity}
+              size="detail"
+              parallax
+              shine
+            />
           )}
 
           <div className="flex flex-col gap-4 min-w-0 self-stretch flex-1">

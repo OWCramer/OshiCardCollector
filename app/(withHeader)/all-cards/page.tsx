@@ -394,9 +394,9 @@ function AllCardsContent() {
         )}
       </aside>
 
-      <main ref={mainRef} className="flex-1">
+      <div ref={mainRef} className="flex-1">
         {mainContent}
-      </main>
+      </div>
 
       <Modal title="Filters" isOpen={showMobileFilters} onClose={() => setShowMobileFilters(false)}>
         {filterPanel}

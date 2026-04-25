@@ -7,9 +7,9 @@ export default function WithHeaderLayout({ children }: { children: ReactNode }) 
       <nav>
         <GlobalHeader />
       </nav>
-      <main className="mt-15.25 flex flex-col flex-1">
+      <div className="mt-15.25 flex flex-col flex-1">
         <div className="flex flex-col flex-1 w-full max-w-full">{children}</div>
-      </main>
+      </div>
     </div>
   );
 }

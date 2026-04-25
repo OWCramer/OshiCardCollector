@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +7,7 @@ import { useLibrary } from "@/lib/library-context";
 import { useAuth } from "@/lib/auth-context";
 import { useGetCardQuery } from "@/generated/graphql";
 import { PageContainer } from "@/components/PageContainer";
+import { OCGCard } from "@/components/OCGCard";
 
 function LibraryCardItem({ cardId, quantity }: { cardId: number; quantity: number }) {
   const { data, loading } = useGetCardQuery({ variables: { id: cardId } });
@@ -19,21 +19,21 @@ function LibraryCardItem({ cardId, quantity }: { cardId: number; quantity: numbe
   const card = data.card;
 
   return (
-    <Link href={`/card/${cardId}`} className="w-40 shrink-0">
-      <div className="relative rounded-lg overflow-hidden">
+    <div className="shrink-0">
+      <div className="relative" style={{ width: 160, height: 224 }}>
         {card.imageUrl ? (
-          <Image src={card.imageUrl} alt={card.name} width={160} height={224} className="object-cover" />
+          <OCGCard href={`/card/${cardId}`} imageUrl={card.imageUrl} name={card.name} size="sm" />
         ) : (
-          <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-lg" />
+          <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
         )}
         {quantity > 1 && (
-          <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs font-bold px-1.5 py-0.5 rounded-md tabular-nums">
+          <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs font-bold px-1.5 py-0.5 rounded-md tabular-nums pointer-events-none">
             ×{quantity}
           </span>
         )}
       </div>
-      <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate">{card.name}</p>
-    </Link>
+      <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">{card.name}</p>
+    </div>
   );
 }
 
