@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useFavorites } from "@/lib/favorites-context";
 import { useAuth } from "@/lib/auth-context";
@@ -13,7 +13,7 @@ import { OCGCard } from "@/components/OCGCard";
 import { Button } from "@/components/Button";
 import { ManageListsModal } from "./ManageListsModal";
 
-export default function FavoritesPage() {
+function ListsContent() {
   const { user, loading: authLoading } = useAuth();
   const { lists, cardsByList, loading: favoritesLoading } = useFavorites();
   const router = useRouter();
@@ -92,5 +92,13 @@ export default function FavoritesPage() {
         </Accordion>
       ))}
     </PageContainer>
+  );
+}
+
+export default function FavoritesPage() {
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <ListsContent />
+    </Suspense>
   );
 }
