@@ -1,0 +1,123 @@
+/*
+              HOLO CARD EFFECT
+            */
+
+.holo::part(tilt) {
+    --space: 5%;
+    --angle: 133deg;
+    --imgsize: 33%;
+    --foil: radial-gradient(
+            circle at 50% 50%,
+            hsl(0 0% 100% / 0.55),
+            hsl(0 0% 100% / 0.08) 35%,
+            transparent 70%
+    );
+
+    --sunpillar-clr-1: hsl(2, 100%, 73%);
+    --sunpillar-clr-2: hsl(53, 100%, 69%);
+    --sunpillar-clr-3: hsl(93, 100%, 69%);
+    --sunpillar-clr-4: hsl(176, 100%, 76%);
+    --sunpillar-clr-5: hsl(228, 100%, 74%);
+    --sunpillar-clr-6: hsl(283, 100%, 73%);
+}
+
+/* Main shine layer */
+.holo::part(tilt)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 4.55% / 3.5%;
+    clip-path: inset(0 round 4.55% 1.55%);
+
+    --background-x: var(--gradient-x, 50%);
+    --background-y: var(--gradient-y, 50%);
+    --pointer-x: var(--gradient-x, 50%);
+    --pointer-y: var(--gradient-y, 50%);
+    --pointer-from-center: var(--hover-tilt-opacity, 0);
+
+    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+
+    background-image:
+            var(--foil),
+            repeating-linear-gradient(
+                    0deg,
+                    var(--sunpillar-clr-1) calc(var(--space) * 1),
+                    var(--sunpillar-clr-2) calc(var(--space) * 2),
+                    var(--sunpillar-clr-3) calc(var(--space) * 3),
+                    var(--sunpillar-clr-4) calc(var(--space) * 4),
+                    var(--sunpillar-clr-5) calc(var(--space) * 5),
+                    var(--sunpillar-clr-6) calc(var(--space) * 6),
+                    var(--sunpillar-clr-1) calc(var(--space) * 7)
+            ),
+            repeating-linear-gradient(
+                    var(--angle),
+                    #0e152e 0%,
+                    hsl(180, 10%, 60%) 3.8%,
+                    hsl(180, 29%, 66%) 4.5%,
+                    hsl(180, 10%, 60%) 5.2%,
+                    #0e152e 10%,
+                    #0e152e 12%
+            ),
+            radial-gradient(
+                    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+                    hsl(0 0% 0% / 0.1) 12%,
+                    hsl(0 0% 0% / 0.15) 20%,
+                    hsl(0 0% 0% / 0.25) 120%
+            );
+
+    background-position:
+            center center,
+            0% var(--background-y),
+            calc(var(--background-x) + (var(--background-y) * 0.2)) var(--background-y),
+            var(--background-x) var(--background-y);
+
+    background-size:
+            var(--imgsize),
+            200% 700%,
+            300% 100%,
+            200% 100%;
+
+    background-blend-mode: exclusion, hue, hard-light;
+    mix-blend-mode: color-dodge;
+
+    filter: brightness(calc((var(--pointer-from-center) * 0.3) + 0.35)) contrast(2)
+    saturate(1.5);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 1.15);
+
+    will-change: opacity, background-position, filter;
+}
+
+/* Glare layer */
+.holo::part(tilt)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 4.55% / 3.5%;
+    clip-path: inset(0 round 4.55% 1.55%);
+
+    --pointer-x: var(--gradient-x, 50%);
+    --pointer-y: var(--gradient-y, 50%);
+
+    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+
+    background-image: radial-gradient(
+            farthest-corner circle at var(--pointer-x) var(--pointer-y),
+            hsl(0 0% 75% / 0.95) 5%,
+            hsl(200 5% 35% / 0.65) 60%,
+            hsl(320 40% 10% / 0.9) 150%
+    );
+
+    background-size: 120% 150%;
+    background-position: center center;
+
+    mix-blend-mode: hard-light;
+    filter: brightness(1) contrast(1.2) saturate(1);
+
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.75);
+
+    will-change: opacity, background-image;
+}

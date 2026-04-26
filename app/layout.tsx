@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 import { classes } from "@/lib/classes";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { HoverProvider } from "@/lib/hover-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -34,17 +35,19 @@ export default function RootLayout({
       </head>
       <body className={classes("flex flex-col min-h-dvh", inter.variable)}>
         <ApolloClientProvider>
-          <ThemeProvider>
-            <AuthProvider>
-              <LibraryProvider>
-                <FavoritesProvider>
-                  <main id="app-root" className="flex flex-col flex-1">
-                    {children}
-                  </main>
-                </FavoritesProvider>
-              </LibraryProvider>
-            </AuthProvider>
-          </ThemeProvider>
+          <HoverProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <LibraryProvider>
+                  <FavoritesProvider>
+                    <main id="app-root" className="flex flex-col flex-1">
+                      {children}
+                    </main>
+                  </FavoritesProvider>
+                </LibraryProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </HoverProvider>
         </ApolloClientProvider>
         <div id="modal-root" />
         <SpeedInsights />
