@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { getArtCostImageSrc, getDamageBonusImageSrc } from "@/components/Card";
-import { CardContainer } from "@/components/CardContainer";
+import { getArtCostImageSrc, getDamageBonusImageSrc } from "@/components/CardIcons";
+import { Card } from "@/components/Card";
 import { LinkedCardText } from "@/components/LinkedCardText";
 
 interface DamageBonus {
@@ -27,7 +27,7 @@ export function ArtsList({ arts }: ArtsListProps) {
     <div className="flex flex-col gap-2">
       <h2 className="text-sm font-semibold opacity-80">Arts</h2>
       {arts.map((art, i) => (
-        <CardContainer key={i}>
+        <Card key={i}>
           <div className="flex flex-row justify-between items-center text-sm font-semibold">
             {art.cost && art.cost.length > 0 && (
               <div className="flex gap-1">
@@ -71,7 +71,7 @@ export function ArtsList({ arts }: ArtsListProps) {
               <LinkedCardText text={art.effectText} />
             </p>
           )}
-        </CardContainer>
+        </Card>
       ))}
     </div>
   );

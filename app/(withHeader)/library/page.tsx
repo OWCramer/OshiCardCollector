@@ -53,11 +53,8 @@ export default function LibraryPage() {
           return (
             <div key={entry.cardId} className="shrink-0">
               <div className="relative" style={{ width: 160, height: 224 }}>
-                {card.imageUrl ? (
-                  <OCGCard href={`/card/${entry.cardId}`} imageUrl={card.imageUrl} name={card.name} size="sm" />
-                ) : (
-                  <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
-                )}
+                <OCGCard card={card} size="sm" />
+                {!card.imageUrl && <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />}
                 {entry.quantity > 1 && (
                   <span className="absolute bottom-2 right-2 bg-black/70 text-white text-xs font-bold px-1.5 py-0.5 rounded-md tabular-nums pointer-events-none">
                     ×{entry.quantity}

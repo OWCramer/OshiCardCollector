@@ -41,7 +41,9 @@ export async function createFavoriteList(uid: string, name: string): Promise<str
   return ref.id;
 }
 
-export async function deleteFavoriteList(uid: string, listId: string): Promise<void> {
+export async function deleteFavoriteList(uid: string, listId: string, cardIds: number[]): Promise<void> {
+  // Firestore doesn't auto-delete subcollections — remove card docs first.
+  await Promise.all(cardIds.map((id) => deleteDoc(cardDocRef(uid, listId, id))));
   await deleteDoc(listDocRef(uid, listId));
 }
 

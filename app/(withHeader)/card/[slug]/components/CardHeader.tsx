@@ -1,5 +1,5 @@
 import { Badge } from "@/components/Badge";
-import { getColorImageSrcs } from "@/components/Card";
+import { getColorImageSrcs } from "@/components/CardIcons";
 import Image from "next/image";
 import Link from "next/link";
 

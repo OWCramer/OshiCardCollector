@@ -40,11 +40,8 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
         <div className="flex flex-wrap gap-4">
           {cards.map((card) => (
             <div key={card.id} className="shrink-0">
-              {card.imageUrl ? (
-                <OCGCard href={`/card/${card.id}`} imageUrl={card.imageUrl} name={card.name} size="sm" />
-              ) : (
-                <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
-              )}
+              <OCGCard card={card} size="sm" />
+              {!card.imageUrl && <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />}
               <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">{card.name}</p>
             </div>
           ))}

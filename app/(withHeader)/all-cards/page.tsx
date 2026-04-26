@@ -9,7 +9,7 @@ import {
   CardType,
 } from "@/generated/graphql";
 import { Dropdown } from "@/components/Dropdown";
-import { CARD_SIZES, ItemCard } from "@/components/Card";
+import { OCGCard, OCG_CARD_SIZES } from "@/components/OCGCard";
 import { Input } from "@/components/Input";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
@@ -73,8 +73,8 @@ function AllCardsContent() {
   const isSmall = !useBreakpoint("sm");
 
   const { width: CARD_WIDTH, height: CARD_HEIGHT } = useMemo(() => {
-    if (isSmall) return CARD_SIZES["sm"];
-    return CARD_SIZES["lg"];
+    if (isSmall) return OCG_CARD_SIZES["sm"];
+    return OCG_CARD_SIZES["lg"];
   }, [isSmall]);
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -352,7 +352,7 @@ function AllCardsContent() {
                 className={classes("flex gap-4 items-center pb-4", isMedium ? "justify-start" : "justify-center")}
               >
                 {row.map((card) => (
-                  <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
+                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} parallax shine />
                 ))}
               </div>
             </div>

@@ -60,7 +60,7 @@ export default function FavoritesPage() {
         <div className="flex flex-col gap-1">
           <h1 className="text-xl font-semibold">Lists</h1>
           <p className="text-sm opacity-75">
-            {lists.length} {pluralize("item", lists.length)}
+            {lists.length} {pluralize("list", lists.length)}
           </p>
         </div>
         <Button highContrast variant="transparent" onClick={() => setManageOpen(true)}>Manage lists</Button>
@@ -74,20 +74,17 @@ export default function FavoritesPage() {
           onOpenChange={() => toggleList(list.id)}
         >
           <div className="grid gap-6 sm:gap-4 md:gap-2 w-fit max-w-full mx-auto grid-cols-[repeat(auto-fill,160px)] mt-3">
-            {Object.values(cardsByList[list.id]).map((card) => {
+            {Object.values(cardsByList[list.id] ?? {}).map((card) => {
               const gqlCard = cardMap[card.cardId];
               if (!gqlCard) return null;
               return (
                 <OCGCard
-                  shine
-                  rarity={gqlCard.rarity}
+                  key={card.cardId}
+                  card={gqlCard}
+                  size="sm"
                   parallax
                   parallaxStrength="med"
-                  href={`/card/${card.cardId}`}
-                  size="sm"
-                  key={card.cardId}
-                  imageUrl={gqlCard.imageUrl ?? ""}
-                  name={gqlCard.name ?? ""}
+                  shine
                 />
               );
             })}

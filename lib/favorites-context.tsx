@@ -143,7 +143,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   async function deleteList(listId: string) {
     if (!user || lists.length <= 1) return;
-    await deleteFavoriteList(user.uid, listId);
+    const cardIds = Object.keys(cardsByList[listId] ?? {}).map(Number);
+    await deleteFavoriteList(user.uid, listId, cardIds);
   }
 
   async function renameList(listId: string, name: string) {

@@ -1,4 +1,4 @@
-import { CardContainer } from "@/components/CardContainer";
+import { Card } from "@/components/Card";
 import { LinkedCardText } from "@/components/LinkedCardText";
 
 interface Keyword {
@@ -30,14 +30,14 @@ export function KeywordsList({ keywords }: KeywordsListProps) {
         <div key={type} className="flex flex-col gap-2">
           <h2 className="text-sm font-semibold opacity-80">{formatType(type)}</h2>
           {kws.map((kw, i) => (
-            <CardContainer key={i}>
+            <Card key={i}>
               <p className="text-sm font-semibold">{kw.title}</p>
               {kw.description && (
                 <p className="text-sm opacity-75 mt-1 whitespace-pre-wrap">
                   <LinkedCardText text={kw.description} />
                 </p>
               )}
-            </CardContainer>
+            </Card>
           ))}
         </div>
       ))}

@@ -15,7 +15,7 @@ import { SetList } from "./components/SetList";
 import { CardMeta } from "./components/CardMeta";
 import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
-import { CardContainer } from "@/components/CardContainer";
+import { Card } from "@/components/Card";
 import { PageLoading } from "@/components/PageLoading";
 import { PageContainer } from "@/components/PageContainer";
 import { ArrowLeftIcon } from "lucide-react";
@@ -68,16 +68,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         className="relative z-10 flex flex-col gap-5"
       >
         <div className="flex flex-col items-center md:flex-row md:items-start md:gap-8 gap-5">
-          {card.imageUrl && (
-            <OCGCard
-              imageUrl={card.imageUrl}
-              name={card.name}
-              rarity={card.rarity}
-              size="detail"
-              parallax
-              shine
-            />
-          )}
+          <OCGCard card={card} size="detail" parallax shine />
 
           <div className="flex flex-col gap-4 min-w-0 self-stretch flex-1">
             <CardHeader
@@ -114,11 +105,11 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
             {card.extraText && (
               <div className="flex flex-col gap-2">
                 <h2 className="text-sm font-semibold opacity-80">Extra</h2>
-                <CardContainer>
+                <Card>
                   <p className="text-sm opacity-75 whitespace-pre-wrap">
                     <LinkedCardText text={card.extraText} />
                   </p>
-                </CardContainer>
+                </Card>
               </div>
             )}
             <CardMeta

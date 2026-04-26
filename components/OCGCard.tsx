@@ -15,6 +15,14 @@ export const OCG_CARD_SIZES = {
 export type OCGCardSize = keyof typeof OCG_CARD_SIZES;
 export type OCGCardParallaxStrength = "low" | "med" | "high";
 
+// Minimal structural type — both GetAllCardsQuery nodes and GetCardQuery cards satisfy this.
+export interface OCGCardData {
+  id: number;
+  name: string;
+  imageUrl?: string | null;
+  rarity?: string | null;
+}
+
 const SHINY_RARITIES = new Set(["RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "HR", "SY", "S", "P"]);
 
 // Parallax intensity per strength level per size.
@@ -41,32 +49,47 @@ const PARALLAX_CONFIG: Record<
 };
 
 interface OCGCardProps {
-  imageUrl: string;
-  name: string;
+  /** Pass a GQL card object to auto-populate imageUrl, name, rarity, and href. */
+  card?: OCGCardData;
+  /** Overrides card.imageUrl. */
+  imageUrl?: string;
+  /** Overrides card.name. */
+  name?: string;
+  /** Overrides card.rarity. */
+  rarity?: string;
+  /** Overrides the auto-derived /card/:id href. */
+  href?: string;
   size?: OCGCardSize;
   parallax?: boolean;
   parallaxStrength?: OCGCardParallaxStrength;
   shine?: boolean;
-  rarity?: string;
-  href?: string;
   onClick?: () => void;
   className?: string;
 }
 
 export function OCGCard({
-  imageUrl,
-  name,
+  card,
+  imageUrl: imageUrlProp,
+  name: nameProp,
+  rarity: rarityProp,
+  href: hrefProp,
   size = "lg",
   parallax = false,
   parallaxStrength = "high",
   shine = false,
-  rarity,
-  href,
   onClick,
   className,
 }: OCGCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const shineRef = useRef<HTMLDivElement>(null);
+
+  const imageUrl = imageUrlProp ?? card?.imageUrl ?? "";
+  const name = nameProp ?? card?.name ?? "";
+  const rarity = rarityProp ?? card?.rarity ?? undefined;
+  const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
+
+  // Nothing to render without an image.
+  if (!imageUrl) return null;
 
   const { width, height } = OCG_CARD_SIZES[size];
   const isShiny = shine && !!rarity && SHINY_RARITIES.has(rarity);
@@ -107,9 +130,9 @@ export function OCGCard({
     if (shineRef.current) shineRef.current.style.opacity = "0";
   }
 
-  const card = (
+  const cardEl = (
     <div
-      style={{ perspective: "600px", width, height, flexShrink: 0 }}
+      style={{ perspective: "600px", width, height }}
       className={!href ? className : undefined}
     >
       <div
@@ -147,10 +170,10 @@ export function OCGCard({
   if (href) {
     return (
       <Link href={href} style={{ flexShrink: 0, display: "block" }} className={className}>
-        {card}
+        {cardEl}
       </Link>
     );
   }
 
-  return card;
+  return cardEl;
 }
