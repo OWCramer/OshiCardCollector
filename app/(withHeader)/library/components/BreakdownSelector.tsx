@@ -60,7 +60,7 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
           ) : (
             <Dropdown value={firstValue} onValueChange={handleFirstChange} items={BREAKDOWN_TABS} className="flex-1" />
           )}
-          {hasBreakdown && breakdowns.length === 1 && canAddLevel && (
+          {breakdowns.length === 1 && canAddLevel && (
             <button
               onClick={addLevel}
               title="Add grouping level"

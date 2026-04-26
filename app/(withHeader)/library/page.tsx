@@ -36,7 +36,6 @@ import {
 
 const ICON_BTN = "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
 const ICON_BTN_IDLE = "ring-black/15 dark:ring-white/15 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10";
-const ICON_BTN_ACTIVE = "ring-zinc-900 dark:ring-white bg-zinc-900 dark:bg-white text-white dark:text-zinc-900";
 
 const SEARCH_INPUT_PROPS = {
   autoCorrect: "off", autoCapitalize: "off", autoComplete: "off", spellCheck: false,
@@ -201,12 +200,13 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
     [cardEntries, sortField, sortOrder]
   );
 
+  const searchQuery = search.trim();
+
   const afterSearch = useMemo(() => {
-    const q = search.trim();
-    if (!q) return sorted;
-    const matchIds = new Set(fuse.search(q).map((r) => r.item.card.id));
+    if (!searchQuery) return sorted;
+    const matchIds = new Set(fuse.search(searchQuery).map((r) => r.item.card.id));
     return sorted.filter(({ card }) => matchIds.has(card.id));
-  }, [fuse, search, sorted]);
+  }, [fuse, searchQuery, sorted]);
 
   const filtered = useMemo(() => {
     let result = afterSearch;
@@ -220,16 +220,11 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
     return result;
   }, [afterSearch, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]);
 
-  const holoDexCount  = Object.values(cardMap).length;
-  const hasActiveState = activeFilterCount > 0 || search.trim().length > 0;
+  const holoDexCount   = useMemo(() => Object.keys(cardMap).length, [cardMap]);
+  const hasActiveState = activeFilterCount > 0 || searchQuery.length > 0;
   const emptyFiltered  = filtered.length === 0 && hasActiveState;
 
   const effectiveDefaults = defaults ?? FACTORY_DEFAULTS;
-  const isPageDirty =
-    hasActiveState ||
-    JSON.stringify(breakdowns) !== JSON.stringify(effectiveDefaults.breakdowns) ||
-    sortField !== effectiveDefaults.sortField ||
-    sortOrder !== effectiveDefaults.sortOrder;
 
   const isDefaultDirty =
     sortField !== effectiveDefaults.sortField ||
@@ -241,6 +236,8 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
     JSON.stringify(rarityFilter)  !== JSON.stringify(effectiveDefaults.rarityFilter) ||
     JSON.stringify(tagsFilter)    !== JSON.stringify(effectiveDefaults.tagsFilter) ||
     specialFilter !== effectiveDefaults.specialFilter;
+
+  const isPageDirty = isDefaultDirty || searchQuery.length > 0;
 
   async function handleSaveDefault() {
     const toSave: LibraryDefaults = {
