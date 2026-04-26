@@ -157,7 +157,7 @@ export function OCGCard({
           shadow
           shadowBlur={30}
           glareIntensity={isHolo ? 0 : glareIntensity}
-          glareMask={isHolo ? "url(/card_masks/glitter_transparent.png)" : undefined}
+          glareMask={isHolo ? "url(/card_masks/metal-no-black.png)" : undefined}
           glareMaskMode="alpha"
           glareMaskComposite="intersect"
         >
