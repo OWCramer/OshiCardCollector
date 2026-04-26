@@ -38,7 +38,9 @@ interface OCGCardProps {
   href?: string;
   size?: OCGCardSize;
   shine?: boolean;
-  pressToTilt?: boolean;
+  tiltFactor?: number;
+  scaleFactor?: number;
+  glareIntensity?: number;
   onClick?: () => void;
   className?: string;
 }
@@ -51,6 +53,9 @@ export function OCGCard({
   href: hrefProp,
   size = "lg",
   shine = true,
+  tiltFactor = 1,
+  scaleFactor = 1.03,
+  glareIntensity = 0.5,
   onClick,
   className,
 }: OCGCardProps) {
@@ -137,10 +142,11 @@ export function OCGCard({
             isHolo ? `${styles.holo}` : undefined
           )}
           exitDelay={0}
-          scaleFactor={1.03}
+          tiltFactor={tiltFactor}
+          scaleFactor={scaleFactor}
           shadow
           shadow-blur={30}
-          glare-intensity={0.5}
+          glare-intensity={glareIntensity}
         >
           {image}
         </hover-tilt>
