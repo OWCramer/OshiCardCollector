@@ -14,7 +14,13 @@ import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { classes } from "@/lib/classes";
-import { ArrowDownIcon, ArrowUpIcon, FilterIcon, SearchIcon, SlidersHorizontalIcon, } from "lucide-react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  FilterIcon,
+  SearchIcon,
+  SlidersHorizontalIcon,
+} from "lucide-react";
 import pluralize from "pluralize";
 import Fuse from "fuse.js";
 import { CardGrid } from "./components/CardGrid";
@@ -25,7 +31,12 @@ import { useLibraryFilters } from "./components/useLibraryFilters";
 import { useLibraryDefaults } from "./components/useLibraryDefaults";
 import { useFilterOptions } from "./components/useFilterOptions";
 import { sortEntries } from "./components/utils";
-import { type CardEntry, FACTORY_DEFAULTS, type LibraryDefaults, SORT_ITEMS, } from "./components/types";
+import {
+  type CardEntry,
+  FACTORY_DEFAULTS,
+  type LibraryDefaults,
+  SORT_ITEMS,
+} from "./components/types";
 
 const ICON_BTN =
   "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
@@ -40,6 +51,23 @@ const SEARCH_INPUT_PROPS = {
 } as const;
 
 const SCROLL_KEY = "library_scroll_y";
+
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+
+  const object = value as Record<string, unknown>;
+
+  return `{${Object.keys(object)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${stableStringify(object[key])}`)
+    .join(",")}}`;
+}
 
 // ── loading shell ─────────────────────────────────────────────────────────────
 
@@ -219,7 +247,7 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
       tagsFilter,
       specialFilter,
     };
-    return JSON.stringify(current) !== JSON.stringify(effectiveDefaults);
+    return stableStringify(current) !== stableStringify(effectiveDefaults);
   }, [
     sortField,
     sortOrder,
