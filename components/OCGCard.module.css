@@ -1,9 +1,12 @@
 /*
   HOLO CARD EFFECT
-  Based on the first/best version:
+  Textured holographic surface for hover-tilt.
+
+  Goal:
+  - texture/reflection first
+  - rainbow second
   - visible diagonal foil bands
-  - no micro-grid texture
-  - toned down so the card art remains readable
+  - no obvious grid
 */
 
 .holo::part(tilt) {
@@ -13,20 +16,20 @@
 
     --foil: radial-gradient(
             circle at 50% 50%,
-            hsl(0 0% 100% / 0.34),
-            hsl(0 0% 100% / 0.055) 35%,
+            hsl(0 0% 100% / 0.26),
+            hsl(0 0% 100% / 0.045) 35%,
             transparent 70%
     );
 
-    --sunpillar-clr-1: hsl(2 100% 73% / 0.58);
-    --sunpillar-clr-2: hsl(53 100% 69% / 0.58);
-    --sunpillar-clr-3: hsl(93 100% 69% / 0.58);
-    --sunpillar-clr-4: hsl(176 100% 76% / 0.58);
-    --sunpillar-clr-5: hsl(228 100% 74% / 0.58);
-    --sunpillar-clr-6: hsl(283 100% 73% / 0.58);
+    --sunpillar-clr-1: hsl(2 100% 73% / 0.38);
+    --sunpillar-clr-2: hsl(53 100% 69% / 0.38);
+    --sunpillar-clr-3: hsl(93 100% 69% / 0.38);
+    --sunpillar-clr-4: hsl(176 100% 76% / 0.38);
+    --sunpillar-clr-5: hsl(228 100% 74% / 0.38);
+    --sunpillar-clr-6: hsl(283 100% 73% / 0.38);
 }
 
-/* Main shine layer */
+/* Main shine / texture layer */
 .holo::part(tilt)::before {
     content: "";
     position: absolute;
@@ -48,6 +51,25 @@
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
 
     background-image:
+        /*
+          Fine etched diagonal surface.
+          Very subtle, but this is what makes it read as material instead of rainbow paint.
+        */
+            repeating-linear-gradient(
+                    133deg,
+                    hsl(0 0% 100% / 0.09) 0px,
+                    hsl(0 0% 100% / 0.09) 0.7px,
+                    transparent 1.2px,
+                    transparent 4.5px
+            ),
+            repeating-linear-gradient(
+                    133deg,
+                    transparent 0px,
+                    transparent 7px,
+                    hsl(0 0% 0% / 0.055) 7.6px,
+                    transparent 8.4px,
+                    transparent 14px
+            ),
             var(--foil),
             repeating-linear-gradient(
                     0deg,
@@ -61,44 +83,48 @@
             ),
             repeating-linear-gradient(
                     var(--angle),
-                    hsl(225 53% 16% / 0.42) 0%,
-                    hsl(180 10% 62% / 0.36) 3.6%,
-                    hsl(180 35% 76% / 0.54) 4.8%,
-                    hsl(180 10% 62% / 0.36) 6%,
-                    hsl(225 53% 16% / 0.42) 11.5%,
-                    hsl(225 53% 16% / 0.42) 15.5%
+                    hsl(225 53% 16% / 0.34) 0%,
+                    hsl(180 10% 62% / 0.3) 3.6%,
+                    hsl(180 35% 76% / 0.46) 4.8%,
+                    hsl(180 10% 62% / 0.3) 6%,
+                    hsl(225 53% 16% / 0.34) 11.5%,
+                    hsl(225 53% 16% / 0.34) 15.5%
             ),
             radial-gradient(
                     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-                    hsl(0 0% 0% / 0.055) 12%,
-                    hsl(0 0% 0% / 0.1) 20%,
-                    hsl(0 0% 0% / 0.18) 120%
+                    hsl(0 0% 0% / 0.05) 12%,
+                    hsl(0 0% 0% / 0.09) 20%,
+                    hsl(0 0% 0% / 0.16) 120%
             );
 
     background-position:
+            calc(var(--diagonal-x) * 0.35) calc(var(--diagonal-y) * 0.35),
+            calc(var(--diagonal-x) * 0.5) calc(var(--diagonal-y) * 0.5),
             center center,
             0% var(--background-y),
             var(--diagonal-x) var(--diagonal-y),
             var(--background-x) var(--background-y);
 
     background-size:
+            180px 180px,
+            220px 220px,
             var(--imgsize),
             200% 700%,
             520% 180%,
             200% 100%;
 
-    background-blend-mode: soft-light, hue, hard-light;
+    background-blend-mode: soft-light, overlay, screen, hue, hard-light, multiply;
     mix-blend-mode: color-dodge;
 
-    filter: brightness(calc((var(--pointer-from-center) * 0.22) + 0.34)) contrast(1.35)
-    saturate(1.12);
+    filter: brightness(calc((var(--pointer-from-center) * 0.2) + 0.36)) contrast(1.28)
+    saturate(1);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.72);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.68);
 
     will-change: opacity, background-position, filter;
 }
 
-/* Glare layer */
+/* Reflective glare layer */
 .holo::part(tilt)::after {
     content: "";
     position: absolute;
@@ -113,20 +139,34 @@
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
 
-    background-image: radial-gradient(
-            farthest-corner circle at var(--pointer-x) var(--pointer-y),
-            hsl(0 0% 80% / 0.52) 5%,
-            hsl(200 5% 35% / 0.32) 60%,
-            hsl(320 40% 10% / 0.5) 150%
-    );
+    background-image:
+            linear-gradient(
+                    133deg,
+                    transparent 0%,
+                    hsl(0 0% 100% / 0.18) 38%,
+                    transparent 52%,
+                    hsl(0 0% 0% / 0.12) 68%,
+                    transparent 100%
+            ),
+            radial-gradient(
+                    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+                    hsl(0 0% 92% / 0.42) 5%,
+                    hsl(200 5% 45% / 0.24) 58%,
+                    hsl(320 40% 10% / 0.4) 150%
+            );
 
-    background-size: 120% 150%;
-    background-position: center center;
+    background-size:
+            220% 220%,
+            120% 150%;
+
+    background-position:
+            var(--pointer-x) var(--pointer-y),
+            center center;
 
     mix-blend-mode: hard-light;
-    filter: brightness(1) contrast(1.05) saturate(0.85);
+    filter: brightness(1) contrast(1.05) saturate(0.75);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.38);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.34);
 
-    will-change: opacity, background-image;
+    will-change: opacity, background-position, background-image;
 }
