@@ -87,6 +87,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
               life={card.life}
               bloomLevel={card.bloomLevel}
               batonPass={card.batonPass}
+              supportType={card.supportType}
             />
 
             {card.specialText && (

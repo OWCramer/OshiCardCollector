@@ -44,6 +44,7 @@ interface OCGCardProps {
   glareIntensity?: number;
   onClick?: () => void;
   className?: string;
+  overlayText?: string;
 }
 
 export function OCGCard({
@@ -60,6 +61,7 @@ export function OCGCard({
   glareIntensity = 0.5,
   onClick,
   className,
+  overlayText,
 }: OCGCardProps) {
   const imageUrl = imageUrlProp ?? card?.imageUrl ?? "";
   const name = nameProp ?? card?.name ?? "";
@@ -163,6 +165,14 @@ export function OCGCard({
             height={height}
             className="block rounded-[4.55%/3.5%]"
           />
+          {overlayText && (
+            <div
+              className="absolute px-2 bottom-1.5 right-1.5 text-sm text-white rounded-lg bg-black/70"
+              style={{ pointerEvents: "none" }}
+            >
+              {overlayText}
+            </div>
+          )}
         </hover-tilt>
       </div>
     </>
