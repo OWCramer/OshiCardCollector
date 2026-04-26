@@ -1,11 +1,11 @@
 "use client";
 
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
-import {classes} from "@/lib/classes";
-import {Modal} from "@/components/Modal";
+import { classes } from "@/lib/classes";
+import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
   sm: { width: 160, height: 224 },
