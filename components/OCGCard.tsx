@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
 import { classes } from "@/lib/classes";
-import { useBreakpoint } from "@/lib/useBreakpoint";
 
 export const OCG_CARD_SIZES = {
   sm: { width: 160, height: 224 },
@@ -36,6 +35,7 @@ interface OCGCardProps {
   rarity?: string;
   /** Overrides the auto-derived /card/:id href. */
   href?: string;
+  goToCard?: boolean;
   size?: OCGCardSize;
   shine?: boolean;
   tiltFactor?: number;
@@ -51,6 +51,7 @@ export function OCGCard({
   name: nameProp,
   rarity: rarityProp,
   href: hrefProp,
+  goToCard = false,
   size = "lg",
   shine = true,
   tiltFactor = 1,
@@ -62,62 +63,13 @@ export function OCGCard({
   const imageUrl = imageUrlProp ?? card?.imageUrl ?? "";
   const name = nameProp ?? card?.name ?? "";
   const rarity = rarityProp ?? card?.rarity ?? undefined;
-  const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
+  const href = hrefProp ?? (goToCard && card ? `/card/${card.id}` : undefined);
   const isHolo = SHINY_RARITIES.has(rarity ?? "") && shine;
-  const isMobile = !useBreakpoint("sm");
-
-  const [pressTiltActive, setPressTiltActive] = useState(false);
-  const pressTimerRef = useRef<number | null>(null);
-  const pressStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Nothing to render without an image.
   if (!imageUrl) return null;
 
   const { width, height } = OCG_CARD_SIZES[size];
-
-  const clearPressTilt = () => {
-    if (pressTimerRef.current !== null) {
-      globalThis.window.clearTimeout(pressTimerRef.current);
-      pressTimerRef.current = null;
-    }
-
-    pressStartRef.current = null;
-    setPressTiltActive(false);
-  };
-
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isMobile || event.pointerType !== "touch") return;
-
-    pressStartRef.current = { x: event.clientX, y: event.clientY };
-
-    pressTimerRef.current = globalThis.window.setTimeout(() => {
-      setPressTiltActive(true);
-    }, 275);
-  };
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isMobile || !pressStartRef.current || pressTiltActive) return;
-
-    const dx = Math.abs(event.clientX - pressStartRef.current.x);
-    const dy = Math.abs(event.clientY - pressStartRef.current.y);
-
-    // If the user starts scrolling, cancel tilt activation.
-    if (dx > 8 || dy > 8) {
-      clearPressTilt();
-    }
-  };
-
-  const image = (
-    <Image
-      src={imageUrl}
-      alt={name}
-      width={width}
-      height={height}
-      className="block rounded-[4.55%/3.5%]"
-    />
-  );
-
-  const shouldRenderTilt = !isMobile || pressTiltActive;
 
   const cardEl = (
     // Setting width and height on the surrounding div is needed for virtualization to function properly.
@@ -128,31 +80,29 @@ export function OCGCard({
       }}
       key={card?.id}
       onClick={onClick}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={clearPressTilt}
-      onPointerCancel={clearPressTilt}
-      onPointerLeave={clearPressTilt}
-      className={classes("touch-pan-y", href ? undefined : className)}
+      className={href ? undefined : className}
     >
-      {shouldRenderTilt ? (
-        <hover-tilt
-          className={classes(
-            "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
-            isHolo ? `${styles.holo}` : undefined
-          )}
-          exitDelay={0}
-          tiltFactor={tiltFactor}
-          scaleFactor={scaleFactor}
-          shadow
-          shadow-blur={30}
-          glare-intensity={glareIntensity}
-        >
-          {image}
-        </hover-tilt>
-      ) : (
-        image
-      )}
+      <hover-tilt
+        className={classes(
+          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
+          "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
+          isHolo ? `${styles.holo}` : undefined
+        )}
+        exitDelay={0}
+        tiltFactor={tiltFactor}
+        scaleFactor={scaleFactor}
+        shadow
+        shadow-blur={30}
+        glare-intensity={glareIntensity}
+      >
+        <Image
+          src={imageUrl}
+          alt={name}
+          width={width}
+          height={height}
+          className="block rounded-[4.55%/3.5%]"
+        />
+      </hover-tilt>
     </div>
   );
 

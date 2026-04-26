@@ -79,7 +79,7 @@ function ListsContent() {
             {Object.values(cardsByList[list.id] ?? {}).map((card) => {
               const gqlCard = cardMap[card.cardId];
               if (!gqlCard) return null;
-              return <OCGCard key={card.cardId} card={gqlCard} size="sm" />;
+              return <OCGCard key={card.cardId} card={gqlCard} size="sm" goToCard />;
             })}
           </div>
         </Accordion>
