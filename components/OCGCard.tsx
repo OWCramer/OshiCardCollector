@@ -56,6 +56,7 @@ export function OCGCard({
   const name = nameProp ?? card?.name ?? "";
   const rarity = rarityProp ?? card?.rarity ?? undefined;
   const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
+  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shiny;
 
   // Nothing to render without an image.
   if (!imageUrl) return null;
@@ -76,7 +77,7 @@ export function OCGCard({
       <hover-tilt
         className={classes(
           "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
-          shiny && SHINY_RARITIES.has(rarity ?? "") ? `${styles.holo}` : undefined
+          isHolo ? `${styles.holo}` : undefined
         )}
         exitDelay={0}
         scaleFactor={1.03}
