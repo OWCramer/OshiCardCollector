@@ -302,7 +302,7 @@ export function useCardFilters(allCards: CardNode[]) {
   const fuse = useMemo(
     () =>
       new Fuse(allCards, {
-        keys: ["name", "tags", "specialText", "extraText"],
+        keys: ["name", "cardNumber", "tags", "specialText", "extraText"],
         threshold: 0.35,
         ignoreLocation: true,
         ignoreDiacritics: true,

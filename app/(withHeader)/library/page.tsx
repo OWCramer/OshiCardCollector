@@ -141,7 +141,7 @@ function LibraryContent() {
 
   const fuse = useMemo(
     () => new Fuse(cardEntries, {
-      keys: ["card.name", "card.tags", "card.specialText", "card.extraText"],
+      keys: ["card.name", "card.cardNumber", "card.tags", "card.specialText", "card.extraText"],
       threshold: 0.35,
       ignoreLocation: true,
       ignoreDiacritics: true,
