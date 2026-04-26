@@ -22,9 +22,10 @@ export function getGroupKey(card: CardMapEntry, breakdown: Breakdown): string {
     case "name":       return card.name[0]?.toUpperCase() ?? "#";
     case "color":      return card.colors[0] ?? "Unknown";
     case "bloomLevel": return card.bloomLevel ?? "—";
-    case "cardType":   return card.cardType;
-    case "rarity":     return card.rarity;
-    default:           return "";
+    case "cardType":    return card.cardType;
+    case "rarity":      return card.rarity;
+    case "supportType": return card.supportType ?? "—";
+    default:            return "";
   }
 }
 
@@ -32,10 +33,15 @@ export function sortGroupKeys(keys: string[], breakdown: Breakdown): string[] {
   if (breakdown === "bloomLevel") {
     return [...keys].sort((a, b) => (BLOOM_ORDER[a] ?? 99) - (BLOOM_ORDER[b] ?? 99));
   }
-  return [...keys].sort((a, b) => a.localeCompare(b));
+  return [...keys].sort((a, b) => {
+    if (a === "—") return 1;
+    if (b === "—") return -1;
+    return a.localeCompare(b);
+  });
 }
 
 export function formatGroupKey(key: string, breakdown: Breakdown): string {
   if (breakdown === "rarity") return key;
+  if (key === "—") return key;
   return key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
 }

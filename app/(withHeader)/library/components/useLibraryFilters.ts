@@ -64,7 +64,7 @@ export function useLibraryFilters() {
   const setBloomFilter   = useCallback((v: string[])       => { setBloomFilterState(v);     updateUrl("bloom",      v.join(",") || null); }, [updateUrl]);
   const setRarityFilter  = useCallback((v: string[])       => { setRarityFilterState(v);    updateUrl("rarity",     v.join(",") || null); }, [updateUrl]);
   const setTagsFilter    = useCallback((v: string[])       => { setTagsFilterState(v);      updateUrl("tags",       v.join(",") || null); }, [updateUrl]);
-  const setSpecialFilter = useCallback((v: SpecialFilter)  => { setSpecialFilterState(v);   updateUrl("special",    v !== "all"   ? v : null); }, [updateUrl]);
+  const setSpecialFilter = useCallback((v: SpecialFilter) => { setSpecialFilterState(v); updateUrl("special", v !== "all" ? v : null); }, [updateUrl]);
 
   return {
     sortField, setSortField,

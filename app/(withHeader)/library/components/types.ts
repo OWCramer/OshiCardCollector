@@ -4,7 +4,7 @@ import type { LibraryEntry } from "@/api/library";
 
 export type SortField = "name" | "quantity" | "color" | "bloomLevel" | "hp" | "cardNumber";
 export type SortOrder = "asc" | "desc";
-export type Breakdown = "none" | "name" | "color" | "bloomLevel" | "cardType" | "rarity";
+export type Breakdown = "none" | "name" | "color" | "bloomLevel" | "cardType" | "rarity" | "supportType";
 export type SpecialFilter = "all" | "buzz" | "limited";
 
 export type CardEntry = { card: CardMapEntry; entry: LibraryEntry };
@@ -25,8 +25,9 @@ export const BREAKDOWN_TABS: Tab<Breakdown>[] = [
   { value: "name",       label: "Name" },
   { value: "color",      label: "Color" },
   { value: "bloomLevel", label: "Bloom" },
-  { value: "cardType",   label: "Type" },
-  { value: "rarity",     label: "Rarity" },
+  { value: "cardType",    label: "Type" },
+  { value: "rarity",      label: "Rarity" },
+  { value: "supportType", label: "Support" },
 ];
 
 export const SPECIAL_ITEMS: { value: SpecialFilter; label: string }[] = [

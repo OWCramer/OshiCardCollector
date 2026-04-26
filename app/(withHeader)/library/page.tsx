@@ -26,19 +26,11 @@ import {
   SlidersHorizontalIcon,
 } from "lucide-react";
 import pluralize from "pluralize";
+import Fuse from "fuse.js";
 import { CardGrid } from "./components/CardGrid";
 import { FilterPanel } from "./components/FilterPanel";
 import { useLibraryFilters } from "./components/useLibraryFilters";
-import {
-  BLOOM_ORDER,
-  type Breakdown,
-  BREAKDOWN_TABS,
-  type CardEntry,
-  SORT_ITEMS,
-  type SortField,
-  type SortOrder,
-  type SpecialFilter,
-} from "./components/types";
+import { BLOOM_ORDER, BREAKDOWN_TABS, type CardEntry, SORT_ITEMS, } from "./components/types";
 import { formatGroupKey, getGroupKey, sortEntries, sortGroupKeys } from "./components/utils";
 
 const ICON_BTN = "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
@@ -146,24 +138,41 @@ function LibraryContent() {
     [colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]
   );
 
+  const fuse = useMemo(
+    () => new Fuse(cardEntries, {
+      keys: ["card.name", "card.tags", "card.specialText", "card.extraText"],
+      threshold: 0.35,
+      ignoreLocation: true,
+      ignoreDiacritics: true,
+      shouldSort: false,
+      useExtendedSearch: true,
+    }),
+    [cardEntries]
+  );
+
   const sorted = useMemo(
     () => sortEntries(cardEntries, sortField, sortOrder),
     [cardEntries, sortField, sortOrder]
   );
 
+  const afterSearch = useMemo(() => {
+    const q = search.trim();
+    if (!q) return sorted;
+    const matchIds = new Set(fuse.search(q).map((r) => r.item.card.id));
+    return sorted.filter(({ card }) => matchIds.has(card.id));
+  }, [fuse, search, sorted]);
+
   const filtered = useMemo(() => {
-    let result = sorted;
-    const q = search.trim().toLowerCase();
-    if (q)                    result = result.filter(({ card }) => card.name.toLowerCase().includes(q) || card.cardNumber.toLowerCase().includes(q));
+    let result = afterSearch;
     if (colorFilter.length)   result = result.filter(({ card }) => card.colors.some((c) => colorFilter.includes(c)));
     if (typeFilter.length)    result = result.filter(({ card }) => typeFilter.includes(card.cardType));
     if (bloomFilter.length)   result = result.filter(({ card }) => !!card.bloomLevel && bloomFilter.includes(card.bloomLevel));
     if (rarityFilter.length)  result = result.filter(({ card }) => rarityFilter.includes(card.rarity));
-    if (tagsFilter.length)    result = result.filter(({ card }) => tagsFilter.some((t) => card.tags.includes(t)));
+    if (tagsFilter.length)   result = result.filter(({ card }) => tagsFilter.some((t) => card.tags.includes(t)));
     if (specialFilter === "buzz")    result = result.filter(({ card }) => card.isBuzz);
     if (specialFilter === "limited") result = result.filter(({ card }) => card.isLimited);
     return result;
-  }, [sorted, search, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]);
+  }, [afterSearch, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]);
 
   const { groups, groupKeys } = useMemo(() => {
     const map = new Map<string, CardEntry[]>();
@@ -264,13 +273,15 @@ function LibraryContent() {
 
       {isMedium && (
         <>
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-x-4 gap-y-2 flex-wrap">
+            <div className="flex items-center gap-2 min-w-0">
               <LayoutListIcon size={14} className="opacity-30 shrink-0" />
-              <Tabs value={breakdown} onValueChange={setBreakdown} tabs={BREAKDOWN_TABS} />
+              <div className="overflow-x-auto">
+                <Tabs value={breakdown} onValueChange={setBreakdown} tabs={BREAKDOWN_TABS} />
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <ArrowUpDownIcon size={14} className="opacity-30 shrink-0" />
               <Dropdown value={sortField} onValueChange={setSortField} items={SORT_ITEMS} className="w-36" />
               {sortToggle}

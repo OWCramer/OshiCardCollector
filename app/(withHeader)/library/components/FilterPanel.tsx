@@ -42,7 +42,7 @@ export function FilterPanel({
       {typeOptions.length > 1   && <Dropdown multi label="Type"    value={typeFilter}   onValueChange={setTypeFilter}   items={typeOptions}   className="w-28" />}
       {bloomOptions.length > 1  && <Dropdown multi label="Bloom"   value={bloomFilter}  onValueChange={setBloomFilter}  items={bloomOptions}  className="w-28" />}
       {rarityOptions.length > 1 && <Dropdown multi label="Rarity"  value={rarityFilter} onValueChange={setRarityFilter} items={rarityOptions} className="w-28" />}
-      {tagOptions.length > 0    && <Dropdown multi label="Tags"    value={tagsFilter}   onValueChange={setTagsFilter}   items={tagOptions}    className="w-28" />}
+      {tagOptions.length > 0 && <Dropdown multi label="Tags" value={tagsFilter} onValueChange={setTagsFilter} items={tagOptions} className="w-28" />}
       <Dropdown label="Special" value={specialFilter} onValueChange={(v) => setSpecialFilter(v as SpecialFilter)} items={SPECIAL_ITEMS} className="w-32" />
     </div>
   );
