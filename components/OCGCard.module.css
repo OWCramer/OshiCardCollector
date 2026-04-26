@@ -21,6 +21,7 @@
 }
 
 /* Main shine layer */
+/*noinspection CssUnresolvedCustomProperty*/
 .holo::part(tilt)::before {
     content: "";
     position: absolute;
@@ -93,6 +94,7 @@
 }
 
 /* Glare layer */
+/*noinspection CssUnresolvedCustomProperty*/
 .holo::part(tilt)::after {
     content: "";
     position: absolute;
