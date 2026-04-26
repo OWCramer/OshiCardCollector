@@ -37,7 +37,7 @@ interface OCGCardProps {
   /** Overrides the auto-derived /card/:id href. */
   href?: string;
   size?: OCGCardSize;
-  shiny?: boolean;
+  shine?: boolean;
   pressToTilt?: boolean;
   onClick?: () => void;
   className?: string;
@@ -50,7 +50,7 @@ export function OCGCard({
   rarity: rarityProp,
   href: hrefProp,
   size = "lg",
-  shiny = true,
+  shine = true,
   onClick,
   className,
 }: OCGCardProps) {
@@ -58,7 +58,7 @@ export function OCGCard({
   const name = nameProp ?? card?.name ?? "";
   const rarity = rarityProp ?? card?.rarity ?? undefined;
   const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
-  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shiny;
+  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shine;
   const isMobile = !useBreakpoint("sm");
 
   const [pressTiltActive, setPressTiltActive] = useState(false);
