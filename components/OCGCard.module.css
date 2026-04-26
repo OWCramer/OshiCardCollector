@@ -3,10 +3,11 @@
   Shiny Rare style adapted for hover-tilt glare-mask.
 
   Important:
-  - wave/illusion mask is supplied through hover-tilt's glare-mask prop
-  - the glare-mask is kept fixed so it behaves like card foil texture
-  - only the gradient/reflection backgrounds move
-  - movement is clamped so extreme tilt does not expose hard seams
+  - alpha mask is supplied through hover-tilt's glare-mask prop
+  - glare-mask-mode="alpha"
+  - glare-mask-composite="intersect"
+  - CSS uses only var(--hover-tilt-glare-mask), because hover-tilt already composes it
+  - negative/transparent mask areas should remain untouched
 */
 
 .holo::part(tilt) {
@@ -50,17 +51,20 @@
     clip-path: inset(0 round 4.55% 3.5%);
 
     /*
-      Keep the mask fixed. This lets wave.png feel like physical texture
-      printed onto the card, instead of sliding around.
+      Use only hover-tilt's generated/intersected glare mask.
+      Do not add var(--hover-tilt-default-gradient) here.
     */
-    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
-    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    -webkit-mask-image: var(--hover-tilt-glare-mask);
+    mask-image: var(--hover-tilt-glare-mask);
 
-    -webkit-mask-size: 100% 100%, cover;
-    mask-size: 100% 100%, cover;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 
-    -webkit-mask-position: center center, center center;
-    mask-position: center center, center center;
+    -webkit-mask-position: center center;
+    mask-position: center center;
+
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 
     background-image:
             repeating-linear-gradient(
@@ -123,16 +127,20 @@
     clip-path: inset(0 round 4.55% 3.5%);
 
     /*
-      Same fixed mask here. The texture should not slide.
+      Use only hover-tilt's generated/intersected glare mask.
+      Do not add var(--hover-tilt-default-gradient) here.
     */
-    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
-    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    -webkit-mask-image: var(--hover-tilt-glare-mask);
+    mask-image: var(--hover-tilt-glare-mask);
 
-    -webkit-mask-size: 100% 100%, cover;
-    mask-size: 100% 100%, cover;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 
-    -webkit-mask-position: center center, center center;
-    mask-position: center center, center center;
+    -webkit-mask-position: center center;
+    mask-position: center center;
+
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 
     background-image:
             repeating-linear-gradient(
