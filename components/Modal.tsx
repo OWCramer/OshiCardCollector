@@ -25,6 +25,8 @@ export function Modal({ isOpen, onClose, onOpen, children, className, title }: M
 
     const appRoot = document.getElementById("app-root");
     appRoot?.setAttribute("inert", "true");
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape" && !e.defaultPrevented) onClose();
@@ -33,6 +35,8 @@ export function Modal({ isOpen, onClose, onOpen, children, className, title }: M
 
     return () => {
       appRoot?.removeAttribute("inert");
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);

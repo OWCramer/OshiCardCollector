@@ -73,8 +73,8 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         <div className="mt-2 px-4 pb-1 text-xs font-semibold uppercase tracking-wider opacity-40">
           Collection
         </div>
-        <button onClick={() => navigate("/favorites")} className={MOBILE_NAV_ITEM_CLASS}>
-          <HeartIcon size={18} /> Favorites
+        <button onClick={() => navigate("/lists")} className={MOBILE_NAV_ITEM_CLASS}>
+          <HeartIcon size={18} /> Lists
         </button>
         <button onClick={() => navigate("/library")} className={MOBILE_NAV_ITEM_CLASS}>
           <LibraryIcon size={18} /> Library
@@ -112,8 +112,8 @@ function CollectionMenu() {
 
       {open && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-40 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-inset ring-black/10 dark:ring-white/10 shadow-lg p-1 z-50">
-          <Link href="/favorites" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
-            <HeartIcon size={14} /> Favorites
+          <Link href="/lists" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
+            <HeartIcon size={14} /> Lists
           </Link>
           <Link href="/library" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
             <LibraryIcon size={14} /> Library

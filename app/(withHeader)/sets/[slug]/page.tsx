@@ -6,6 +6,7 @@ import { useGetAllCardsQuery } from "@/generated/graphql";
 import { Button } from "@/components/Button";
 import { PageContainer } from "@/components/PageContainer";
 import { OCGCard } from "@/components/OCGCard";
+import { PageLoading } from "@/components/PageLoading";
 import { ArrowLeftIcon } from "lucide-react";
 
 export default function SetPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -34,9 +35,7 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
       </p>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-900 dark:border-zinc-700 dark:border-t-zinc-100" />
-        </div>
+        <PageLoading />
       ) : (
         <div className="flex flex-wrap gap-4">
           {cards.map((card) => (

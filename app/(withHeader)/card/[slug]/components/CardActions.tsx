@@ -143,7 +143,6 @@ function LibraryButton({ cardId }: { cardId: number }) {
     debounceRef.current = null;
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(
     () => () => {
       flush();
@@ -216,7 +215,10 @@ export function CardActions({ cardId, className }: { cardId: number; className?:
 
   return (
     <div
-      className={classes("flex items-center h-9 px-1 gap-0.5 rounded-xl backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 text-black dark:text-white", className)}
+      className={classes(
+        "flex items-center h-9 px-1 gap-0.5 rounded-xl backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 text-black dark:text-white",
+        className
+      )}
     >
       <FavoriteButton cardId={cardId} />
       <div className="w-px h-5 bg-black/10 dark:bg-white/10" />

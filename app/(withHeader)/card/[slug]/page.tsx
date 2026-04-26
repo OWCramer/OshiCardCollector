@@ -16,6 +16,7 @@ import { CardMeta } from "./components/CardMeta";
 import { CardActions } from "./components/CardActions";
 import { Button } from "@/components/Button";
 import { CardContainer } from "@/components/CardContainer";
+import { PageLoading } from "@/components/PageLoading";
 import { PageContainer } from "@/components/PageContainer";
 import { ArrowLeftIcon } from "lucide-react";
 import { LinkedCardText } from "@/components/LinkedCardText";
@@ -35,12 +36,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
     router.back();
   }, [router]);
 
-  if (loading)
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-900 dark:border-zinc-700 dark:border-t-zinc-100" />
-      </div>
-    );
+  if (loading) return <PageLoading />;
 
   if (error || !data?.card) notFound();
 

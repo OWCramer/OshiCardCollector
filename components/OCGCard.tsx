@@ -118,7 +118,11 @@ export function OCGCard({
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{ transformStyle: "preserve-3d", willChange: "transform", width, height }}
-        className={classes("overflow-hidden relative", (onClick || href) && "cursor-pointer")}
+        className={classes(
+          "overflow-hidden relative",
+          (onClick || href) && "cursor-pointer",
+          (onClick || href) && !parallax && "transition-transform duration-200 hover:scale-[1.02]"
+        )}
       >
         <Image src={imageUrl} alt={name} width={width} height={height} className="block" />
         {isShiny && (
