@@ -155,6 +155,8 @@ export function OCGCard({
           shadow
           shadow-blur={30}
           glare-intensity={glareIntensity}
+          glare-mask={isHolo ? "url(/card_masks/wave.png)" : undefined}
+          glare-mask-mode={isHolo ? "luminance" : undefined}
         >
           <Image
             src={imageUrl}
