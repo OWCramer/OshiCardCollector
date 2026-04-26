@@ -38,7 +38,8 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
 
   function addLevel() {
     const used = new Set(breakdowns);
-    const next = BREAKDOWN_SUB_TABS.find((t) => !used.has(t.value))?.value ?? BREAKDOWN_SUB_TABS[0].value;
+    const next =
+      BREAKDOWN_SUB_TABS.find((t) => !used.has(t.value))?.value ?? BREAKDOWN_SUB_TABS[0].value;
     onChange([...breakdowns, next as Breakdown]);
   }
 
@@ -58,7 +59,12 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
               <Tabs value={firstValue} onValueChange={handleFirstChange} tabs={BREAKDOWN_TABS} />
             </div>
           ) : (
-            <Dropdown value={firstValue} onValueChange={handleFirstChange} items={BREAKDOWN_TABS} className="flex-1" />
+            <Dropdown
+              value={firstValue}
+              onValueChange={handleFirstChange}
+              items={BREAKDOWN_TABS}
+              className="flex-1"
+            />
           )}
           {breakdowns.length === 1 && canAddLevel && (
             <button
@@ -80,7 +86,10 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
             >
               <ChevronDownIcon
                 size={14}
-                className={classes("transition-transform duration-200", subRowsVisible && "rotate-180")}
+                className={classes(
+                  "transition-transform duration-200",
+                  subRowsVisible && "rotate-180"
+                )}
               />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-zinc-900 dark:bg-white" />
             </button>
@@ -90,38 +99,47 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
       </div>
 
       {/* Sub-level rows */}
-      {subRowsVisible && breakdowns.slice(1).map((bd, i) => {
-        const level = i + 1;
-        const isLast = level === breakdowns.length - 1;
-        return (
-          <div key={level} className="flex items-center gap-1 min-w-0 w-full">
-            {isMedium ? (
-              <div className="overflow-x-auto overflow-y-hidden">
-                <Tabs value={bd} onValueChange={(v) => handleSubChange(level, v)} tabs={BREAKDOWN_SUB_TABS} />
-              </div>
-            ) : (
-              <Dropdown value={bd} onValueChange={(v) => handleSubChange(level, v)} items={BREAKDOWN_SUB_TABS} className="flex-1" />
-            )}
-            <button
-              onClick={() => removeLevel(level)}
-              title="Remove this grouping level"
-              className="shrink-0 h-9 w-9 flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity"
-            >
-              <XIcon size={14} />
-            </button>
-            {isLast && canAddLevel && (
+      {subRowsVisible &&
+        breakdowns.slice(1).map((bd, i) => {
+          const level = i + 1;
+          const isLast = level === breakdowns.length - 1;
+          return (
+            <div key={level} className="flex items-center gap-1 min-w-0 w-full">
+              {isMedium ? (
+                <div className="overflow-x-auto overflow-y-hidden">
+                  <Tabs
+                    value={bd}
+                    onValueChange={(v) => handleSubChange(level, v)}
+                    tabs={BREAKDOWN_SUB_TABS}
+                  />
+                </div>
+              ) : (
+                <Dropdown
+                  value={bd}
+                  onValueChange={(v) => handleSubChange(level, v)}
+                  items={BREAKDOWN_SUB_TABS}
+                  className="flex-1"
+                />
+              )}
               <button
-                onClick={addLevel}
-                title="Add grouping level"
+                onClick={() => removeLevel(level)}
+                title="Remove this grouping level"
                 className="shrink-0 h-9 w-9 flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity"
               >
-                <PlusIcon size={14} />
+                <XIcon size={14} />
               </button>
-            )}
-          </div>
-        );
-      })}
+              {isLast && canAddLevel && (
+                <button
+                  onClick={addLevel}
+                  title="Add grouping level"
+                  className="shrink-0 h-9 w-9 flex items-center justify-center opacity-30 hover:opacity-100 transition-opacity"
+                >
+                  <PlusIcon size={14} />
+                </button>
+              )}
+            </div>
+          );
+        })}
     </div>
   );
 }
-

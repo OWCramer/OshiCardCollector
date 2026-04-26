@@ -1,8 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type {
+  Breakdown,
+  LibraryDefaults,
+  LibraryState,
+  SortField,
+  SortOrder,
+  SpecialFilter,
+} from "./types";
 import { FACTORY_DEFAULTS } from "./types";
-import type { Breakdown, LibraryDefaults, LibraryState, SortField, SortOrder, SpecialFilter } from "./types";
 
 const LS_KEY = "library_filters_v1";
 
@@ -39,20 +46,22 @@ export function useLibraryFilters(defaults: LibraryDefaults | null) {
   const resetPage = useCallback(() => {
     const base: LibraryState = { ...(defaults ?? FACTORY_DEFAULTS), search: "" };
     setState(base);
-    try { localStorage.removeItem(LS_KEY); } catch {}
+    try {
+      localStorage.removeItem(LS_KEY);
+    } catch {}
   }, [defaults]);
 
   return {
     ...state,
-    setSortField:     (v: SortField)     => set("sortField", v),
-    setSortOrder:     (v: SortOrder)     => set("sortOrder", v),
-    setBreakdowns:    (v: Breakdown[])   => set("breakdowns", v),
-    setSearch:        (v: string)        => set("search", v),
-    setColorFilter:   (v: string[])      => set("colorFilter", v),
-    setTypeFilter:    (v: string[])      => set("typeFilter", v),
-    setBloomFilter:   (v: string[])      => set("bloomFilter", v),
-    setRarityFilter:  (v: string[])      => set("rarityFilter", v),
-    setTagsFilter:    (v: string[])      => set("tagsFilter", v),
+    setSortField: (v: SortField) => set("sortField", v),
+    setSortOrder: (v: SortOrder) => set("sortOrder", v),
+    setBreakdowns: (v: Breakdown[]) => set("breakdowns", v),
+    setSearch: (v: string) => set("search", v),
+    setColorFilter: (v: string[]) => set("colorFilter", v),
+    setTypeFilter: (v: string[]) => set("typeFilter", v),
+    setBloomFilter: (v: string[]) => set("bloomFilter", v),
+    setRarityFilter: (v: string[]) => set("rarityFilter", v),
+    setTagsFilter: (v: string[]) => set("tagsFilter", v),
     setSpecialFilter: (v: SpecialFilter) => set("specialFilter", v),
     resetPage,
   };

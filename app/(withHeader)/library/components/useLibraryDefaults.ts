@@ -10,7 +10,10 @@ export function useLibraryDefaults(uid: string | null) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!uid) { setLoading(false); return; }
+    if (!uid) {
+      setLoading(false);
+      return;
+    }
     const ref = doc(db, "users", uid, "preferences", "library");
     getDoc(ref).then((snap) => {
       if (snap.exists()) setDefaults(snap.data() as LibraryDefaults);
@@ -18,12 +21,15 @@ export function useLibraryDefaults(uid: string | null) {
     });
   }, [uid]);
 
-  const saveDefaults = useCallback(async (state: LibraryDefaults) => {
-    if (!uid) return;
-    const ref = doc(db, "users", uid, "preferences", "library");
-    await setDoc(ref, state);
-    setDefaults(state);
-  }, [uid]);
+  const saveDefaults = useCallback(
+    async (state: LibraryDefaults) => {
+      if (!uid) return;
+      const ref = doc(db, "users", uid, "preferences", "library");
+      await setDoc(ref, state);
+      setDefaults(state);
+    },
+    [uid]
+  );
 
   return { defaults, loading, saveDefaults };
 }
