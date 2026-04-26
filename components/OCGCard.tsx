@@ -36,7 +36,8 @@ interface OCGCardProps {
   /** Overrides the auto-derived /card/:id href. */
   href?: string;
   size?: OCGCardSize;
-  shiny?: boolean;
+  shine?: boolean;
+  disableTilt?: boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -48,7 +49,8 @@ export function OCGCard({
   rarity: rarityProp,
   href: hrefProp,
   size = "lg",
-  shiny = true,
+  shine = true,
+  disableTilt = false,
   onClick,
   className,
 }: OCGCardProps) {
@@ -56,12 +58,22 @@ export function OCGCard({
   const name = nameProp ?? card?.name ?? "";
   const rarity = rarityProp ?? card?.rarity ?? undefined;
   const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
-  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shiny;
+  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shine;
 
   // Nothing to render without an image.
   if (!imageUrl) return null;
 
   const { width, height } = OCG_CARD_SIZES[size];
+
+  const image = (
+    <Image
+      src={imageUrl}
+      alt={name}
+      width={width}
+      height={height}
+      className="block rounded-[4.55%/3.5%]"
+    />
+  );
 
   const cardEl = (
     // Setting width and height on the surrounding div is needed for virtualization to function properly.
@@ -74,25 +86,23 @@ export function OCGCard({
       onClick={onClick}
       className={href ? undefined : className}
     >
-      <hover-tilt
-        className={classes(
-          "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
-          isHolo ? `${styles.holo}` : undefined
-        )}
-        exitDelay={0}
-        scaleFactor={1.03}
-        shadow
-        shadow-blur={30}
-        glare-intensity={0.5}
-      >
-        <Image
-          src={imageUrl}
-          alt={name}
-          width={width}
-          height={height}
-          className="block rounded-[4.55%/3.5%]"
-        />
-      </hover-tilt>
+      {disableTilt ? (
+        image
+      ) : (
+        <hover-tilt
+          className={classes(
+            "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
+            isHolo ? `${styles.holo}` : undefined
+          )}
+          exitDelay={0}
+          scaleFactor={1.03}
+          shadow
+          shadow-blur={30}
+          glare-intensity={0.5}
+        >
+          {image}
+        </hover-tilt>
+      )}
     </div>
   );
 
