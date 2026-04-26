@@ -20,7 +20,7 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
   const firstValue = breakdowns[0] ?? "none";
   const hasBreakdown = breakdowns.length > 0;
   const hasSubRows = breakdowns.length > 1;
-  const [subRowsVisible, setSubRowsVisible] = useState(true);
+  const [subRowsVisible, setSubRowsVisible] = useState(false);
 
   function handleFirstChange(v: string) {
     if (v === "none") {
@@ -37,6 +37,7 @@ export function BreakdownSelector({ breakdowns, onChange, trailing }: BreakdownS
   }
 
   function addLevel() {
+    setSubRowsVisible(true);
     const used = new Set(breakdowns);
     const next =
       BREAKDOWN_SUB_TABS.find((t) => !used.has(t.value))?.value ?? BREAKDOWN_SUB_TABS[0].value;
