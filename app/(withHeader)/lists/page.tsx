@@ -63,7 +63,9 @@ function ListsContent() {
             {lists.length} {pluralize("list", lists.length)}
           </p>
         </div>
-        <Button highContrast variant="transparent" onClick={() => setManageOpen(true)}>Manage lists</Button>
+        <Button highContrast variant="transparent" onClick={() => setManageOpen(true)}>
+          Manage lists
+        </Button>
       </div>
       <ManageListsModal isOpen={manageOpen} onClose={() => setManageOpen(false)} />
       {lists.map((list) => (
@@ -77,16 +79,7 @@ function ListsContent() {
             {Object.values(cardsByList[list.id] ?? {}).map((card) => {
               const gqlCard = cardMap[card.cardId];
               if (!gqlCard) return null;
-              return (
-                <OCGCard
-                  key={card.cardId}
-                  card={gqlCard}
-                  size="sm"
-                  parallax
-                  parallaxStrength="med"
-                  shine
-                />
-              );
+              return <OCGCard key={card.cardId} card={gqlCard} size="sm" />;
             })}
           </div>
         </Accordion>
