@@ -155,8 +155,11 @@ export function OCGCard({
           tiltFactor={tiltFactor}
           scaleFactor={scaleFactor}
           shadow
-          shadow-blur={30}
-          glare-intensity={glareIntensity}
+          shadowBlur={30}
+          glareIntensity={isHolo ? 0 : glareIntensity}
+          glareMask={isHolo ? "url(/card_masks/metal-no-black.png)" : undefined}
+          glareMaskMode="alpha"
+          glareMaskComposite="intersect"
         >
           <Image
             src={imageUrl}

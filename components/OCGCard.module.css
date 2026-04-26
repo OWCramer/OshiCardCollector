@@ -1,26 +1,46 @@
 /*
   HOLO CARD EFFECT
-  Holographic color/foil without overall brightness lift:
-  - increased strength by ~25%
-  - slower foil/background movement
-  - no global brightening
-  - no darkening vignette
-  - reduced cursor hotspot
+  Shiny Rare style adapted for hover-tilt glare-mask.
+
+  Important:
+  - alpha mask is supplied through hover-tilt's glare-mask prop
+  - glare-mask-mode="alpha"
+  - glare-mask-composite="intersect"
+  - CSS uses only var(--hover-tilt-glare-mask), because hover-tilt already composes it
+  - negative/transparent mask areas should remain untouched
 */
 
 .holo::part(tilt) {
     --space: 5%;
     --angle: 133deg;
+    --imgsize: cover;
 
-    --sunpillar-clr-1: hsl(2 100% 73% / 0.36);
-    --sunpillar-clr-2: hsl(53 100% 69% / 0.36);
-    --sunpillar-clr-3: hsl(93 100% 69% / 0.36);
-    --sunpillar-clr-4: hsl(176 100% 76% / 0.36);
-    --sunpillar-clr-5: hsl(228 100% 74% / 0.36);
-    --sunpillar-clr-6: hsl(283 100% 73% / 0.36);
+    /*
+      Clamp hover-tilt's full 0%-100% range into a smaller 30%-70% style range.
+      This prevents background layers from traveling far enough to show stitch seams.
+    */
+    --raw-background-x: var(--gradient-x, 50%);
+    --raw-background-y: var(--gradient-y, 50%);
+
+    --background-x: calc(50% + ((var(--raw-background-x) - 50%) * 0.45));
+    --background-y: calc(50% + ((var(--raw-background-y) - 50%) * 0.45));
+
+    --pointer-x: var(--background-x);
+    --pointer-y: var(--background-y);
+    --pointer-from-center: var(--hover-tilt-opacity, 0);
+    --card-opacity: var(--hover-tilt-opacity, 0);
+
+    --sunpillar-clr-1: hsl(2 100% 73% / 0.75);
+    --sunpillar-clr-2: hsl(53 100% 69% / 0.75);
+    --sunpillar-clr-3: hsl(93 100% 69% / 0.75);
+    --sunpillar-clr-4: hsl(176 100% 76% / 0.75);
+    --sunpillar-clr-5: hsl(228 100% 74% / 0.75);
+    --sunpillar-clr-6: hsl(283 100% 73% / 0.75);
 }
 
-/* Main shine layer */
+/*
+  SHINE LAYER
+*/
 /*noinspection CssUnresolvedCustomProperty*/
 .holo::part(tilt)::before {
     content: "";
@@ -30,17 +50,21 @@
     border-radius: 4.55% / 3.5%;
     clip-path: inset(0 round 4.55% 3.5%);
 
-    --background-x: var(--gradient-x, 50%);
-    --background-y: var(--gradient-y, 50%);
+    /*
+      Use only hover-tilt's generated/intersected glare mask.
+      Do not add var(--hover-tilt-default-gradient) here.
+    */
+    -webkit-mask-image: var(--hover-tilt-glare-mask);
+    mask-image: var(--hover-tilt-glare-mask);
 
-    --diagonal-x: calc((var(--background-x) * 0.34) + (var(--background-y) * 0.08));
-    --diagonal-y: calc((var(--background-y) * 0.42) + 14%);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 
-    --reflection-x: calc(var(--background-x) * 0.62);
-    --reflection-y: calc(var(--background-y) * 0.62);
+    -webkit-mask-position: center center;
+    mask-position: center center;
 
-    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
-    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 
     background-image:
             repeating-linear-gradient(
@@ -55,45 +79,44 @@
             ),
             repeating-linear-gradient(
                     var(--angle),
-                    hsl(225 42% 14% / 0.2) 0%,
-                    hsl(220 26% 25% / 0.18) 2.8%,
-                    hsl(195 28% 48% / 0.19) 4.8%,
-                    hsl(185 34% 68% / 0.23) 6.4%,
-                    hsl(195 28% 48% / 0.19) 8.2%,
-                    hsl(220 26% 25% / 0.18) 11.2%,
-                    hsl(225 42% 14% / 0.2) 16.5%,
-                    hsl(225 42% 14% / 0.2) 22%
+                    #0e152e 0%,
+                    hsl(180 10% 60%) 3.8%,
+                    hsl(180 29% 66%) 4.5%,
+                    hsl(180 10% 60%) 5.2%,
+                    #0e152e 10%,
+                    #0e152e 12%
             ),
-            linear-gradient(
-                    var(--angle),
-                    transparent 0%,
-                    hsl(200 40% 76% / 0.06) 42%,
-                    hsl(285 45% 75% / 0.05) 50%,
-                    transparent 68%,
-                    transparent 100%
+            radial-gradient(
+                    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+                    hsl(0 0% 0% / 0.08) 12%,
+                    hsl(0 0% 0% / 0.12) 20%,
+                    hsl(0 0% 0% / 0.22) 120%
             );
 
     background-position:
             0% var(--background-y),
-            var(--diagonal-x) var(--diagonal-y),
-            var(--reflection-x) var(--reflection-y);
+            calc(var(--background-x) + (var(--background-y) * 0.2)) var(--background-y),
+            var(--background-x) var(--background-y);
 
     background-size:
             200% 700%,
-            640% 220%,
-            240% 240%;
+            300% 100%,
+            200% 100%;
 
-    background-blend-mode: color, soft-light, soft-light;
-    mix-blend-mode: soft-light;
+    background-blend-mode: soft-light, hue, hard-light;
+    mix-blend-mode: color-dodge;
 
-    filter: brightness(1) contrast(1.1) saturate(1.22);
+    filter: brightness(calc((var(--pointer-from-center) * 0.25) + 0.34)) contrast(1.45)
+    saturate(1.45);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.73);
+    opacity: calc(var(--card-opacity) * 0.72);
 
     will-change: opacity, background-position, filter;
 }
 
-/* Glare layer */
+/*
+  GLARE / SECONDARY LAYER
+*/
 /*noinspection CssUnresolvedCustomProperty*/
 .holo::part(tilt)::after {
     content: "";
@@ -103,41 +126,67 @@
     border-radius: 4.55% / 3.5%;
     clip-path: inset(0 round 4.55% 3.5%);
 
-    --pointer-x: var(--gradient-x, 50%);
-    --pointer-y: var(--gradient-y, 50%);
-    --glare-x: calc(var(--pointer-x) * 0.72);
-    --glare-y: calc(var(--pointer-y) * 0.72);
+    /*
+      Use only hover-tilt's generated/intersected glare mask.
+      Do not add var(--hover-tilt-default-gradient) here.
+    */
+    -webkit-mask-image: var(--hover-tilt-glare-mask);
+    mask-image: var(--hover-tilt-glare-mask);
 
-    -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
-    mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+
+    -webkit-mask-position: center center;
+    mask-position: center center;
+
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 
     background-image:
-            linear-gradient(
-                    133deg,
-                    transparent 0%,
-                    hsl(205 28% 72% / 0.05) 44%,
-                    transparent 62%,
-                    transparent 100%
+            repeating-linear-gradient(
+                    0deg,
+                    var(--sunpillar-clr-1) calc(var(--space) * 1),
+                    var(--sunpillar-clr-2) calc(var(--space) * 2),
+                    var(--sunpillar-clr-3) calc(var(--space) * 3),
+                    var(--sunpillar-clr-4) calc(var(--space) * 4),
+                    var(--sunpillar-clr-5) calc(var(--space) * 5),
+                    var(--sunpillar-clr-6) calc(var(--space) * 6),
+                    var(--sunpillar-clr-1) calc(var(--space) * 7)
+            ),
+            repeating-linear-gradient(
+                    var(--angle),
+                    #0e152e 0%,
+                    hsl(180 10% 60%) 3.8%,
+                    hsl(180 29% 66%) 4.5%,
+                    hsl(180 10% 60%) 5.2%,
+                    #0e152e 10%,
+                    #0e152e 12%
             ),
             radial-gradient(
                     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-                    hsl(0 0% 100% / 0.05) 4%,
-                    hsl(205 8% 50% / 0.04) 52%,
-                    transparent 150%
+                    hsl(0 0% 100% / 0.55) 0%,
+                    hsl(0 0% 100% / 0.12) 22%,
+                    hsl(320 5% 15% / 0.55) 150%
             );
 
-    background-size:
-            250% 250%,
-            125% 155%;
-
     background-position:
-            var(--glare-x) var(--glare-y),
-            center center;
+            0% var(--background-y),
+            calc((var(--background-x) + (var(--background-y) * 0.2)) * -1)
+            calc(var(--background-y) * -1),
+            var(--background-x) var(--background-y);
 
-    mix-blend-mode: soft-light;
-    filter: brightness(1) contrast(1.03) saturate(1);
+    background-size:
+            200% 400%,
+            195% 100%,
+            cover;
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.2);
+    background-blend-mode: soft-light, hue, hard-light;
+    mix-blend-mode: difference;
 
-    will-change: opacity, background-position, background-image;
+    filter: brightness(calc((var(--pointer-from-center) * 0.25) + 0.42)) contrast(1.25)
+    saturate(1.12);
+
+    opacity: calc(var(--card-opacity) * 0.3);
+
+    will-change: opacity, background-position, filter;
 }
