@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
 import { classes } from "@/lib/classes";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 
 export const OCG_CARD_SIZES = {
   sm: { width: 160, height: 224 },
@@ -25,7 +26,7 @@ export interface OCGCardData {
 const SHINY_RARITIES = new Set(["RR", "R", "SR", "SEC", "OSR", "OUR", "UR", "HR", "SY", "S", "P"]);
 
 interface OCGCardProps {
-  /** Pass a GQL card object to auto-populate imageUrl, name, rarity, and href. */
+  /** Pass a GQL card object to autopopulate imageUrl, name, rarity, and href. */
   card?: OCGCardData;
   /** Overrides card.imageUrl. */
   imageUrl?: string;
@@ -36,8 +37,8 @@ interface OCGCardProps {
   /** Overrides the auto-derived /card/:id href. */
   href?: string;
   size?: OCGCardSize;
-  shine?: boolean;
-  disableTilt?: boolean;
+  shiny?: boolean;
+  pressToTilt?: boolean;
   onClick?: () => void;
   className?: string;
 }
@@ -49,8 +50,7 @@ export function OCGCard({
   rarity: rarityProp,
   href: hrefProp,
   size = "lg",
-  shine = true,
-  disableTilt = false,
+  shiny = true,
   onClick,
   className,
 }: OCGCardProps) {
@@ -58,12 +58,49 @@ export function OCGCard({
   const name = nameProp ?? card?.name ?? "";
   const rarity = rarityProp ?? card?.rarity ?? undefined;
   const href = hrefProp ?? (card ? `/card/${card.id}` : undefined);
-  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shine;
+  const isHolo = SHINY_RARITIES.has(rarity ?? "") && shiny;
+  const isMobile = !useBreakpoint("sm");
+
+  const [pressTiltActive, setPressTiltActive] = useState(false);
+  const pressTimerRef = useRef<number | null>(null);
+  const pressStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Nothing to render without an image.
   if (!imageUrl) return null;
 
   const { width, height } = OCG_CARD_SIZES[size];
+
+  const clearPressTilt = () => {
+    if (pressTimerRef.current !== null) {
+      window.clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+
+    pressStartRef.current = null;
+    setPressTiltActive(false);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile || event.pointerType !== "touch") return;
+
+    pressStartRef.current = { x: event.clientX, y: event.clientY };
+
+    pressTimerRef.current = window.setTimeout(() => {
+      setPressTiltActive(true);
+    }, 275);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile || !pressStartRef.current || pressTiltActive) return;
+
+    const dx = Math.abs(event.clientX - pressStartRef.current.x);
+    const dy = Math.abs(event.clientY - pressStartRef.current.y);
+
+    // If the user starts scrolling, cancel tilt activation.
+    if (dx > 8 || dy > 8) {
+      clearPressTilt();
+    }
+  };
 
   const image = (
     <Image
@@ -75,6 +112,8 @@ export function OCGCard({
     />
   );
 
+  const shouldRenderTilt = !isMobile || pressTiltActive;
+
   const cardEl = (
     // Setting width and height on the surrounding div is needed for virtualization to function properly.
     <div
@@ -84,11 +123,14 @@ export function OCGCard({
       }}
       key={card?.id}
       onClick={onClick}
-      className={href ? undefined : className}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={clearPressTilt}
+      onPointerCancel={clearPressTilt}
+      onPointerLeave={clearPressTilt}
+      className={classes("touch-pan-y", href ? undefined : className)}
     >
-      {disableTilt ? (
-        image
-      ) : (
+      {shouldRenderTilt ? (
         <hover-tilt
           className={classes(
             "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
@@ -102,6 +144,8 @@ export function OCGCard({
         >
           {image}
         </hover-tilt>
+      ) : (
+        image
       )}
     </div>
   );
