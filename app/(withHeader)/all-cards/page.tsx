@@ -355,7 +355,7 @@ function AllCardsContent() {
                 )}
               >
                 {row.map((card) => (
-                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} />
+                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} goToCard />
                 ))}
               </div>
             </div>
