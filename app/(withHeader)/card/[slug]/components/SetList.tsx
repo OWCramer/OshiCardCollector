@@ -12,7 +12,7 @@ export function SetList({ setNames }: SetListProps) {
 
   return (
     <Accordion
-      items={[
+      groups={[
         {
           title: (
             <span className="font-semibold opacity-80">

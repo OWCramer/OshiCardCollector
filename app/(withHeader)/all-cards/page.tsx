@@ -9,16 +9,17 @@ import {
   CardType,
 } from "@/generated/graphql";
 import { Dropdown } from "@/components/Dropdown";
-import { CARD_SIZES, ItemCard } from "@/components/Card";
+import { OCGCard, OCG_CARD_SIZES } from "@/components/OCGCard";
 import { Input } from "@/components/Input";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useMemo, useEffect, useState, Suspense } from "react";
+import { useRef, useMemo, useEffect, useLayoutEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
 import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
+import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 // Card dimensions (must match rendered size)
@@ -72,8 +73,8 @@ function AllCardsContent() {
   const isSmall = !useBreakpoint("sm");
 
   const { width: CARD_WIDTH, height: CARD_HEIGHT } = useMemo(() => {
-    if (isSmall) return CARD_SIZES["sm"];
-    return CARD_SIZES["lg"];
+    if (isSmall) return OCG_CARD_SIZES["sm"];
+    return OCG_CARD_SIZES["lg"];
   }, [isSmall]);
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -146,7 +147,7 @@ function AllCardsContent() {
   const [containerWidth, setContainerWidth] = useState(0);
   const [scrollMargin, setScrollMargin] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = mainRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
@@ -348,10 +349,10 @@ function AllCardsContent() {
               }}
             >
               <div
-                className={`flex flex-row gap-4 ${isMedium ? "justify-start" : "justify-center"} items-center pb-4`}
+                className={classes("flex gap-4 items-center pb-4", isMedium ? "justify-start" : "justify-center")}
               >
                 {row.map((card) => (
-                  <ItemCard size={isSmall ? "sm" : "lg"} key={card.id} card={card} />
+                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} parallax shine />
                 ))}
               </div>
             </div>
@@ -373,7 +374,7 @@ function AllCardsContent() {
   ]);
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 justify-start relative">
+    <div className="flex flex-col-reverse md:flex-row gap-4 w-full p-8 relative">
       <aside className="flex flex-row md:flex-col gap-4 md:w-full md:max-w-48 xl:max-w-64 fixed bottom-6 left-4 right-4 md:sticky md:top-23.25 md:self-start h-fit md:max-h-[calc(100dvh-6.5rem)] md:overflow-y-auto md:overscroll-contain bg-white/50 dark:bg-black/50 backdrop-blur ring-1 ring-inset ring-black/10 dark:ring-white/15 rounded-lg p-4 z-10">
         <Input
           className="w-full"
@@ -393,9 +394,9 @@ function AllCardsContent() {
         )}
       </aside>
 
-      <main ref={mainRef} className="flex-1">
+      <div ref={mainRef} className="flex-1">
         {mainContent}
-      </main>
+      </div>
 
       <Modal title="Filters" isOpen={showMobileFilters} onClose={() => setShowMobileFilters(false)}>
         {filterPanel}

@@ -1,3 +1,4 @@
+import { Card } from "@/components/Card";
 import { LinkedCardText } from "@/components/LinkedCardText";
 
 interface OshiSkill {
@@ -35,10 +36,7 @@ export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
     <div className="flex flex-col gap-2">
       <h2 className="text-sm font-semibold opacity-80">Oshi Skills</h2>
       {oshiSkills.map((skill, i) => (
-        <div
-          key={i}
-          className="flex flex-col gap-1 rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm"
-        >
+        <Card key={i} className="flex flex-col gap-1 text-sm">
           <div className="font-medium flex flex-row gap-1 items-center">
             <div>{skill.skillType == "OSHI" ? <OshiBadge /> : <SPOshiBadge />}</div>
             <p className="flex flex-row gap-2 justify-between flex-1">
@@ -51,7 +49,7 @@ export function OshiSkillsList({ oshiSkills }: OshiSkillsListProps) {
               [{skill.usageLimit}] <LinkedCardText text={skill.effectText} />
             </p>
           )}
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -16,7 +16,7 @@ export function QnaList({ qna }: QnaListProps) {
 
   return (
     <Accordion
-      items={[
+      groups={[
         {
           title: <span className="font-semibold opacity-80">Q&amp;A</span>,
           content: (

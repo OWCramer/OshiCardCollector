@@ -9,6 +9,7 @@ import { signOutUser } from "@/lib/firebase";
 import Image from "next/image";
 import { Menu, type MenuSection } from "@/components/Menu";
 import { Button } from "@/components/Button";
+import { classes } from "@/lib/classes";
 import {
   ChevronDownIcon,
   HeartIcon,
@@ -20,6 +21,7 @@ import {
   PlaySquareIcon,
   SunIcon,
   SunMoonIcon,
+  UserIcon,
   XIcon,
 } from "lucide-react";
 
@@ -71,8 +73,8 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         <div className="mt-2 px-4 pb-1 text-xs font-semibold uppercase tracking-wider opacity-40">
           Collection
         </div>
-        <button onClick={() => navigate("/favorites")} className={MOBILE_NAV_ITEM_CLASS}>
-          <HeartIcon size={18} /> Favorites
+        <button onClick={() => navigate("/lists")} className={MOBILE_NAV_ITEM_CLASS}>
+          <HeartIcon size={18} /> Lists
         </button>
         <button onClick={() => navigate("/library")} className={MOBILE_NAV_ITEM_CLASS}>
           <LibraryIcon size={18} /> Library
@@ -105,13 +107,13 @@ function CollectionMenu() {
         className="flex shrink-0 items-center gap-2 h-9 px-4 rounded-xl text-black dark:text-white backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.97] transition-all duration-150 cursor-pointer select-none"
       >
         Collection
-        <ChevronDownIcon size={13} className={`opacity-60 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+        <ChevronDownIcon size={13} className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")} />
       </button>
 
       {open && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-40 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-inset ring-black/10 dark:ring-white/10 shadow-lg p-1 z-50">
-          <Link href="/favorites" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
-            <HeartIcon size={14} /> Favorites
+          <Link href="/lists" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
+            <HeartIcon size={14} /> Lists
           </Link>
           <Link href="/library" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
             <LibraryIcon size={14} /> Library
@@ -144,7 +146,10 @@ export function GlobalHeader() {
     },
     {
       label: "Account",
-      items: [{ label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut }],
+      items: [
+        { label: "Profile", icon: UserIcon, onClick: () => router.push("/user") },
+        { label: "Sign Out", icon: LogOutIcon, onClick: handleSignOut },
+      ],
     },
   ];
 

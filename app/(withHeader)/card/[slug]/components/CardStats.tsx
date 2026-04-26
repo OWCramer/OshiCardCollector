@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getArtCostImageSrc } from "@/components/Card";
+import { getArtCostImageSrc } from "@/components/CardIcons";
 import { Stat } from "./Stat";
 
 interface CardStatsProps {

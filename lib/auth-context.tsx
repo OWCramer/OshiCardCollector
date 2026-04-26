@@ -8,7 +8,15 @@ import {
   type ReactNode,
 } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  addDoc,
+  getDoc,
+  getDocs,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 
 interface AuthContextValue {
@@ -36,6 +44,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             photoURL: firebaseUser.photoURL,
             createdAt: serverTimestamp(),
           });
+          // Create a default "Favorites" list so they always have at least one
+          await addDoc(collection(db, "users", firebaseUser.uid, "favoriteLists"), {
+            name: "Favorites",
+            createdAt: serverTimestamp(),
+          });
+        } else {
+          // Ensure existing users always have at least one list
+          const listsSnap = await getDocs(
+            collection(db, "users", firebaseUser.uid, "favoriteLists")
+          );
+          if (listsSnap.empty) {
+            await addDoc(collection(db, "users", firebaseUser.uid, "favoriteLists"), {
+              name: "Favorites",
+              createdAt: serverTimestamp(),
+            });
+          }
         }
       }
 

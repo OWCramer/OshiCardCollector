@@ -2,6 +2,7 @@ import { Button } from "@/components/Button";
 import Image from "next/image";
 import { GoblinLink } from "./GoblinLink";
 import Link from "next/link";
+import { PageContainer } from "@/components/PageContainer";
 
 async function getFubuki() {
   try {
@@ -24,8 +25,8 @@ export default async function NotFound() {
   const card = await getFubuki();
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center">
-      <main className="flex flex-col items-center gap-6 px-6 text-center">
+    <PageContainer className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center gap-6 px-6 text-center">
         <p className="text-8xl font-bold tracking-tight text-zinc-200 dark:text-zinc-800 select-none">
           404
         </p>
@@ -54,10 +55,10 @@ export default async function NotFound() {
           </p>
         </div>
 
-        <Button href="/dashboard" variant="transparent" highContrast>
-          Back to dashboard
+        <Button href="/all-cards" variant="transparent" highContrast>
+          Back to cards
         </Button>
-      </main>
-    </div>
+      </div>
+    </PageContainer>
   );
 }

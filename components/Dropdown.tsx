@@ -106,12 +106,37 @@ function useCustomScrollbar(open: boolean) {
 export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   const { items, className, highContrast = true, label } = props;
   const [open, setOpen] = useState(false);
-  const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [menuStyle, setMenuStyle] = useState<{
+    top?: number; bottom?: number;
+    left?: number; right?: number;
+    width: number; maxHeight: number;
+  } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { scrollRef, trackRef, thumb, needsScroll, onScroll, onThumbMouseDown } =
     useCustomScrollbar(open);
+
+  function calcMenuStyle(rect: DOMRect) {
+    const GAP = 4;
+    const PADDING = 8;
+    const spaceBelow = window.innerHeight - rect.bottom - GAP;
+    const spaceAbove = rect.top - GAP;
+
+    const upward = spaceBelow < 256 && spaceAbove > spaceBelow;
+    const maxHeight = Math.min(256, (upward ? spaceAbove : spaceBelow) - PADDING);
+    const vertical = upward
+      ? { bottom: window.innerHeight - rect.top + GAP }
+      : { top: rect.bottom + GAP };
+
+    const menuWidth = Math.max(rect.width, 160);
+    const useRight = rect.left + menuWidth > window.innerWidth - PADDING;
+    const horizontal = useRight
+      ? { right: window.innerWidth - rect.right }
+      : { left: rect.left };
+
+    return { ...vertical, ...horizontal, width: rect.width, maxHeight };
+  }
 
   // Close on outside click or scroll
   useEffect(() => {
@@ -124,10 +149,9 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
         setOpen(false);
       }
     }
-    function handleScroll() {
-      if (!triggerRef.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      setMenuStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+    function handleScroll(e: Event) {
+      if (menuRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     window.addEventListener("scroll", handleScroll, true);
@@ -182,8 +206,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
         onClick={() => {
           const next = !open;
           if (next && triggerRef.current) {
-            const rect = triggerRef.current.getBoundingClientRect();
-            setMenuStyle({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+            setMenuStyle(calcMenuStyle(triggerRef.current.getBoundingClientRect()));
           }
           setOpen(next);
         }}
@@ -213,7 +236,15 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
       {open && menuStyle && createPortal(
         <div
           ref={menuRef}
-          style={{ position: "fixed", top: menuStyle.top, left: menuStyle.left, minWidth: menuStyle.width, zIndex: 9999 }}
+          style={{
+            position: "fixed",
+            top: menuStyle.top,
+            bottom: menuStyle.bottom,
+            left: menuStyle.left,
+            right: menuStyle.right,
+            minWidth: menuStyle.width,
+            zIndex: 9999,
+          }}
           className={classes(
             "w-max rounded-xl shadow-lg",
             "bg-white dark:bg-zinc-900",
@@ -224,8 +255,8 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
           <div
             ref={scrollRef}
             onScroll={onScroll}
-            className="max-h-64 overflow-y-auto overscroll-contain p-1"
-            style={{ scrollbarWidth: "none" }}
+            className="overflow-y-auto overscroll-contain p-1"
+            style={{ scrollbarWidth: "none", maxHeight: menuStyle.maxHeight }}
           >
             {items.map((item) => {
               const selected = isSelected(item.value);
