@@ -1,6 +1,6 @@
 import { Dropdown } from "@/components/Dropdown";
-import { SPECIAL_ITEMS } from "./types";
 import type { SpecialFilter } from "./types";
+import { SPECIAL_ITEMS } from "./types";
 
 interface FilterOption {
   value: string;
@@ -28,22 +28,83 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel({
-  colorOptions, typeOptions, bloomOptions, rarityOptions, tagOptions,
-  colorFilter, setColorFilter,
-  typeFilter, setTypeFilter,
-  bloomFilter, setBloomFilter,
-  rarityFilter, setRarityFilter,
-  tagsFilter, setTagsFilter,
-  specialFilter, setSpecialFilter,
+  colorOptions,
+  typeOptions,
+  bloomOptions,
+  rarityOptions,
+  tagOptions,
+  colorFilter,
+  setColorFilter,
+  typeFilter,
+  setTypeFilter,
+  bloomFilter,
+  setBloomFilter,
+  rarityFilter,
+  setRarityFilter,
+  tagsFilter,
+  setTagsFilter,
+  specialFilter,
+  setSpecialFilter,
 }: FilterPanelProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {colorOptions.length > 1  && <Dropdown multi label="Color"   value={colorFilter}  onValueChange={setColorFilter}  items={colorOptions}  className="w-28" />}
-      {typeOptions.length > 1   && <Dropdown multi label="Type"    value={typeFilter}   onValueChange={setTypeFilter}   items={typeOptions}   className="w-28" />}
-      {bloomOptions.length > 1  && <Dropdown multi label="Bloom"   value={bloomFilter}  onValueChange={setBloomFilter}  items={bloomOptions}  className="w-28" />}
-      {rarityOptions.length > 1 && <Dropdown multi label="Rarity"  value={rarityFilter} onValueChange={setRarityFilter} items={rarityOptions} className="w-28" />}
-      {tagOptions.length > 0 && <Dropdown multi label="Tags" value={tagsFilter} onValueChange={setTagsFilter} items={tagOptions} className="w-28" />}
-      <Dropdown label="Special" value={specialFilter} onValueChange={(v) => setSpecialFilter(v as SpecialFilter)} items={SPECIAL_ITEMS} className="w-32" />
+      {colorOptions.length > 1 && (
+        <Dropdown
+          multi
+          label="Color"
+          value={colorFilter}
+          onValueChange={setColorFilter}
+          items={colorOptions}
+          className="w-28"
+        />
+      )}
+      {typeOptions.length > 1 && (
+        <Dropdown
+          multi
+          label="Type"
+          value={typeFilter}
+          onValueChange={setTypeFilter}
+          items={typeOptions}
+          className="w-28"
+        />
+      )}
+      {bloomOptions.length > 1 && (
+        <Dropdown
+          multi
+          label="Bloom"
+          value={bloomFilter}
+          onValueChange={setBloomFilter}
+          items={bloomOptions}
+          className="w-28"
+        />
+      )}
+      {rarityOptions.length > 1 && (
+        <Dropdown
+          multi
+          label="Rarity"
+          value={rarityFilter}
+          onValueChange={setRarityFilter}
+          items={rarityOptions}
+          className="w-28"
+        />
+      )}
+      {tagOptions.length > 0 && (
+        <Dropdown
+          multi
+          label="Tags"
+          value={tagsFilter}
+          onValueChange={setTagsFilter}
+          items={tagOptions}
+          className="w-28"
+        />
+      )}
+      <Dropdown
+        label="Special"
+        value={specialFilter}
+        onValueChange={(v) => setSpecialFilter(v as SpecialFilter)}
+        items={SPECIAL_ITEMS}
+        className="w-32"
+      />
     </div>
   );
 }

@@ -9,7 +9,9 @@ export default function Home() {
         <p className="max-w-md text-lg opacity-65">
           Track and manage your card collection in one place.
         </p>
-        <Button href="/all-cards">Get Started</Button>
+        <Button highContrast href="/all-cards">
+          Get Started
+        </Button>
         <Link href="/privacy-policy" className="text-sm opacity-50 hover:opacity-75">
           Privacy Policy
         </Link>
