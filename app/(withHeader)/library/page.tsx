@@ -67,6 +67,7 @@ function LibraryContent() {
     rarityFilter, setRarityFilter,
     tagsFilter, setTagsFilter,
     specialFilter, setSpecialFilter,
+    resetPage,
   } = useLibraryFilters();
 
   const [showFilters, setShowFilters]               = useState(false);
@@ -205,6 +206,7 @@ function LibraryContent() {
   const filterPanelActive = showFilters || activeFilterCount > 0;
   const hasActiveState = activeFilterCount > 0 || search.trim().length > 0;
   const emptyFiltered = filtered.length === 0 && hasActiveState;
+  const isPageDirty = hasActiveState || breakdown !== "none" || sortField !== "name" || sortOrder !== "asc";
 
   const filterPanelProps = {
     colorOptions, typeOptions, bloomOptions, rarityOptions, tagOptions,
@@ -303,13 +305,18 @@ function LibraryContent() {
 
           {filterPanelActive && <FilterPanel {...filterPanelProps} />}
 
-          <Input
-            className="w-full"
-            placeholder="Search cards…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            {...SEARCH_INPUT_PROPS}
-          />
+          <div className="flex items-center gap-2">
+            <Input
+              className="flex-1"
+              placeholder="Search cards…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              {...SEARCH_INPUT_PROPS}
+            />
+            {isPageDirty && (
+              <Button variant="transparent" highContrast onClick={resetPage}>Reset</Button>
+            )}
+          </div>
         </>
       )}
 
@@ -324,6 +331,9 @@ function LibraryContent() {
             onChange={(e) => setSearch(e.target.value)}
             {...SEARCH_INPUT_PROPS}
           />
+          {isPageDirty && (
+            <Button variant="transparent" highContrast onClick={resetPage}>Reset</Button>
+          )}
           <Button
             variant="transparent"
             highContrast

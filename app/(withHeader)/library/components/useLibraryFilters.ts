@@ -66,6 +66,20 @@ export function useLibraryFilters() {
   const setTagsFilter    = useCallback((v: string[])       => { setTagsFilterState(v);      updateUrl("tags",       v.join(",") || null); }, [updateUrl]);
   const setSpecialFilter = useCallback((v: SpecialFilter) => { setSpecialFilterState(v); updateUrl("special", v !== "all" ? v : null); }, [updateUrl]);
 
+  const resetPage = useCallback(() => {
+    setSortFieldState("name");
+    setSortOrderState("asc");
+    setBreakdownState("none");
+    setSearchState("");
+    setColorFilterState([]);
+    setTypeFilterState([]);
+    setBloomFilterState([]);
+    setRarityFilterState([]);
+    setTagsFilterState([]);
+    setSpecialFilterState("all");
+    router.replace(pathname, { scroll: false });
+  }, [router, pathname]);
+
   return {
     sortField, setSortField,
     sortOrder, setSortOrder,
@@ -77,5 +91,6 @@ export function useLibraryFilters() {
     rarityFilter, setRarityFilter,
     tagsFilter, setTagsFilter,
     specialFilter, setSpecialFilter,
+    resetPage,
   };
 }
