@@ -1,24 +1,24 @@
 "use client";
 
 import {
+  CardType,
   useGetAllCardsQuery,
+  useGetColorsQuery,
   useGetRaritiesQuery,
   useGetSetsQuery,
-  useGetColorsQuery,
   useGetTagsQuery,
-  CardType,
 } from "@/generated/graphql";
 import { Dropdown } from "@/components/Dropdown";
-import { OCGCard, OCG_CARD_SIZES } from "@/components/OCGCard";
+import { OCG_CARD_SIZES, OCGCard } from "@/components/OCGCard";
 import { Input } from "@/components/Input";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useMemo, useEffect, useLayoutEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useCardFilters, type SortField } from "@/hooks/useCardFilters";
-import { FilterIcon, Loader2Icon, ArrowUpIcon, ArrowDownIcon, SearchIcon } from "lucide-react";
+import { type SortField, useCardFilters } from "@/hooks/useCardFilters";
+import { ArrowDownIcon, ArrowUpIcon, FilterIcon, Loader2Icon, SearchIcon } from "lucide-react";
 import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
@@ -349,10 +349,13 @@ function AllCardsContent() {
               }}
             >
               <div
-                className={classes("flex gap-4 items-center pb-4", isMedium ? "justify-start" : "justify-center")}
+                className={classes(
+                  "flex gap-4 items-center pb-4",
+                  isMedium ? "justify-start" : "justify-center"
+                )}
               >
                 {row.map((card) => (
-                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} parallax shine />
+                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} goToCard />
                 ))}
               </div>
             </div>

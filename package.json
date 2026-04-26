@@ -19,6 +19,7 @@
     "firebase": "^12.12.0",
     "fuse.js": "^7.3.0",
     "graphql": "^16.13.2",
+    "hover-tilt": "^1.0.0",
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
     "pluralize": "^8.0.0",

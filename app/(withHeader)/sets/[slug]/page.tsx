@@ -23,12 +23,16 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
   return (
     <PageContainer
       leading={
-        <Button variant="transparent" highContrast icon={ArrowLeftIcon} onClick={() => router.back()}>
+        <Button
+          variant="transparent"
+          highContrast
+          icon={ArrowLeftIcon}
+          onClick={() => router.back()}
+        >
           Sets
         </Button>
       }
     >
-
       <h1 className="text-xl font-semibold mb-1">{setName}</h1>
       <p className="text-sm text-zinc-500 mb-6">
         {loading ? "Loading…" : `${cards.length} card${cards.length !== 1 ? "s" : ""}`}
@@ -40,9 +44,13 @@ export default function SetPage({ params }: { params: Promise<{ slug: string }> 
         <div className="flex flex-wrap gap-4">
           {cards.map((card) => (
             <div key={card.id} className="shrink-0">
-              <OCGCard card={card} size="sm" />
-              {!card.imageUrl && <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />}
-              <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">{card.name}</p>
+              <OCGCard card={card} size="sm" goToCard />
+              {!card.imageUrl && (
+                <div className="w-40 h-56 bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+              )}
+              <p className="mt-1.5 text-xs text-zinc-600 dark:text-zinc-400 truncate w-40">
+                {card.name}
+              </p>
             </div>
           ))}
         </div>
