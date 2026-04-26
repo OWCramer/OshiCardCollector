@@ -12,14 +12,21 @@ interface AccordionItemProps {
   content: ReactNode;
   isOpen: boolean;
   onToggle: () => void;
+  variant?: "default" | "slim";
 }
 
-function AccordionItem({ title, content, isOpen, onToggle }: AccordionItemProps) {
+function AccordionItem({ title, content, isOpen, onToggle, variant = "default" }: AccordionItemProps) {
+  const isSlim = variant === "slim";
   return (
-    <div className="bg-black/5 dark:bg-white/5">
+    <div className={isSlim ? undefined : "bg-black/5 dark:bg-white/5"}>
       <button
         onClick={onToggle}
-        className="w-full flex items-center cursor-pointer justify-between gap-4 px-3 py-2.5 text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left"
+        className={classes(
+          "w-full flex items-center cursor-pointer justify-between gap-4 text-sm font-medium transition-colors text-left",
+          isSlim
+            ? "py-1 px-0 opacity-60 hover:opacity-100"
+            : "px-3 py-2.5 hover:bg-black/5 dark:hover:bg-white/5"
+        )}
         aria-expanded={isOpen}
       >
         <span>{title}</span>
@@ -31,7 +38,11 @@ function AccordionItem({ title, content, isOpen, onToggle }: AccordionItemProps)
         />
       </button>
       {isOpen && <Divider />}
-      {isOpen && <div className="px-3 pb-3 text-sm mt-2">{content}</div>}
+      {isOpen && (
+        <div className={isSlim ? "pb-2 text-sm mt-1" : "px-3 pb-3 text-sm mt-2"}>
+          {content}
+        </div>
+      )}
     </div>
   );
 }
@@ -42,6 +53,7 @@ interface SingleAccordionProps {
   title: ReactNode;
   children: ReactNode;
   className?: string;
+  variant?: "default" | "slim";
   /** Open on first render (uncontrolled). */
   defaultOpen?: boolean;
   /** Controlled open state. Provide alongside onOpenChange to take full control. */
@@ -89,6 +101,7 @@ function SingleAccordion({
   title,
   children,
   className,
+  variant = "default",
   defaultOpen = false,
   open,
   onOpenChange,
@@ -103,8 +116,8 @@ function SingleAccordion({
   }
 
   return (
-    <div className={classes("rounded-xl overflow-hidden", className)}>
-      <AccordionItem title={title} content={children} isOpen={isOpen} onToggle={toggle} />
+    <div className={variant === "slim" ? className : classes("rounded-xl overflow-hidden", className)}>
+      <AccordionItem title={title} content={children} isOpen={isOpen} onToggle={toggle} variant={variant} />
     </div>
   );
 }
