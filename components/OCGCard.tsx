@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { classes } from "@/lib/classes";
@@ -131,10 +131,7 @@ export function OCGCard({
   }
 
   const cardEl = (
-    <div
-      style={{ perspective: "600px", width, height }}
-      className={!href ? className : undefined}
-    >
+    <div style={{ perspective: "600px", width, height }} className={href ? undefined : className}>
       <div
         ref={cardRef}
         onClick={onClick}
