@@ -133,10 +133,10 @@
       Keep brightness low so hover-at-center does not blow out the image.
       Use contrast/opacity/color movement for intensity instead.
     */
-    filter: brightness(calc((var(--pointer-from-center) * 0.08) + 0.26)) contrast(1.42)
+    filter: brightness(calc((var(--pointer-from-center) * 0.08) + 0.26)) contrast(1.48)
     saturate(0.95);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.92);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.98);
 
     will-change: opacity, background-position, filter;
 }
@@ -191,7 +191,7 @@
     mix-blend-mode: hard-light;
     filter: brightness(0.92) contrast(1.12) saturate(0.72);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.42);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.45);
 
     will-change: opacity, background-position, background-image;
 }
