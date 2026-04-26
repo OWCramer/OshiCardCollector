@@ -72,7 +72,7 @@ export function OCGCard({
 
   const clearPressTilt = () => {
     if (pressTimerRef.current !== null) {
-      window.clearTimeout(pressTimerRef.current);
+      globalThis.window.clearTimeout(pressTimerRef.current);
       pressTimerRef.current = null;
     }
 
@@ -85,7 +85,7 @@ export function OCGCard({
 
     pressStartRef.current = { x: event.clientX, y: event.clientY };
 
-    pressTimerRef.current = window.setTimeout(() => {
+    pressTimerRef.current = globalThis.window.setTimeout(() => {
       setPressTiltActive(true);
     }, 275);
   };
