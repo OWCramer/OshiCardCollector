@@ -263,7 +263,7 @@ export type GetCardQueryVariables = Exact<{
 }>;
 
 
-export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> } | null };
+export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, supportType?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> } | null };
 
 export type GetCardPricingQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -278,7 +278,7 @@ export type GetAllCardsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, setNames: Array<string>, tags: Array<string>, extraText?: string | null, specialText?: string | null, releaseDate?: string | null }> } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, supportType?: string | null, setNames: Array<string>, tags: Array<string>, extraText?: string | null, specialText?: string | null, releaseDate?: string | null }> } };
 
 export type GetRaritiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -323,6 +323,7 @@ export const GetCardDocument = gql`
     specialText
     illustrator
     releaseDate
+    supportType
     setNames
     tags
     arts {
@@ -465,6 +466,7 @@ export const GetAllCardsDocument = gql`
       bloomLevel
       isBuzz
       isLimited
+      supportType
       setNames
       tags
       extraText
