@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLibrary } from "@/lib/library-context";
 import { useAuth } from "@/lib/auth-context";
+import type { CardMapEntry } from "@/lib/use-card-map";
 import { useCardMap } from "@/lib/use-card-map";
 import { PageContainer } from "@/components/PageContainer";
 import { PageLoading } from "@/components/PageLoading";
@@ -15,13 +16,15 @@ import { Modal } from "@/components/Modal";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { classes } from "@/lib/classes";
 import {
-  ArrowDownIcon, ArrowUpIcon,
-  FilterIcon, SearchIcon, SlidersHorizontalIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  FilterIcon,
+  SearchIcon,
+  SlidersHorizontalIcon,
 } from "lucide-react";
 import pluralize from "pluralize";
 import Fuse from "fuse.js";
 import type { LibraryEntry } from "@/api/library";
-import type { CardMapEntry } from "@/lib/use-card-map";
 import { CardGrid } from "./components/CardGrid";
 import { FilterPanel } from "./components/FilterPanel";
 import { BreakdownSelector } from "./components/BreakdownSelector";
@@ -30,15 +33,23 @@ import { useLibraryFilters } from "./components/useLibraryFilters";
 import { useLibraryDefaults } from "./components/useLibraryDefaults";
 import { sortEntries } from "./components/utils";
 import {
-  BLOOM_ORDER, FACTORY_DEFAULTS, SORT_ITEMS,
-  type CardEntry, type LibraryDefaults,
+  BLOOM_ORDER,
+  type CardEntry,
+  FACTORY_DEFAULTS,
+  type LibraryDefaults,
+  SORT_ITEMS,
 } from "./components/types";
 
-const ICON_BTN = "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
-const ICON_BTN_IDLE = "ring-black/15 dark:ring-white/15 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10";
+const ICON_BTN =
+  "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
+const ICON_BTN_IDLE =
+  "ring-black/15 dark:ring-white/15 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10";
 
 const SEARCH_INPUT_PROPS = {
-  autoCorrect: "off", autoCapitalize: "off", autoComplete: "off", spellCheck: false,
+  autoCorrect: "off",
+  autoCapitalize: "off",
+  autoComplete: "off",
+  spellCheck: false,
 } as const;
 
 // ── top-level shell ───────────────────────────────────────────────────────────
@@ -54,7 +65,11 @@ function LibraryContent() {
   const { library, loading: libraryLoading } = useLibrary();
   const router = useRouter();
   const { cardMap, loading: cardsLoading } = useCardMap(!user);
-  const { defaults, loading: defaultsLoading, saveDefaults } = useLibraryDefaults(user?.uid ?? null);
+  const {
+    defaults,
+    loading: defaultsLoading,
+    saveDefaults,
+  } = useLibraryDefaults(user?.uid ?? null);
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
@@ -69,7 +84,9 @@ function LibraryContent() {
         <div>
           <p className="text-lg font-semibold">Your library is empty</p>
           <p className="text-sm opacity-75 mt-1">
-            <Link href="/all-cards" className="underline underline-offset-2">Browse cards</Link>{" "}
+            <Link href="/all-cards" className="underline underline-offset-2">
+              Browse cards
+            </Link>{" "}
             and hit + to add them.
           </p>
         </div>
@@ -114,52 +131,69 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
     const saved = sessionStorage.getItem(SCROLL_KEY);
     if (saved) {
       sessionStorage.removeItem(SCROLL_KEY);
-      requestAnimationFrame(() => window.scrollTo(0, parseInt(saved, 10)));
+      requestAnimationFrame(() => window.scrollTo(0, Number.parseInt(saved, 10)));
     }
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const {
-    sortField, setSortField,
-    sortOrder, setSortOrder,
-    breakdowns, setBreakdowns,
-    search, setSearch,
-    colorFilter, setColorFilter,
-    typeFilter, setTypeFilter,
-    bloomFilter, setBloomFilter,
-    rarityFilter, setRarityFilter,
-    tagsFilter, setTagsFilter,
-    specialFilter, setSpecialFilter,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    breakdowns,
+    setBreakdowns,
+    search,
+    setSearch,
+    colorFilter,
+    setColorFilter,
+    typeFilter,
+    setTypeFilter,
+    bloomFilter,
+    setBloomFilter,
+    rarityFilter,
+    setRarityFilter,
+    tagsFilter,
+    setTagsFilter,
+    specialFilter,
+    setSpecialFilter,
     resetPage,
   } = useLibraryFilters(defaults);
 
-  const entries       = useMemo(() => Object.values(library), [library]);
+  const entries = useMemo(() => Object.values(library), [library]);
   const totalQuantity = useMemo(() => entries.reduce((sum, e) => sum + e.quantity, 0), [entries]);
 
   const cardEntries = useMemo<CardEntry[]>(
-    () => entries.flatMap((entry) => {
-      const card = cardMap[entry.cardId];
-      return card ? [{ card, entry }] : [];
-    }),
+    () =>
+      entries.flatMap((entry) => {
+        const card = cardMap[entry.cardId];
+        return card ? [{ card, entry }] : [];
+      }),
     [entries, cardMap]
   );
 
   const colorOptions = useMemo(() => {
     const s = new Set<string>();
     cardEntries.forEach(({ card }) => card.colors.forEach((c) => s.add(c)));
-    return Array.from(s).sort().map((v) => ({ value: v, label: v }));
+    return Array.from(s)
+      .sort((a, b) => a.localeCompare(b))
+      .map((v) => ({ value: v, label: v }));
   }, [cardEntries]);
 
   const typeOptions = useMemo(() => {
     const s = new Set<string>();
     cardEntries.forEach(({ card }) => s.add(card.cardType));
-    return Array.from(s).sort().map((v) => ({ value: v, label: v }));
+    return Array.from(s)
+      .sort((a, b) => a.localeCompare(b))
+      .map((v) => ({ value: v, label: v }));
   }, [cardEntries]);
 
   const bloomOptions = useMemo(() => {
     const s = new Set<string>();
-    cardEntries.forEach(({ card }) => { if (card.bloomLevel) s.add(card.bloomLevel); });
+    cardEntries.forEach(({ card }) => {
+      if (card.bloomLevel) s.add(card.bloomLevel);
+    });
     return Array.from(s)
       .sort((a, b) => (BLOOM_ORDER[a] ?? 99) - (BLOOM_ORDER[b] ?? 99))
       .map((v) => ({ value: v, label: v }));
@@ -168,30 +202,40 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
   const rarityOptions = useMemo(() => {
     const s = new Set<string>();
     cardEntries.forEach(({ card }) => s.add(card.rarity));
-    return Array.from(s).sort().map((v) => ({ value: v, label: v }));
+    return Array.from(s)
+      .sort((a, b) => a.localeCompare(b))
+      .map((v) => ({ value: v, label: v }));
   }, [cardEntries]);
 
   const tagOptions = useMemo(() => {
     const s = new Set<string>();
     cardEntries.forEach(({ card }) => card.tags.forEach((t) => s.add(t)));
-    return Array.from(s).sort().map((v) => ({ value: v, label: v }));
+    return Array.from(s)
+      .sort((a, b) => a.localeCompare(b))
+      .map((v) => ({ value: v, label: v }));
   }, [cardEntries]);
 
   const activeFilterCount = useMemo(
-    () => colorFilter.length + typeFilter.length + bloomFilter.length +
-          rarityFilter.length + tagsFilter.length + (specialFilter !== "all" ? 1 : 0),
+    () =>
+      colorFilter.length +
+      typeFilter.length +
+      bloomFilter.length +
+      rarityFilter.length +
+      tagsFilter.length +
+      (specialFilter === "all" ? 0 : 1),
     [colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]
   );
 
   const fuse = useMemo(
-    () => new Fuse(cardEntries, {
-      keys: ["card.name", "card.cardNumber", "card.tags", "card.specialText", "card.extraText"],
-      threshold: 0.35,
-      ignoreLocation: true,
-      ignoreDiacritics: true,
-      shouldSort: false,
-      useExtendedSearch: true,
-    }),
+    () =>
+      new Fuse(cardEntries, {
+        keys: ["card.name", "card.cardNumber", "card.tags", "card.specialText", "card.extraText"],
+        threshold: 0.35,
+        ignoreLocation: true,
+        ignoreDiacritics: true,
+        shouldSort: false,
+        useExtendedSearch: true,
+      }),
     [cardEntries]
   );
 
@@ -210,39 +254,52 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
 
   const filtered = useMemo(() => {
     let result = afterSearch;
-    if (colorFilter.length)  result = result.filter(({ card }) => card.colors.some((c) => colorFilter.includes(c)));
-    if (typeFilter.length)   result = result.filter(({ card }) => typeFilter.includes(card.cardType));
-    if (bloomFilter.length)  result = result.filter(({ card }) => !!card.bloomLevel && bloomFilter.includes(card.bloomLevel));
-    if (rarityFilter.length) result = result.filter(({ card }) => rarityFilter.includes(card.rarity));
-    if (tagsFilter.length)   result = result.filter(({ card }) => tagsFilter.some((t) => card.tags.includes(t)));
-    if (specialFilter === "buzz")    result = result.filter(({ card }) => card.isBuzz);
+    if (colorFilter.length)
+      result = result.filter(({ card }) => card.colors.some((c) => colorFilter.includes(c)));
+    if (typeFilter.length) result = result.filter(({ card }) => typeFilter.includes(card.cardType));
+    if (bloomFilter.length)
+      result = result.filter(
+        ({ card }) => !!card.bloomLevel && bloomFilter.includes(card.bloomLevel)
+      );
+    if (rarityFilter.length)
+      result = result.filter(({ card }) => rarityFilter.includes(card.rarity));
+    if (tagsFilter.length)
+      result = result.filter(({ card }) => tagsFilter.some((t) => card.tags.includes(t)));
+    if (specialFilter === "buzz") result = result.filter(({ card }) => card.isBuzz);
     if (specialFilter === "limited") result = result.filter(({ card }) => card.isLimited);
     return result;
   }, [afterSearch, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter]);
 
-  const holoDexCount   = useMemo(() => Object.keys(cardMap).length, [cardMap]);
+  const holoDexCount = useMemo(() => Object.keys(cardMap).length, [cardMap]);
   const hasActiveState = activeFilterCount > 0 || searchQuery.length > 0;
-  const emptyFiltered  = filtered.length === 0 && hasActiveState;
+  const emptyFiltered = filtered.length === 0 && hasActiveState;
 
   const effectiveDefaults = defaults ?? FACTORY_DEFAULTS;
 
   const isDefaultDirty =
     sortField !== effectiveDefaults.sortField ||
     sortOrder !== effectiveDefaults.sortOrder ||
-    JSON.stringify(breakdowns)    !== JSON.stringify(effectiveDefaults.breakdowns) ||
-    JSON.stringify(colorFilter)   !== JSON.stringify(effectiveDefaults.colorFilter) ||
-    JSON.stringify(typeFilter)    !== JSON.stringify(effectiveDefaults.typeFilter) ||
-    JSON.stringify(bloomFilter)   !== JSON.stringify(effectiveDefaults.bloomFilter) ||
-    JSON.stringify(rarityFilter)  !== JSON.stringify(effectiveDefaults.rarityFilter) ||
-    JSON.stringify(tagsFilter)    !== JSON.stringify(effectiveDefaults.tagsFilter) ||
+    JSON.stringify(breakdowns) !== JSON.stringify(effectiveDefaults.breakdowns) ||
+    JSON.stringify(colorFilter) !== JSON.stringify(effectiveDefaults.colorFilter) ||
+    JSON.stringify(typeFilter) !== JSON.stringify(effectiveDefaults.typeFilter) ||
+    JSON.stringify(bloomFilter) !== JSON.stringify(effectiveDefaults.bloomFilter) ||
+    JSON.stringify(rarityFilter) !== JSON.stringify(effectiveDefaults.rarityFilter) ||
+    JSON.stringify(tagsFilter) !== JSON.stringify(effectiveDefaults.tagsFilter) ||
     specialFilter !== effectiveDefaults.specialFilter;
 
   const isPageDirty = isDefaultDirty || searchQuery.length > 0;
 
   async function handleSaveDefault() {
     const toSave: LibraryDefaults = {
-      sortField, sortOrder, breakdowns,
-      colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, specialFilter,
+      sortField,
+      sortOrder,
+      breakdowns,
+      colorFilter,
+      typeFilter,
+      bloomFilter,
+      rarityFilter,
+      tagsFilter,
+      specialFilter,
     };
     await saveDefaults(toSave);
     setSavedFeedback(true);
@@ -250,13 +307,23 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
   }
 
   const filterPanelProps = {
-    colorOptions, typeOptions, bloomOptions, rarityOptions, tagOptions,
-    colorFilter, setColorFilter,
-    typeFilter, setTypeFilter,
-    bloomFilter, setBloomFilter,
-    rarityFilter, setRarityFilter,
-    tagsFilter, setTagsFilter,
-    specialFilter, setSpecialFilter,
+    colorOptions,
+    typeOptions,
+    bloomOptions,
+    rarityOptions,
+    tagOptions,
+    colorFilter,
+    setColorFilter,
+    typeFilter,
+    setTypeFilter,
+    bloomFilter,
+    setBloomFilter,
+    rarityFilter,
+    setRarityFilter,
+    tagsFilter,
+    setTagsFilter,
+    specialFilter,
+    setSpecialFilter,
   };
 
   const sortToggle = (
@@ -310,7 +377,12 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
             <div className="flex flex-col gap-2">
               <span className="text-sm opacity-75">Sort by</span>
               <div className="flex items-center gap-2">
-                <Dropdown value={sortField} onValueChange={setSortField} items={SORT_ITEMS} className="flex-1 min-w-0" />
+                <Dropdown
+                  value={sortField}
+                  onValueChange={setSortField}
+                  items={SORT_ITEMS}
+                  className="flex-1 min-w-0"
+                />
                 {sortToggle}
               </div>
             </div>
@@ -322,12 +394,25 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
         </div>
         <div className="flex gap-2">
           {isPageDirty && (
-            <Button variant="transparent" highContrast className="flex-1" onClick={() => { resetPage(); setShowFiltersModal(false); }}>
+            <Button
+              variant="transparent"
+              highContrast
+              className="flex-1"
+              onClick={() => {
+                resetPage();
+                setShowFiltersModal(false);
+              }}
+            >
               Reset
             </Button>
           )}
           {(isDefaultDirty || savedFeedback) && (
-            <Button variant="transparent" highContrast className="flex-1" onClick={handleSaveDefault}>
+            <Button
+              variant="transparent"
+              highContrast
+              className="flex-1"
+              onClick={handleSaveDefault}
+            >
               {savedFeedback ? "Saved!" : "Set Default"}
             </Button>
           )}
@@ -362,7 +447,12 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
               onChange={(e) => setSearch(e.target.value)}
               {...SEARCH_INPUT_PROPS}
             />
-            <Dropdown value={sortField} onValueChange={setSortField} items={SORT_ITEMS} className="w-36" />
+            <Dropdown
+              value={sortField}
+              onValueChange={setSortField}
+              items={SORT_ITEMS}
+              className="w-36"
+            />
             {sortToggle}
             {(isDefaultDirty || savedFeedback) && (
               <Button variant="transparent" highContrast onClick={handleSaveDefault}>
@@ -370,7 +460,9 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
               </Button>
             )}
             {isPageDirty && (
-              <Button variant="transparent" highContrast onClick={resetPage}>Reset</Button>
+              <Button variant="transparent" highContrast onClick={resetPage}>
+                Reset
+              </Button>
             )}
           </div>
         </>
@@ -389,9 +481,16 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
             {...SEARCH_INPUT_PROPS}
           />
           {isPageDirty && (
-            <Button variant="transparent" highContrast onClick={resetPage}>Reset</Button>
+            <Button variant="transparent" highContrast onClick={resetPage}>
+              Reset
+            </Button>
           )}
-          <Button variant="transparent" highContrast icon={FilterIcon} onClick={() => setShowFiltersModal(true)} />
+          <Button
+            variant="transparent"
+            highContrast
+            icon={FilterIcon}
+            onClick={() => setShowFiltersModal(true)}
+          />
         </div>
       )}
 
