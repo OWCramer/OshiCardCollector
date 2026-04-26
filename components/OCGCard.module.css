@@ -2,6 +2,7 @@
   HOLO CARD EFFECT
   Holographic color/foil without overall brightness lift:
   - increased strength by ~25%
+  - slower foil/background movement
   - no global brightening
   - no darkening vignette
   - reduced cursor hotspot
@@ -31,8 +32,11 @@
     --background-x: var(--gradient-x, 50%);
     --background-y: var(--gradient-y, 50%);
 
-    --diagonal-x: calc((var(--background-x) * 0.58) + (var(--background-y) * 0.14));
-    --diagonal-y: calc((var(--background-y) * 0.72) + 6%);
+    --diagonal-x: calc((var(--background-x) * 0.34) + (var(--background-y) * 0.08));
+    --diagonal-y: calc((var(--background-y) * 0.42) + 14%);
+
+    --reflection-x: calc(var(--background-x) * 0.62);
+    --reflection-y: calc(var(--background-y) * 0.62);
 
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
@@ -71,7 +75,7 @@
     background-position:
             0% var(--background-y),
             var(--diagonal-x) var(--diagonal-y),
-            calc(var(--background-x) * 1.05) calc(var(--background-y) * 1.05);
+            var(--reflection-x) var(--reflection-y);
 
     background-size:
             200% 700%,
@@ -99,6 +103,8 @@
 
     --pointer-x: var(--gradient-x, 50%);
     --pointer-y: var(--gradient-y, 50%);
+    --glare-x: calc(var(--pointer-x) * 0.72);
+    --glare-y: calc(var(--pointer-y) * 0.72);
 
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
@@ -123,7 +129,7 @@
             125% 155%;
 
     background-position:
-            calc(var(--pointer-x) * 1.1) calc(var(--pointer-y) * 1.1),
+            var(--glare-x) var(--glare-y),
             center center;
 
     mix-blend-mode: soft-light;
