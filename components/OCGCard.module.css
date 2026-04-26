@@ -56,8 +56,8 @@
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
 
-    -webkit-mask-size: 220% 220%, cover;
-    mask-size: 220% 220%, cover;
+    -webkit-mask-size: 100% 100%, cover;
+    mask-size: 100% 100%, cover;
 
     -webkit-mask-position: center center, center center;
     mask-position: center center, center center;
@@ -128,8 +128,8 @@
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
 
-    -webkit-mask-size: 220% 220%, cover;
-    mask-size: 220% 220%, cover;
+    -webkit-mask-size: 100% 100%, cover;
+    mask-size: 100% 100%, cover;
 
     -webkit-mask-position: center center, center center;
     mask-position: center center, center center;
