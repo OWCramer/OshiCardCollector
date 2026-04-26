@@ -3,9 +3,10 @@
   Shiny Rare style adapted for hover-tilt glare-mask.
 
   Important:
-  - illusion.png is supplied through hover-tilt's glare-mask prop
+  - wave/illusion mask is supplied through hover-tilt's glare-mask prop
   - the glare-mask is kept fixed so it behaves like card foil texture
   - only the gradient/reflection backgrounds move
+  - movement is clamped so extreme tilt does not expose hard seams
 */
 
 .holo::part(tilt) {
@@ -13,10 +14,18 @@
     --angle: 133deg;
     --imgsize: cover;
 
-    --background-x: var(--gradient-x, 50%);
-    --background-y: var(--gradient-y, 50%);
-    --pointer-x: var(--gradient-x, 50%);
-    --pointer-y: var(--gradient-y, 50%);
+    /*
+      Clamp hover-tilt's full 0%-100% range into a smaller 30%-70% style range.
+      This prevents background layers from traveling far enough to show stitch seams.
+    */
+    --raw-background-x: var(--gradient-x, 50%);
+    --raw-background-y: var(--gradient-y, 50%);
+
+    --background-x: calc(50% + ((var(--raw-background-x) - 50%) * 0.45));
+    --background-y: calc(50% + ((var(--raw-background-y) - 50%) * 0.45));
+
+    --pointer-x: var(--background-x);
+    --pointer-y: var(--background-y);
     --pointer-from-center: var(--hover-tilt-opacity, 0);
     --card-opacity: var(--hover-tilt-opacity, 0);
 
@@ -41,7 +50,7 @@
     clip-path: inset(0 round 4.55% 3.5%);
 
     /*
-      Keep the mask fixed. This lets illusion.png feel like physical texture
+      Keep the mask fixed. This lets wave.png feel like physical texture
       printed onto the card, instead of sliding around.
     */
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, {useRef, useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
-import { classes } from "@/lib/classes";
-import { Modal } from "@/components/Modal";
+import {classes} from "@/lib/classes";
+import {Modal} from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
   sm: { width: 160, height: 224 },
@@ -154,8 +154,8 @@ export function OCGCard({
           scaleFactor={scaleFactor}
           shadow
           shadow-blur={30}
-          glare-intensity={glareIntensity}
-          glare-mask={isHolo ? "url(/card_masks/wave.png)" : undefined}
+          glare-intensity={isHolo ? 0 : glareIntensity}
+          glare-mask={isHolo ? "url(/card_masks/testing.webp)" : undefined}
           glare-mask-mode={isHolo ? "luminance" : undefined}
         >
           <Image
