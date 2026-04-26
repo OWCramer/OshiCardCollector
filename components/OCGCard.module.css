@@ -1,12 +1,10 @@
 /*
   HOLO CARD EFFECT
-  Based on the first/best version:
-  - visible diagonal foil bands
-  - no micro-grid texture
-  - toned down so the card art remains readable
-  - softer, less-white diagonal bands
-  - reduced RGB/rainbow color shifting
-  - slightly strengthened overall effect
+  Center-hover is intentionally restrained:
+  - hover without tilt should not wash out the image
+  - tilt/movement should reveal the foil reflection
+  - diagonal reflection is broad/diffused, not white stripe lines
+  - RGB/rainbow is reduced
 */
 
 .holo::part(tilt) {
@@ -14,19 +12,22 @@
     --angle: 133deg;
     --imgsize: 33%;
 
+    /*
+      Keep this very subtle. If this is too bright, hover-at-center becomes a white wash.
+    */
     --foil: radial-gradient(
             circle at 50% 50%,
-            hsl(0 0% 100% / 0.3),
-            hsl(0 0% 100% / 0.05) 35%,
-            transparent 70%
+            hsl(0 0% 100% / 0.18),
+            hsl(0 0% 100% / 0.035) 34%,
+            transparent 68%
     );
 
-    --sunpillar-clr-1: hsl(2 100% 73% / 0.26);
-    --sunpillar-clr-2: hsl(53 100% 69% / 0.26);
-    --sunpillar-clr-3: hsl(93 100% 69% / 0.26);
-    --sunpillar-clr-4: hsl(176 100% 76% / 0.26);
-    --sunpillar-clr-5: hsl(228 100% 74% / 0.26);
-    --sunpillar-clr-6: hsl(283 100% 73% / 0.26);
+    --sunpillar-clr-1: hsl(2 100% 73% / 0.2);
+    --sunpillar-clr-2: hsl(53 100% 69% / 0.2);
+    --sunpillar-clr-3: hsl(93 100% 69% / 0.2);
+    --sunpillar-clr-4: hsl(176 100% 76% / 0.2);
+    --sunpillar-clr-5: hsl(228 100% 74% / 0.2);
+    --sunpillar-clr-6: hsl(283 100% 73% / 0.2);
 }
 
 /* Main shine layer */
@@ -44,8 +45,8 @@
     --pointer-y: var(--gradient-y, 50%);
     --pointer-from-center: var(--hover-tilt-opacity, 0);
 
-    --diagonal-x: calc((var(--background-x) * 0.42) + (var(--background-y) * 0.08));
-    --diagonal-y: calc((var(--background-y) * 0.58) + 10%);
+    --diagonal-x: calc((var(--background-x) * 0.36) + (var(--background-y) * 0.06));
+    --diagonal-y: calc((var(--background-y) * 0.5) + 12%);
 
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
@@ -64,39 +65,56 @@
             ),
             repeating-linear-gradient(
                     var(--angle),
-                    hsl(225 45% 18% / 0.34) 0%,
-                    hsl(185 18% 58% / 0.24) 3.8%,
-                    hsl(185 35% 74% / 0.36) 4.9%,
-                    hsl(185 18% 58% / 0.24) 6%,
-                    hsl(225 45% 18% / 0.34) 11.5%,
-                    hsl(225 45% 18% / 0.34) 15.5%
+                    hsl(225 35% 18% / 0.3) 0%,
+                    hsl(220 22% 28% / 0.24) 2.5%,
+                    hsl(195 20% 48% / 0.23) 4.5%,
+                    hsl(185 24% 66% / 0.3) 6.5%,
+                    hsl(195 20% 48% / 0.23) 8.5%,
+                    hsl(220 22% 28% / 0.24) 11%,
+                    hsl(225 35% 18% / 0.3) 16.5%,
+                    hsl(225 35% 18% / 0.3) 22%
+            ),
+            linear-gradient(
+                    var(--angle),
+                    transparent 0%,
+                    hsl(0 0% 100% / 0.075) 32%,
+                    hsl(200 30% 75% / 0.085) 44%,
+                    transparent 58%,
+                    hsl(0 0% 0% / 0.075) 72%,
+                    transparent 100%
             ),
             radial-gradient(
                     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-                    hsl(0 0% 0% / 0.05) 12%,
-                    hsl(0 0% 0% / 0.09) 20%,
-                    hsl(0 0% 0% / 0.16) 120%
+                    hsl(0 0% 0% / 0.055) 12%,
+                    hsl(0 0% 0% / 0.085) 24%,
+                    hsl(0 0% 0% / 0.15) 120%
             );
 
     background-position:
             center center,
             0% var(--background-y),
             var(--diagonal-x) var(--diagonal-y),
+            calc(var(--background-x) * 0.75) calc(var(--background-y) * 0.75),
             var(--background-x) var(--background-y);
 
     background-size:
             var(--imgsize),
             200% 700%,
-            520% 180%,
+            680% 240%,
+            240% 240%,
             200% 100%;
 
-    background-blend-mode: soft-light, soft-light, hard-light;
+    background-blend-mode: soft-light, soft-light, soft-light, hard-light;
     mix-blend-mode: color-dodge;
 
-    filter: brightness(calc((var(--pointer-from-center) * 0.2) + 0.34)) contrast(1.22)
-    saturate(0.8);
+    /*
+      Lower base brightness so hover-at-center does not become a bright overlay.
+      The effect still strengthens as hover-tilt opacity increases.
+    */
+    filter: brightness(calc((var(--pointer-from-center) * 0.16) + 0.28)) contrast(1.14)
+    saturate(0.72);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.72);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.62);
 
     will-change: opacity, background-position, filter;
 }
@@ -116,20 +134,35 @@
     -webkit-mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
     mask-image: var(--hover-tilt-glare-mask), var(--hover-tilt-default-gradient);
 
-    background-image: radial-gradient(
-            farthest-corner circle at var(--pointer-x) var(--pointer-y),
-            hsl(0 0% 80% / 0.46) 5%,
-            hsl(200 5% 35% / 0.28) 60%,
-            hsl(320 40% 10% / 0.42) 150%
-    );
+    background-image:
+            linear-gradient(
+                    133deg,
+                    transparent 0%,
+                    hsl(0 0% 100% / 0.09) 34%,
+                    hsl(205 20% 70% / 0.07) 46%,
+                    transparent 58%,
+                    hsl(0 0% 0% / 0.08) 74%,
+                    transparent 100%
+            ),
+            radial-gradient(
+                    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+                    hsl(0 0% 82% / 0.34) 5%,
+                    hsl(200 5% 35% / 0.22) 60%,
+                    hsl(320 40% 10% / 0.34) 150%
+            );
 
-    background-size: 120% 150%;
-    background-position: center center;
+    background-size:
+            220% 220%,
+            120% 150%;
+
+    background-position:
+            var(--pointer-x) var(--pointer-y),
+            center center;
 
     mix-blend-mode: hard-light;
-    filter: brightness(1) contrast(1.03) saturate(0.72);
+    filter: brightness(0.96) contrast(1.02) saturate(0.62);
 
-    opacity: calc(var(--hover-tilt-opacity, 0) * 0.38);
+    opacity: calc(var(--hover-tilt-opacity, 0) * 0.26);
 
-    will-change: opacity, background-image;
+    will-change: opacity, background-position, background-image;
 }
