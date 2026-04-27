@@ -106,8 +106,9 @@
     background-blend-mode: soft-light, hue, hard-light;
     mix-blend-mode: color-dodge;
 
-    filter: brightness(calc((var(--pointer-from-center) * 0.25) + 0.34)) contrast(1.45)
-    saturate(1.45);
+    filter: brightness(calc((var(--pointer-from-center) * 0.45) + 0.55))
+    contrast(1.8)
+    saturate(2);
 
     opacity: calc(var(--card-opacity) * 0.72);
 
@@ -176,15 +177,15 @@
             var(--background-x) var(--background-y);
 
     background-size:
-            200% 400%,
-            195% 100%,
+            100% 100%,
+            100% 100%,
             cover;
 
     background-blend-mode: soft-light, hue, hard-light;
     mix-blend-mode: difference;
 
     filter: brightness(calc((var(--pointer-from-center) * 0.25) + 0.42)) contrast(1.25)
-    saturate(1.12);
+    saturate(1.45);
 
     opacity: calc(var(--card-opacity) * 0.3);
 
