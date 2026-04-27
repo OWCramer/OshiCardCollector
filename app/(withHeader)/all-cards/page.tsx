@@ -15,7 +15,7 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { type SortField, useCardFilters } from "@/hooks/useCardFilters";
 import { ArrowDownIcon, ArrowUpIcon, FilterIcon, Loader2Icon, SearchIcon } from "lucide-react";
@@ -48,6 +48,33 @@ const SORT_FIELD_ITEMS: { value: SortField; label: string }[] = [
   { value: "bloomLevel", label: "Bloom Level" },
   { value: "releaseDate", label: "Release Date" },
 ];
+
+// ─── memoized row — only re-renders when card data or layout changes, not on scroll ──
+
+type CardNode = { id: number; name: string; imageUrl?: string | null; rarity?: string | null };
+
+const VirtualRow = memo(function VirtualRow({
+  row,
+  isSmall,
+  isMedium,
+}: {
+  row: CardNode[];
+  isSmall: boolean;
+  isMedium: boolean;
+}) {
+  return (
+    <div
+      className={classes(
+        "flex gap-4 items-center pb-4",
+        isMedium ? "justify-start" : "justify-center"
+      )}
+    >
+      {row.map((card) => (
+        <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} goToCard />
+      ))}
+    </div>
+  );
+});
 
 // ─── page export (provides Suspense for useSearchParams) ──────────────────────
 
@@ -348,16 +375,7 @@ function AllCardsContent() {
                 transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)`,
               }}
             >
-              <div
-                className={classes(
-                  "flex gap-4 items-center pb-4",
-                  isMedium ? "justify-start" : "justify-center"
-                )}
-              >
-                {row.map((card) => (
-                  <OCGCard key={card.id} card={card} size={isSmall ? "sm" : "lg"} goToCard />
-                ))}
-              </div>
+              <VirtualRow row={row} isSmall={isSmall} isMedium={isMedium} />
             </div>
           );
         })}
