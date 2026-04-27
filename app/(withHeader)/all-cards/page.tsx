@@ -170,15 +170,22 @@ function AllCardsContent() {
   // low-priority — Safari's JS engine can't finish Fuse.js within one frame
   // budget, causing input lag without this.
   const [inputValue, setInputValue] = useState(search);
+
   useEffect(() => {
-    setInputValue(search);
-  }, [search]);
+    const timeoutId = globalThis.setTimeout(() => {
+      setDebouncedSearch(inputValue);
+    }, 10);
+
+    return () => globalThis.clearTimeout(timeoutId);
+  }, [inputValue, setDebouncedSearch]);
+
   function handleSearchChange(v: string) {
     setInputValue(v);
-    setDebouncedSearch(v);
   }
 
   useEffect(() => {
+    if (globalThis.scrollY === 0) return;
+
     globalThis.scrollTo({ top: 0, behavior: "smooth" });
   }, [filteredCards]);
 
