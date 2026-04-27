@@ -15,7 +15,7 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, Suspense, startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { type SortField, useCardFilters } from "@/hooks/useCardFilters";
 import { ArrowDownIcon, ArrowUpIcon, FilterIcon, Loader2Icon, SearchIcon } from "lucide-react";
@@ -134,7 +134,7 @@ function AllCardsContent() {
 
   const {
     search,
-    setSearch,
+    setSearch: setDebouncedSearch,
     rarityFilter,
     setRarityFilter,
     cardTypeFilter,
@@ -164,6 +164,17 @@ function AllCardsContent() {
     clearFilters,
     clearFiltersHref,
   } = useCardFilters(allCards);
+
+  // Local state for the input so the field updates instantly. The actual search
+  // (Fuse.js + re-render) is wrapped in startTransition so React treats it as
+  // low-priority — Safari's JS engine can't finish Fuse.js within one frame
+  // budget, causing input lag without this.
+  const [inputValue, setInputValue] = useState(search);
+  useEffect(() => { setInputValue(search); }, [search]);
+  function handleSearchChange(v: string) {
+    setInputValue(v);
+    startTransition(() => setDebouncedSearch(v));
+  }
 
   useEffect(() => {
     globalThis.scrollTo({ top: 0, behavior: "smooth" });
@@ -400,8 +411,8 @@ function AllCardsContent() {
         <Input
           className="w-full"
           placeholder="Search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={inputValue}
+          onChange={(e) => handleSearchChange(e.target.value)}
         />
         {isMedium ? (
           filterPanel
