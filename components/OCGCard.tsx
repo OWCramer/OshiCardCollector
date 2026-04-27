@@ -9,7 +9,7 @@ import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
   sm: { width: 160, height: 224 },
-  lg: { width: 240, height: 335 },
+  lg: { width: 240, height: 336 },
   detail: { width: 370, height: 517 },
 } as const;
 
@@ -47,7 +47,7 @@ interface OCGCardProps {
   overlayText?: string;
 }
 
-export function OCGCard({
+function OCGCardInner({
   card,
   imageUrl: imageUrlProp,
   name: nameProp,
@@ -105,8 +105,61 @@ export function OCGCard({
 
   const { width, height } = OCG_CARD_SIZES[size];
 
-  const cardEl = (
-    // Setting width and height on the surrounding div is needed for virtualization to function properly.
+  const cardDiv = (
+    <div
+      style={{ width: `${width}px`, height: `${height}px` }}
+      key={card?.id}
+      onClick={onClick}
+      className={href ? undefined : className}
+      onTouchStart={href ? undefined : handleTouchStart}
+      onTouchMove={href ? undefined : handleTouchMove}
+      onTouchEnd={href ? undefined : handleTouchEnd}
+    >
+      <hover-tilt
+        className={classes(
+          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
+          "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
+          isHolo ? `${styles.holo}` : undefined
+        )}
+        exitDelay={0}
+        tiltFactor={tiltFactor}
+        scaleFactor={scaleFactor}
+        shadow
+        shadowBlur={30}
+        glareIntensity={isHolo ? 0 : glareIntensity}
+        glareMask={isHolo ? "url(/card_masks/metal-no-black.png)" : undefined}
+        glareMaskMode="alpha"
+        glareMaskComposite="intersect"
+      >
+        <Image
+          src={imageUrl}
+          alt={name}
+          width={width}
+          height={height}
+          className="block rounded-[4.55%/3.5%]"
+          style={{ width: `${width}px`, height: `${height}px` }}
+        />
+        {overlayText && (
+          <div
+            className="absolute px-2 bottom-1.5 right-1.5 text-sm text-white rounded-lg bg-black/70"
+            style={{ pointerEvents: "none" }}
+          >
+            {overlayText}
+          </div>
+        )}
+      </hover-tilt>
+    </div>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} style={{ flexShrink: 0, display: "block" }} className={className}>
+        {cardDiv}
+      </Link>
+    );
+  }
+
+  return (
     <>
       <Modal title="Card preview" isOpen={showModal} onClose={() => setShowModal(false)}>
         <div className="flex w-full h-full items-center justify-center">
@@ -128,66 +181,15 @@ export function OCGCard({
                 width={width}
                 height={height}
                 className="block rounded-[4.55%/3.5%]"
+                style={{ width: `${width}px`, height: `${height}px` }}
               />
             </hover-tilt>
           </div>
         </div>
       </Modal>
-      <div
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-        }}
-        key={card?.id}
-        onClick={onClick}
-        className={href ? undefined : className}
-        onTouchStart={goToCard ? undefined : handleTouchStart}
-        onTouchMove={goToCard ? undefined : handleTouchMove}
-        onTouchEnd={goToCard ? undefined : handleTouchEnd}
-      >
-        <hover-tilt
-          className={classes(
-            "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
-            "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
-            isHolo ? `${styles.holo}` : undefined
-          )}
-          exitDelay={0}
-          tiltFactor={tiltFactor}
-          scaleFactor={scaleFactor}
-          shadow
-          shadowBlur={30}
-          glareIntensity={isHolo ? 0 : glareIntensity}
-          glareMask={isHolo ? "url(/card_masks/metal-no-black.png)" : undefined}
-          glareMaskMode="alpha"
-          glareMaskComposite="intersect"
-        >
-          <Image
-            src={imageUrl}
-            alt={name}
-            width={width}
-            height={height}
-            className="block rounded-[4.55%/3.5%]"
-          />
-          {overlayText && (
-            <div
-              className="absolute px-2 bottom-1.5 right-1.5 text-sm text-white rounded-lg bg-black/70"
-              style={{ pointerEvents: "none" }}
-            >
-              {overlayText}
-            </div>
-          )}
-        </hover-tilt>
-      </div>
+      {cardDiv}
     </>
   );
-
-  if (href) {
-    return (
-      <Link href={href} style={{ flexShrink: 0, display: "block" }} className={className}>
-        {cardEl}
-      </Link>
-    );
-  }
-
-  return cardEl;
 }
+
+export const OCGCard = React.memo(OCGCardInner);
