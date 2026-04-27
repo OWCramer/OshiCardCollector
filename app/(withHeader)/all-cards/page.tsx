@@ -15,7 +15,7 @@ import { useBreakpoint } from "@/lib/useBreakpoint";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { memo, Suspense, startTransition, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { type SortField, useCardFilters } from "@/hooks/useCardFilters";
 import { ArrowDownIcon, ArrowUpIcon, FilterIcon, Loader2Icon, SearchIcon } from "lucide-react";
@@ -170,10 +170,12 @@ function AllCardsContent() {
   // low-priority — Safari's JS engine can't finish Fuse.js within one frame
   // budget, causing input lag without this.
   const [inputValue, setInputValue] = useState(search);
-  useEffect(() => { setInputValue(search); }, [search]);
+  useEffect(() => {
+    setInputValue(search);
+  }, [search]);
   function handleSearchChange(v: string) {
     setInputValue(v);
-    startTransition(() => setDebouncedSearch(v));
+    setDebouncedSearch(v);
   }
 
   useEffect(() => {
