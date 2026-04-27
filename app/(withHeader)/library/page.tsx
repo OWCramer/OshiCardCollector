@@ -14,13 +14,7 @@ import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { classes } from "@/lib/classes";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  FilterIcon,
-  SearchIcon,
-  SlidersHorizontalIcon,
-} from "lucide-react";
+import { ArrowDownIcon, ArrowUpIcon, FilterIcon, PlusIcon, SearchIcon, SlidersHorizontalIcon, } from "lucide-react";
 import pluralize from "pluralize";
 import Fuse from "fuse.js";
 import { CardGrid } from "./components/CardGrid";
@@ -31,12 +25,7 @@ import { useLibraryFilters } from "./components/useLibraryFilters";
 import { useLibraryDefaults } from "./components/useLibraryDefaults";
 import { useFilterOptions } from "./components/useFilterOptions";
 import { sortEntries } from "./components/utils";
-import {
-  type CardEntry,
-  FACTORY_DEFAULTS,
-  type LibraryDefaults,
-  SORT_ITEMS,
-} from "./components/types";
+import { type CardEntry, FACTORY_DEFAULTS, type LibraryDefaults, SORT_ITEMS, } from "./components/types";
 
 const ICON_BTN =
   "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
@@ -336,7 +325,12 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
   return (
     <PageContainer className="flex flex-col gap-3 pb-24 md:pb-0">
       <div className="flex flex-col gap-0.5">
-        <h1 className="text-xl font-semibold">Library</h1>
+        <div className="flex justify-between items-center w-full">
+          <h1 className="text-xl font-semibold">Library</h1>
+          <Button variant="primary" icon={PlusIcon} href="/library/card-importer">
+            Add
+          </Button>
+        </div>
         <p className="text-sm opacity-50">
           {entries.length} unique {pluralize("card", entries.length)} · {totalQty} total · HoloDex{" "}
           {((entries.length / holoDexCount) * 100).toFixed(3)}%
