@@ -165,10 +165,7 @@ function AllCardsContent() {
     clearFiltersHref,
   } = useCardFilters(allCards);
 
-  // Local state for the input so the field updates instantly. The actual search
-  // (Fuse.js + re-render) is wrapped in startTransition so React treats it as
-  // low-priority — Safari's JS engine can't finish Fuse.js within one frame
-  // budget, causing input lag without this.
+  // Local state for the input so the field updates instantly. Makes it not bad
   const [inputValue, setInputValue] = useState(search);
 
   useEffect(() => {
