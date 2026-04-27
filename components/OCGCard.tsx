@@ -127,7 +127,7 @@ function OCGCardInner({
         shadow
         shadowBlur={30}
         glareIntensity={isHolo ? 0 : glareIntensity}
-        glareMask={isHolo ? "url(/card_masks/metal-no-black.png)" : undefined}
+        glareMask={isHolo ? "url(/card_masks/noiseTexture.png)" : undefined}
         glareMaskMode="alpha"
         glareMaskComposite="intersect"
       >
