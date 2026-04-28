@@ -115,7 +115,7 @@ function OCGCardInner({
       onClick={onClick}
       onMouseEnter={onHover ? () => onHover(true) : undefined}
       onMouseLeave={onHover ? () => onHover(false) : undefined}
-      className={href ? undefined : className}
+      className={classes("select-none", href ? undefined : className)}
       onTouchStart={href ? undefined : handleTouchStart}
       onTouchMove={href ? undefined : handleTouchMove}
       onTouchEnd={href ? undefined : handleTouchEnd}
