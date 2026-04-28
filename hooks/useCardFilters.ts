@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo, useState, useCallback, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import {usePathname, useSearchParams} from "next/navigation";
 import Fuse from "fuse.js";
-import { type GetAllCardsQuery } from "@/generated/graphql";
+import {type GetAllCardsQuery} from "@/generated/graphql";
 
 export type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
@@ -46,8 +46,8 @@ function parseList(value: string | null): string[] {
 
 function parseNumber(value: string | null): number | undefined {
   if (!value) return undefined;
-  const n = parseInt(value, 10);
-  return isNaN(n) ? undefined : n;
+  const n = Number.parseInt(value, 10);
+  return Number.isNaN(n) ? undefined : n;
 }
 
 function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder): number {
@@ -66,7 +66,7 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
     case "rarity": {
       const ra = RARITY_ORDER[a.rarity] ?? 99;
       const rb = RARITY_ORDER[b.rarity] ?? 99;
-      result = ra !== rb ? ra - rb : a.rarity.localeCompare(b.rarity);
+      result = ra === rb ? a.rarity.localeCompare(b.rarity) : ra - rb;
       break;
     }
     case "hp": {
@@ -76,8 +76,8 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       break;
     }
     case "bloomLevel": {
-      const ba = a.bloomLevel != null ? (BLOOM_ORDER[a.bloomLevel] ?? 99) : 99;
-      const bb = b.bloomLevel != null ? (BLOOM_ORDER[b.bloomLevel] ?? 99) : 99;
+      const ba = a.bloomLevel == null ? 99 : (BLOOM_ORDER[a.bloomLevel] ?? 99);
+      const bb = b.bloomLevel == null ? 99 : (BLOOM_ORDER[b.bloomLevel] ?? 99);
       result = ba - bb;
       break;
     }
@@ -86,8 +86,11 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       const db = b.releaseDate;
       if (!da && !db) result = 0;
       else if (!da) result = 1;
-      else if (!db) result = -1;
-      else result = da.localeCompare(db);
+      else if (db) {
+        result = da.localeCompare(db);
+      } else {
+        result = -1;
+      }
       break;
     }
   }
@@ -98,13 +101,11 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
 // ─── hook ────────────────────────────────────────────────────────────────────
 
 export function useCardFilters(allCards: CardNode[]) {
-  const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   // Snapshot searchParams for this render — only the lazy initializers below
   // actually use it, and those run once on mount.
-  const initial = searchParams;
+  const initial = useSearchParams();
 
   // ── state — initialized once from the URL on mount ──────────────────────
   const [search, setSearch] = useState(() => initial.get("search") ?? "");
@@ -134,7 +135,7 @@ export function useCardFilters(allCards: CardNode[]) {
   // Sync state from URL on browser back/forward (popstate fires only on history nav, not router.replace)
   useEffect(() => {
     function syncFromUrl() {
-      const params = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(globalThis.location.search);
       setSearch(params.get("search") ?? "");
       setRarityFilter(parseList(params.get("rarity")));
       setCardTypeFilter(parseList(params.get("cardType")));
@@ -149,23 +150,29 @@ export function useCardFilters(allCards: CardNode[]) {
       setSortField((params.get("sortField") as SortField) ?? "releaseDate");
       setSortOrder((params.get("sortOrder") as SortOrder) ?? "asc");
     }
-    window.addEventListener("popstate", syncFromUrl);
-    return () => window.removeEventListener("popstate", syncFromUrl);
+    globalThis.addEventListener("popstate", syncFromUrl);
+    return () => globalThis.removeEventListener("popstate", syncFromUrl);
   }, []);
 
-  // ── URL writer — updates the URL without reading the subscription ────────
+  // ── URL writer — updates the address bar only, without triggering a Next navigation ────────
   const updateUrl = useCallback(
     (key: string, value: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(globalThis.location.search);
+
       if (value == null || value === "") {
         params.delete(key);
       } else {
         params.set(key, value);
       }
+
       const qs = params.toString();
-      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+      const nextUrl = `${pathname}${qs ? `?${qs}` : ""}`;
+
+      if (nextUrl === `${globalThis.location.pathname}${globalThis.location.search}`) return;
+
+      globalThis.history.replaceState(null, "", nextUrl);
     },
-    [router, pathname, searchParams]
+    [pathname]
   );
 
   // ── update* — set state + sync URL ──────────────────────────────────────
@@ -235,14 +242,14 @@ export function useCardFilters(allCards: CardNode[]) {
   const updateMinHp = useCallback(
     (v: number | undefined) => {
       setMinHp(v);
-      updateUrl("minHp", v != null ? String(v) : null);
+      updateUrl("minHp", v == null ? null : String(v));
     },
     [updateUrl]
   );
   const updateMaxHp = useCallback(
     (v: number | undefined) => {
       setMaxHp(v);
-      updateUrl("maxHp", v != null ? String(v) : null);
+      updateUrl("maxHp", v == null ? null : String(v));
     },
     [updateUrl]
   );
@@ -332,8 +339,7 @@ export function useCardFilters(allCards: CardNode[]) {
       if (isLimitedFilter === true && !card.isLimited) return false;
       if (isBuzzFilter === true && !card.isBuzz) return false;
       if (minHp !== undefined && (card.hp == null || card.hp < minHp)) return false;
-      if (maxHp !== undefined && (card.hp == null || card.hp > maxHp)) return false;
-      return true;
+      return !(maxHp !== undefined && (card.hp == null || card.hp > maxHp));
     });
   }, [
     afterSearch,
