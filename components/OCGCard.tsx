@@ -124,7 +124,8 @@ function OCGCardInner({
         className={classes(
           "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
           "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
-          isHolo ? `${styles.holo}` : undefined
+          isHolo ? `${styles.holo}` : undefined,
+          href || onClick ? "cursor-pointer" : undefined
         )}
         exitDelay={0}
         tiltFactor={tiltFactor}

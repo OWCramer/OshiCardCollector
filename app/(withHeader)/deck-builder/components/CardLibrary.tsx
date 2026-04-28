@@ -6,7 +6,7 @@ import { useGetAllCardsLazyQuery } from "@/generated/graphql";
 import { useCardMap } from "@/lib/use-card-map";
 import { useLibrary } from "@/lib/library-context";
 import { Card } from "@/components/Card";
-import { OCG_CARD_SIZES, OCGCard } from "@/components/OCGCard";
+import { OCG_CARD_SIZES, OCGCard, type OCGCardData } from "@/components/OCGCard";
 import { Checkbox } from "@/components/Checkbox";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCardLibraryFilters } from "./useCardLibraryFilters";
@@ -16,7 +16,12 @@ const GAP = 8;
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = OCG_CARD_SIZES["xs"];
 const ROW_HEIGHT = CARD_HEIGHT + GAP;
 
-export function CardLibrary() {
+interface CardLibraryProps {
+  onCardHover?: (card: OCGCardData | null) => void;
+  onCardClick?: (card: OCGCardData) => void;
+}
+
+export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
   const { user, loading: authLoading } = useAuth();
   const { library, loading: libraryLoading } = useLibrary();
   const [fetchGQLCards, { data: gqlData, loading: gqlCardsLoading }] = useGetAllCardsLazyQuery();
@@ -124,7 +129,8 @@ export function CardLibrary() {
               >
                 {row.map((card) => (
                   <OCGCard
-                    onHover={(isHovered) => console.log("hover", card.id, isHovered)}
+                    onHover={(isHovered) => onCardHover?.(isHovered ? card : null)}
+                    onClick={() => onCardClick?.(card)}
                     size="xs"
                     key={card.id}
                     card={card}
