@@ -169,12 +169,14 @@ function AllCardsContent() {
   const [inputValue, setInputValue] = useState(search);
 
   useEffect(() => {
+    if (inputValue === search) return;
+
     const timeoutId = globalThis.setTimeout(() => {
       setDebouncedSearch(inputValue);
     }, 10);
 
     return () => globalThis.clearTimeout(timeoutId);
-  }, [inputValue, setDebouncedSearch]);
+  }, [inputValue, search, setDebouncedSearch]);
 
   function handleSearchChange(v: string) {
     setInputValue(v);
