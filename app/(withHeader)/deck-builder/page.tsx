@@ -19,10 +19,16 @@ export default function DeckBuilderPage() {
   }
 
   return (
-    <PageContainer className="flex flex-row justify-evenly gap-3" fullWidth>
-      <CardPreview />
-      <CardLibrary />
-      <DeckPreview />
+    <PageContainer className="flex flex-row gap-3 items-start" fullWidth>
+      <div className="flex-1 min-w-0 h-[calc(100dvh-6rem)]">
+        <CardPreview />
+      </div>
+      <div className="flex-1 min-w-0 h-[calc(100dvh-6rem)]">
+        <CardLibrary />
+      </div>
+      <div className="flex-1 min-w-0 h-[calc(100dvh-6rem)]">
+        <DeckPreview />
+      </div>
     </PageContainer>
   );
 }

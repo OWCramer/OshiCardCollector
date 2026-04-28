@@ -8,6 +8,7 @@ import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
+  xs: { width: 130, height: 182 },
   sm: { width: 160, height: 224 },
   lg: { width: 240, height: 336 },
   detail: { width: 370, height: 517 },
@@ -43,6 +44,7 @@ interface OCGCardProps {
   scaleFactor?: number;
   glareIntensity?: number;
   onClick?: () => void;
+  onHover?: (hovered: boolean) => void;
   className?: string;
   overlayText?: string;
 }
@@ -60,6 +62,7 @@ function OCGCardInner({
   scaleFactor = 1.03,
   glareIntensity = 0.5,
   onClick,
+  onHover,
   className,
   overlayText,
 }: OCGCardProps) {
@@ -110,6 +113,8 @@ function OCGCardInner({
       style={{ width: `${width}px`, height: `${height}px` }}
       key={card?.id}
       onClick={onClick}
+      onMouseEnter={onHover ? () => onHover(true) : undefined}
+      onMouseLeave={onHover ? () => onHover(false) : undefined}
       className={href ? undefined : className}
       onTouchStart={href ? undefined : handleTouchStart}
       onTouchMove={href ? undefined : handleTouchMove}
