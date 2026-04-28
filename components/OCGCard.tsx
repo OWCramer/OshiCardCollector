@@ -176,6 +176,7 @@ function OCGCardInner({
               glare-intensity={glareIntensity}
             >
               <Image
+                loading="eager"
                 src={imageUrl}
                 alt={name}
                 width={width}
