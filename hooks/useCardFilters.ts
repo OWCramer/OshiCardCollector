@@ -1,9 +1,9 @@
 "use client";
 
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {usePathname, useSearchParams} from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import Fuse from "fuse.js";
-import {type GetAllCardsQuery} from "@/generated/graphql";
+import { type GetAllCardsQuery } from "@/generated/graphql";
 
 export type CardNode = GetAllCardsQuery["cards"]["nodes"][number];
 
