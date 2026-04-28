@@ -1,21 +1,71 @@
+"use client";
+
 import { Card } from "@/components/Card";
-import type { OCGCardData } from "@/components/OCGCard";
+import { OCGCard } from "@/components/OCGCard";
+import { type FullCardEntry } from "./CardLibrary";
+import { CardHeader } from "./preview/CardHeader";
+import { CardStats } from "./preview/CardStats";
+import { ArtsList } from "./preview/ArtsList";
+import { OshiSkillsList } from "./preview/OshiSkillsList";
+import { KeywordsList } from "./preview/KeywordsList";
+import { CardMeta } from "./preview/CardMeta";
+import { Divider } from "@/components/Divider";
 
 interface CardPreviewProps {
-  card?: OCGCardData | null;
+  card?: FullCardEntry | null;
 }
 
 export function CardPreview({ card }: CardPreviewProps) {
+  if (!card) {
+    return (
+      <Card className="flex text-2xl font-semibold justify-center items-center w-full h-full">
+        Hover over a card to see details!
+      </Card>
+    );
+  }
+
   return (
-    <Card className="w-full h-full">
-      {card ? (
-        <div>
-          <p>{card.id}</p>
-          <p>{card.name}</p>
-        </div>
-      ) : (
-        "Card Preview"
+    <Card className="flex flex-col w-full h-full overflow-y-auto overscroll-contain gap-4 px-6">
+      <OCGCard
+        className="self-center my-1"
+        card={card}
+        size="detail"
+        scaleFactor={1}
+        tiltFactor={0.1}
+      />
+      <Divider />
+      <CardHeader
+        cardNumber={card.cardNumber}
+        name={card.name}
+        cardType={card.cardType}
+        colors={card.colors?.length ? card.colors : [card.color]}
+        rarity={card.rarity}
+        isBuzz={card.isBuzz}
+        isLimited={card.isLimited}
+        tags={card.tags}
+      />
+      <CardStats
+        hp={card.hp}
+        life={card.life}
+        bloomLevel={card.bloomLevel}
+        batonPass={card.batonPass}
+        supportType={card.supportType}
+      />
+      {card.specialText && (
+        <p className="text-sm opacity-75 whitespace-pre-wrap">{card.specialText}</p>
       )}
+      <KeywordsList keywords={card.keywords} />
+      <ArtsList arts={card.arts} />
+      <OshiSkillsList oshiSkills={card.oshiSkills} />
+      {card.extraText && (
+        <div className="flex flex-col gap-2">
+          <h2 className="text-sm font-semibold opacity-80">Extra</h2>
+          <Card>
+            <p className="text-sm opacity-75 whitespace-pre-wrap">{card.extraText}</p>
+          </Card>
+        </div>
+      )}
+      <CardMeta className="mt-auto" illustrator={card.illustrator} releaseDate={card.releaseDate} />
     </Card>
   );
 }

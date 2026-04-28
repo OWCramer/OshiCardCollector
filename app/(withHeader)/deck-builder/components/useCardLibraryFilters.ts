@@ -13,6 +13,7 @@ type Card = {
   colors: string[];
   bloomLevel?: string | null;
   releaseDate?: string | null;
+  supportType?: string | null;
   tags: string[];
   specialText?: string | null;
   extraText?: string | null;
@@ -61,6 +62,8 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
   const [typeFilter, setTypeFilter] = useState<string[]>([]);
   const [bloomFilter, setBloomFilter] = useState<string[]>([]);
   const [rarityFilter, setRarityFilter] = useState<string[]>([]);
+  const [tagsFilter, setTagsFilter] = useState<string[]>([]);
+  const [supportTypeFilter, setSupportTypeFilter] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
   const filterOptions = useMemo(
@@ -69,13 +72,16 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
       typeOptions: [...new Set(cards.map((c) => c.cardType))].map((v) => ({ value: v, label: v })),
       bloomOptions: [...new Set(cards.map((c) => c.bloomLevel).filter(Boolean) as string[])].map((v) => ({ value: v, label: v })),
       rarityOptions: [...new Set(cards.map((c) => c.rarity))].map((v) => ({ value: v, label: v })),
+      tagOptions: [...new Set(cards.flatMap((c) => c.tags))].sort().map((v) => ({ value: v, label: v })),
+      supportTypeOptions: [...new Set(cards.map((c) => c.supportType).filter(Boolean) as string[])].map((v) => ({ value: v, label: v })),
     }),
     [cards]
   );
 
   const hasActiveFilters =
     colorFilter.length > 0 || typeFilter.length > 0 ||
-    bloomFilter.length > 0 || rarityFilter.length > 0;
+    bloomFilter.length > 0 || rarityFilter.length > 0 ||
+    tagsFilter.length > 0 || supportTypeFilter.length > 0;
 
   const fuse = useMemo(
     () =>
@@ -96,14 +102,18 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
     if (typeFilter.length) result = result.filter((c) => typeFilter.includes(c.cardType));
     if (bloomFilter.length) result = result.filter((c) => c.bloomLevel != null && bloomFilter.includes(c.bloomLevel));
     if (rarityFilter.length) result = result.filter((c) => rarityFilter.includes(c.rarity));
+    if (tagsFilter.length) result = result.filter((c) => tagsFilter.some((t) => c.tags.includes(t)));
+    if (supportTypeFilter.length) result = result.filter((c) => c.supportType != null && supportTypeFilter.includes(c.supportType));
     return sortCards(result, sortField, sortOrder);
-  }, [search, fuse, cards, colorFilter, typeFilter, bloomFilter, rarityFilter, sortField, sortOrder]);
+  }, [search, fuse, cards, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, supportTypeFilter, sortField, sortOrder]);
 
   function clearFilters() {
     setColorFilter([]);
     setTypeFilter([]);
     setBloomFilter([]);
     setRarityFilter([]);
+    setTagsFilter([]);
+    setSupportTypeFilter([]);
   }
 
   return {
@@ -115,6 +125,8 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
     typeFilter, setTypeFilter,
     bloomFilter, setBloomFilter,
     rarityFilter, setRarityFilter,
+    tagsFilter, setTagsFilter,
+    supportTypeFilter, setSupportTypeFilter,
     filterOptions,
     hasActiveFilters,
     clearFilters,

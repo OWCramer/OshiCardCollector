@@ -28,6 +28,10 @@ export function CardLibraryControls({
   setBloomFilter,
   rarityFilter,
   setRarityFilter,
+  tagsFilter,
+  setTagsFilter,
+  supportTypeFilter,
+  setSupportTypeFilter,
   filterOptions,
   hasActiveFilters,
   clearFilters,
@@ -116,6 +120,26 @@ export function CardLibraryControls({
                 onValueChange={setRarityFilter}
                 items={filterOptions.rarityOptions}
                 className="w-28"
+              />
+            )}
+            {filterOptions.tagOptions.length > 0 && (
+              <Dropdown
+                multi
+                label="Tags"
+                value={tagsFilter}
+                onValueChange={setTagsFilter}
+                items={filterOptions.tagOptions}
+                className="w-28"
+              />
+            )}
+            {filterOptions.supportTypeOptions.length > 1 && (
+              <Dropdown
+                multi
+                label="Support Type"
+                value={supportTypeFilter}
+                onValueChange={setSupportTypeFilter}
+                items={filterOptions.supportTypeOptions}
+                className="w-36"
               />
             )}
           </div>

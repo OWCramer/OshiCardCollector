@@ -263,7 +263,7 @@ export type GetCardQueryVariables = Exact<{
 }>;
 
 
-export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, supportType?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> } | null };
+export type GetCardQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> } | null };
 
 export type GetCardPricingQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -278,7 +278,15 @@ export type GetAllCardsQueryVariables = Exact<{
 }>;
 
 
-export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, supportType?: string | null, setNames: Array<string>, tags: Array<string>, extraText?: string | null, specialText?: string | null, releaseDate?: string | null }> } };
+export type GetAllCardsQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, colors: Array<string>, rarity: string, imageUrl?: string | null, hp?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, setNames: Array<string>, tags: Array<string>, extraText?: string | null, specialText?: string | null, releaseDate?: string | null }> } };
+
+export type GetAllCardsFullQueryVariables = Exact<{
+  filters?: InputMaybe<CardFilter>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetAllCardsFullQuery = { __typename?: 'Query', cards: { __typename?: 'CardConnection', nodes: Array<{ __typename?: 'Card', id: number, name: string, cardNumber: string, cardType: CardType, color: string, colors: Array<string>, rarity: string, imageUrl?: string | null, cardUrl?: string | null, hp?: number | null, life?: number | null, bloomLevel?: string | null, isBuzz: boolean, isLimited: boolean, batonPass?: Array<string> | null, extraText?: string | null, specialText?: string | null, illustrator?: string | null, releaseDate?: string | null, supportType?: string | null, setNames: Array<string>, tags: Array<string>, arts: Array<{ __typename?: 'Art', name: string, damage?: string | null, cost?: Array<string> | null, effectText?: string | null, damageBonuses: Array<{ __typename?: 'DamageBonus', amount: string, colors: Array<string> }> }>, oshiSkills: Array<{ __typename?: 'OshiSkill', name: string, skillType: OshiSkillType, cost?: string | null, usageLimit?: string | null, effectText: string }>, qna: Array<{ __typename?: 'QA', question: string, answer: string }>, keywords: Array<{ __typename?: 'Keyword', description: string, title: string, type: string }> }> } };
 
 export type GetRaritiesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -323,7 +331,6 @@ export const GetCardDocument = gql`
     specialText
     illustrator
     releaseDate
-    supportType
     setNames
     tags
     arts {
@@ -466,7 +473,6 @@ export const GetAllCardsDocument = gql`
       bloomLevel
       isBuzz
       isLimited
-      supportType
       setNames
       tags
       extraText
@@ -513,6 +519,99 @@ export type GetAllCardsQueryHookResult = ReturnType<typeof useGetAllCardsQuery>;
 export type GetAllCardsLazyQueryHookResult = ReturnType<typeof useGetAllCardsLazyQuery>;
 export type GetAllCardsSuspenseQueryHookResult = ReturnType<typeof useGetAllCardsSuspenseQuery>;
 export type GetAllCardsQueryResult = Apollo.QueryResult<GetAllCardsQuery, GetAllCardsQueryVariables>;
+export const GetAllCardsFullDocument = gql`
+    query GetAllCardsFull($filters: CardFilter, $pageSize: Int) {
+  cards(filter: $filters, pageSize: $pageSize) {
+    nodes {
+      id
+      name
+      cardNumber
+      cardType
+      color
+      colors
+      rarity
+      imageUrl
+      cardUrl
+      hp
+      life
+      bloomLevel
+      isBuzz
+      isLimited
+      batonPass
+      extraText
+      specialText
+      illustrator
+      releaseDate
+      supportType
+      setNames
+      tags
+      arts {
+        name
+        damage
+        cost
+        effectText
+        damageBonuses {
+          amount
+          colors
+        }
+      }
+      oshiSkills {
+        name
+        skillType
+        cost
+        usageLimit
+        effectText
+      }
+      qna {
+        question
+        answer
+      }
+      keywords {
+        description
+        title
+        type
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllCardsFullQuery__
+ *
+ * To run a query within a React component, call `useGetAllCardsFullQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllCardsFullQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllCardsFullQuery({
+ *   variables: {
+ *      filters: // value for 'filters'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetAllCardsFullQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>(GetAllCardsFullDocument, options);
+      }
+export function useGetAllCardsFullLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>(GetAllCardsFullDocument, options);
+        }
+// @ts-ignore
+export function useGetAllCardsFullSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>;
+export function useGetAllCardsFullSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetAllCardsFullQuery | undefined, GetAllCardsFullQueryVariables>;
+export function useGetAllCardsFullSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>(GetAllCardsFullDocument, options);
+        }
+export type GetAllCardsFullQueryHookResult = ReturnType<typeof useGetAllCardsFullQuery>;
+export type GetAllCardsFullLazyQueryHookResult = ReturnType<typeof useGetAllCardsFullLazyQuery>;
+export type GetAllCardsFullSuspenseQueryHookResult = ReturnType<typeof useGetAllCardsFullSuspenseQuery>;
+export type GetAllCardsFullQueryResult = Apollo.QueryResult<GetAllCardsFullQuery, GetAllCardsFullQueryVariables>;
 export const GetRaritiesDocument = gql`
     query GetRarities {
   rarities

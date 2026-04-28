@@ -2,30 +2,31 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useGetAllCardsLazyQuery } from "@/generated/graphql";
-import { useCardMap } from "@/lib/use-card-map";
+import { type GetAllCardsFullQuery, useGetAllCardsFullLazyQuery } from "@/generated/graphql";
 import { useLibrary } from "@/lib/library-context";
 import { Card } from "@/components/Card";
-import { OCG_CARD_SIZES, OCGCard, type OCGCardData } from "@/components/OCGCard";
+import { OCG_CARD_SIZES, OCGCard } from "@/components/OCGCard";
 import { Checkbox } from "@/components/Checkbox";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCardLibraryFilters } from "./useCardLibraryFilters";
 import { CardLibraryControls } from "./CardLibraryControls";
+
+export type FullCardEntry = GetAllCardsFullQuery["cards"]["nodes"][number];
 
 const GAP = 8;
 const { width: CARD_WIDTH, height: CARD_HEIGHT } = OCG_CARD_SIZES["xs"];
 const ROW_HEIGHT = CARD_HEIGHT + GAP;
 
 interface CardLibraryProps {
-  onCardHover?: (card: OCGCardData | null) => void;
-  onCardClick?: (card: OCGCardData) => void;
+  onCardHover?: (card: FullCardEntry | null) => void;
+  onCardClick?: (card: FullCardEntry) => void;
 }
 
 export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
   const { user, loading: authLoading } = useAuth();
   const { library, loading: libraryLoading } = useLibrary();
-  const [fetchGQLCards, { data: gqlData, loading: gqlCardsLoading }] = useGetAllCardsLazyQuery();
-  const { cardMap, loading: cardsLoading } = useCardMap(!user);
+  const [fetchGQLCards, { data: gqlData, loading: gqlCardsLoading }] =
+    useGetAllCardsFullLazyQuery();
   const [useFireLibrary, setUseFireLibrary] = useState(true);
 
   const hasLibraryCards = !libraryLoading && Object.keys(library).length > 0;
@@ -33,14 +34,20 @@ export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
 
   useEffect(() => {
     if (authLoading || libraryLoading) return;
-    if (!user || !hasLibraryCards || !useFireLibrary) fetchGQLCards({ variables: { pageSize: 0 } });
-  }, [authLoading, libraryLoading, user, hasLibraryCards, useFireLibrary, fetchGQLCards]);
+    fetchGQLCards({ variables: { pageSize: 0 } });
+  }, [authLoading, libraryLoading, fetchGQLCards]);
+
+  const fullCardMap = useMemo(() => {
+    const map: Record<number, FullCardEntry> = {};
+    for (const card of gqlData?.cards.nodes ?? []) map[card.id] = card;
+    return map;
+  }, [gqlData]);
 
   const cards = useMemo(() => {
-    if (authLoading || libraryLoading || gqlCardsLoading || cardsLoading) return [];
+    if (authLoading || libraryLoading || gqlCardsLoading) return [];
     if (allowSwitch && useFireLibrary) {
       return Object.values(library)
-        .map((entry) => cardMap[entry.cardId])
+        .map((entry) => fullCardMap[entry.cardId])
         .filter(Boolean);
     }
     return gqlData?.cards.nodes ?? [];
@@ -48,11 +55,10 @@ export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
     authLoading,
     libraryLoading,
     gqlCardsLoading,
-    cardsLoading,
     allowSwitch,
     useFireLibrary,
     library,
-    cardMap,
+    fullCardMap,
     gqlData,
   ]);
 
@@ -84,7 +90,7 @@ export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
       result.push(filters.displayCards.slice(i, i + columns));
     }
     return result;
-  }, [filters.displayCards, columns]);
+  }, [filters, columns]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
@@ -96,11 +102,14 @@ export function CardLibrary({ onCardHover, onCardClick }: CardLibraryProps) {
 
   return (
     <Card className="flex flex-col gap-2 w-full h-full">
-      <div className="flex flex-row justify-between">
-        <h2>Available Cards</h2>
+      <div className="flex items-center justify-between shrink-0">
+        <div className="flex items-baseline gap-2">
+          <h2 className="font-semibold">Cards</h2>
+          <span className="text-sm opacity-50">{filters.displayCards.length} available</span>
+        </div>
         {allowSwitch && (
           <Checkbox
-            label="Only show owned cards"
+            label="Only show owned"
             checked={useFireLibrary}
             onCheckedChange={setUseFireLibrary}
           />
