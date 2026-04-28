@@ -118,7 +118,7 @@ function OCGCardInner({
     >
       <hover-tilt
         className={classes(
-          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
+          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%] z-10",
           "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
           isHolo ? `${styles.holo}` : undefined
         )}
@@ -167,7 +167,7 @@ function OCGCardInner({
           <div className="w-fit h-full items-center justify-center">
             <hover-tilt
               className={classes(
-                "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
+                "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%] z-10",
                 isHolo ? `${styles.holo}` : undefined
               )}
               exitDelay={0}
