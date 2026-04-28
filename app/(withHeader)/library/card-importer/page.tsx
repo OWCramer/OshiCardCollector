@@ -30,7 +30,7 @@ function AddedCardButton({
         <OCGCard card={card} size="lg" overlayText={`${card.cardNumber} - ${card.rarity}`} />
       </div>
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-0 w-62 pb-1 px-1">
+        <div className="flex items-center gap-0 w-62 pb-1 px-1 -z-10">
           <Button
             icon={willDelete ? TrashIcon : MinusIcon}
             variant={willDelete ? "destructive" : "primary"}
