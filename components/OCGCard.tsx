@@ -8,6 +8,7 @@ import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
+  xs: { width: 130, height: 182 },
   sm: { width: 160, height: 224 },
   lg: { width: 240, height: 336 },
   detail: { width: 370, height: 517 },
