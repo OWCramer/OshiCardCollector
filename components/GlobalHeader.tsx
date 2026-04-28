@@ -101,13 +101,22 @@ function CollectionMenu() {
   }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div
+      aria-label="Collection menu"
+      aria-haspopup="menu"
+      aria-expanded={open}
+      className="relative"
+      ref={ref}
+    >
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex shrink-0 items-center gap-2 h-9 px-4 rounded-xl text-black dark:text-white backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.97] transition-all duration-150 cursor-pointer select-none"
       >
         Collection
-        <ChevronDownIcon size={13} className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")} />
+        <ChevronDownIcon
+          size={13}
+          className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")}
+        />
       </button>
 
       {open && (
@@ -139,9 +148,24 @@ export function GlobalHeader() {
     {
       label: "Theme",
       items: [
-        { label: "Light", icon: SunIcon, active: theme === "light", onClick: () => setTheme("light") },
-        { label: "Dark", icon: MoonIcon, active: theme === "dark", onClick: () => setTheme("dark") },
-        { label: "System", icon: SunMoonIcon, active: theme === "system", onClick: () => setTheme("system") },
+        {
+          label: "Light",
+          icon: SunIcon,
+          active: theme === "light",
+          onClick: () => setTheme("light"),
+        },
+        {
+          label: "Dark",
+          icon: MoonIcon,
+          active: theme === "dark",
+          onClick: () => setTheme("dark"),
+        },
+        {
+          label: "System",
+          icon: SunMoonIcon,
+          active: theme === "system",
+          onClick: () => setTheme("system"),
+        },
       ],
     },
     {
@@ -154,9 +178,19 @@ export function GlobalHeader() {
   ];
 
   const triggerNode = (
-    <div className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150">
+    <div
+      aria-haspopup="menu"
+      className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150"
+    >
       {user?.photoURL ? (
-        <Image src={user.photoURL} alt="Profile" width={32} height={32} className="rounded-full" referrerPolicy="no-referrer" />
+        <Image
+          src={user.photoURL}
+          alt="Profile"
+          width={32}
+          height={32}
+          className="rounded-full"
+          referrerPolicy="no-referrer"
+        />
       ) : (
         <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
       )}
@@ -167,7 +201,7 @@ export function GlobalHeader() {
     <>
       {mobileOpen && <MobileMenuOverlay onClose={() => setMobileOpen(false)} />}
 
-      <header className="fixed w-full h-15.25 z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
+      <nav className="fixed w-full h-15.25 z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
         {/* Hamburger — mobile only */}
         <button
           onClick={() => setMobileOpen(true)}
@@ -177,27 +211,39 @@ export function GlobalHeader() {
           <MenuIcon size={20} />
         </button>
 
-        <Link href={user ? "/all-cards" : "/"} className="text-lg font-semibold hover:opacity-80 transition-opacity">
+        <Link
+          href={user ? "/all-cards" : "/"}
+          className="text-lg font-semibold hover:opacity-80 transition-opacity"
+        >
           oshi.cards
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2">
-          <Button href="/all-cards" variant="transparent" highContrast>Cards</Button>
-          <Button href="/sets" variant="transparent" highContrast>Sets</Button>
+        <div
+          aria-label="Main navigation"
+          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2"
+        >
+          <Button href="/all-cards" variant="transparent" highContrast>
+            Cards
+          </Button>
+          <Button href="/sets" variant="transparent" highContrast>
+            Sets
+          </Button>
           <CollectionMenu />
-        </nav>
+        </div>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div aria-label="User account actions" className="ml-auto flex items-center gap-1">
           {user ? (
             <Menu sections={sections} align="right" menuClassName="w-44">
               {triggerNode}
             </Menu>
           ) : (
-            <Button href="/login" variant="transparent" highContrast>Sign in</Button>
+            <Button href="/login" variant="transparent" highContrast>
+              Sign in
+            </Button>
           )}
         </div>
-      </header>
+      </nav>
     </>
   );
 }

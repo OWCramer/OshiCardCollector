@@ -40,9 +40,9 @@ export default function RootLayout({
               <AuthProvider>
                 <LibraryProvider>
                   <FavoritesProvider>
-                    <main id="app-root" className="flex flex-col flex-1">
+                    <div aria-label="App root" id="app-root" className="flex flex-col flex-1">
                       {children}
-                    </main>
+                    </div>
                   </FavoritesProvider>
                 </LibraryProvider>
               </AuthProvider>
