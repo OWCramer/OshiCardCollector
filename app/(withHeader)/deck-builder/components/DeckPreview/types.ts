@@ -10,9 +10,9 @@ export interface TabProps {
   onCardHover?: (card: FullCardEntry | null) => void;
 }
 
-export const BLOOM_ORDER: Record<string, number> = { Spot: 0, Debut: 1, "1st": 2, "2nd": 3 };
+export const BLOOM_ORDER: Record<string, number> = { "Spot": 0, "Debut": 1, "1st": 2, "2nd": 3 };
 
-export const OSHI_SCALE = 0.62;
+export const OSHI_SCALE = 0.68;
 const { width: XS_W, height: XS_H } = OCG_CARD_SIZES["xs"];
 export const OSHI_W = Math.round(XS_W * OSHI_SCALE);
 export const OSHI_H = Math.round(XS_H * OSHI_SCALE);

@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { CardPreview } from "@/app/(withHeader)/deck-builder/components/CardPreview";
 import { CardLibrary, type FullCardEntry } from "@/app/(withHeader)/deck-builder/components/CardLibrary";
 import { DeckPreview, type DeckEntry } from "@/app/(withHeader)/deck-builder/components/DeckPreview";
 import { maxForCard } from "@/app/(withHeader)/deck-builder/components/useDeckRules";
+import { type RawDeckCard } from "@/lib/useDeckStorage";
 import { useBreakpoint } from "@/lib/useBreakpoint";
+import { useLeaveWarning } from "@/lib/useLeaveWarning";
 
 export default function DeckBuilderPage() {
   const useSinglePane = !useBreakpoint("xl");
@@ -14,10 +16,7 @@ export default function DeckBuilderPage() {
   const [deck, setDeck] = useState<DeckEntry[]>([]);
   const [allCards, setAllCards] = useState<FullCardEntry[]>([]);
 
-  const cheerOptions = useMemo(
-    () => allCards.filter((c) => c.cardType === "CHEER"),
-    [allCards]
-  );
+  useLeaveWarning(deck.length > 0);
 
   function handleCardHover(card: FullCardEntry | null) {
     if (card) setHoveredCard(card);
@@ -28,7 +27,6 @@ export default function DeckBuilderPage() {
       const existing = prev.find((e) => e.card.id === card.id);
       const qty = existing?.quantity ?? 0;
       if (qty >= maxForCard(card)) return prev;
-      // Block a second oshi even if it's a different card
       if (card.cardType === "OSHI" && prev.some((e) => e.card.cardType === "OSHI")) return prev;
       if (existing) {
         return prev.map((e) => (e.card.id === card.id ? { ...e, quantity: qty + 1 } : e));
@@ -54,12 +52,24 @@ export default function DeckBuilderPage() {
     setDeck((prev) => [...prev.filter((e) => e.card.cardType !== "CHEER"), ...entries]);
   }
 
+  function handleLoadDeck(rawCards: RawDeckCard[]) {
+    const cardMap = new Map(allCards.map((c) => [c.id, c]));
+    const entries: DeckEntry[] = rawCards
+      .map(({ cardId, quantity }) => {
+        const card = cardMap.get(cardId);
+        return card ? { card, quantity } : null;
+      })
+      .filter((e): e is DeckEntry => e !== null);
+    setDeck(entries);
+  }
+
   const sharedDeckProps = {
     deck,
+    allCards,
     onRemoveCard: removeCard,
     onClearDeck: clearDeck,
-    cheerOptions,
     onSetCheer: setCheer,
+    onLoadDeck: handleLoadDeck,
   };
 
   if (useSinglePane) {

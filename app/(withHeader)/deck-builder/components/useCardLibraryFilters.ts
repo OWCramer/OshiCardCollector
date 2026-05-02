@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
 
-export type SortField = "name" | "releaseDate" | "rarity" | "cardNumber";
+export type SortField = "name" | "releaseDate" | "rarity" | "cardNumber" | "color" | "bloomLevel" | "type";
 export type SortOrder = "asc" | "desc";
 
 type Card = {
@@ -23,11 +23,26 @@ const RARITY_ORDER: Record<string, number> = {
   C: 0, U: 1, R: 2, RR: 3, SR: 4, HR: 5, OSR: 6, SEC: 7,
 };
 
+const COLOR_ORDER: Record<string, number> = {
+  WHITE: 0, RED: 1, BLUE: 2, GREEN: 3, YELLOW: 4, PURPLE: 5,
+};
+
+const BLOOM_ORDER: Record<string, number> = {
+  Spot: 0, Debut: 1, "1st": 2, "2nd": 3,
+};
+
+const TYPE_ORDER: Record<string, number> = {
+  OSHI: 0, HOLOMEM: 1, SUPPORT: 2, CHEER: 3,
+};
+
 export const SORT_ITEMS: { value: SortField; label: string }[] = [
   { value: "releaseDate", label: "Release Date" },
   { value: "name", label: "Name" },
   { value: "rarity", label: "Rarity" },
   { value: "cardNumber", label: "Card #" },
+  { value: "color", label: "Color" },
+  { value: "bloomLevel", label: "Bloom Level" },
+  { value: "type", label: "Type" },
 ];
 
 function sortCards<T extends Card>(cards: T[], field: SortField, order: SortOrder): T[] {
@@ -49,6 +64,24 @@ function sortCards<T extends Card>(cards: T[], field: SortField, order: SortOrde
       case "cardNumber":
         r = a.cardNumber.localeCompare(b.cardNumber);
         break;
+      case "color": {
+        const ca = COLOR_ORDER[a.colors[0]] ?? 99;
+        const cb = COLOR_ORDER[b.colors[0]] ?? 99;
+        r = ca !== cb ? ca - cb : a.name.localeCompare(b.name);
+        break;
+      }
+      case "bloomLevel": {
+        const ba = BLOOM_ORDER[a.bloomLevel ?? ""] ?? 99;
+        const bb = BLOOM_ORDER[b.bloomLevel ?? ""] ?? 99;
+        r = ba !== bb ? ba - bb : a.name.localeCompare(b.name);
+        break;
+      }
+      case "type": {
+        const ta = TYPE_ORDER[a.cardType] ?? 99;
+        const tb = TYPE_ORDER[b.cardType] ?? 99;
+        r = ta !== tb ? ta - tb : a.name.localeCompare(b.name);
+        break;
+      }
     }
     return order === "asc" ? r : -r;
   });

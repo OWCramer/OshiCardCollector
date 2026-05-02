@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import { type Tab, Tabs } from "@/components/Tabs";
 import { type FullCardEntry } from "../CardLibrary";
 import { calculateCheerDistribution, useDeckRules } from "../useDeckRules";
+import { type RawDeckCard } from "@/lib/useDeckStorage";
 import { DeckHeader } from "./DeckHeader";
 import { DeckStatsPanel } from "./DeckStatsPanel";
 import { HolomemTab } from "./HolomemTab";
@@ -19,8 +20,9 @@ interface DeckPreviewProps {
   onRemoveCard: (cardId: number) => void;
   onClearDeck: () => void;
   onCardHover?: (card: FullCardEntry | null) => void;
-  cheerOptions: FullCardEntry[];
+  allCards: FullCardEntry[];
   onSetCheer: (entries: DeckEntry[]) => void;
+  onLoadDeck: (rawCards: RawDeckCard[]) => void;
 }
 
 export function DeckPreview({
@@ -28,9 +30,11 @@ export function DeckPreview({
   onRemoveCard,
   onClearDeck,
   onCardHover,
-  cheerOptions,
+  allCards,
   onSetCheer,
+  onLoadDeck,
 }: DeckPreviewProps) {
+  const cheerOptions = useMemo(() => allCards.filter((c) => c.cardType === "CHEER"), [allCards]);
   const [tab, setTab] = useState<DeckTab>("holomem");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const { stats } = useDeckRules(deck);
@@ -129,10 +133,12 @@ export function DeckPreview({
 
       <DeckStatsPanel
         stats={stats}
+        rawCards={deck.map((e) => ({ cardId: e.card.id, quantity: e.quantity }))}
         onRemoveOshi={() => stats.oshiEntry && onRemoveCard(stats.oshiEntry.card.id)}
         onCardHover={onCardHover}
         canAutofillCheer={cheerOptions.length > 0}
         onAutofillCheer={handleAutofillCheer}
+        onLoadDeck={onLoadDeck}
       />
     </Card>
   );

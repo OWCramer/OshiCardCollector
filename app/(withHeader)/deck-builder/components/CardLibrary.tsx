@@ -14,6 +14,9 @@ import { useVirtualGrid } from "./useVirtualGrid";
 import { useDeckRules } from "./useDeckRules";
 import { type DeckEntry } from "./DeckPreview";
 
+const COLOR_ORDER: Record<string, number> = { WHITE: 0, RED: 1, BLUE: 2, GREEN: 3, YELLOW: 4, PURPLE: 5 };
+const BLOOM_ORDER: Record<string, number> = { Spot: 0, Debut: 1, "1st": 2, "2nd": 3 };
+
 export type FullCardEntry = GetAllCardsFullQuery["cards"]["nodes"][number];
 
 type LibraryTab = "all" | "oshi" | "holomem" | "cheer" | "support";
@@ -50,6 +53,7 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
     useGetAllCardsFullLazyQuery();
   const [useFireLibrary, setUseFireLibrary] = useState(true);
   const [libraryTab, setLibraryTab] = useState<LibraryTab>("all");
+  const [groupTab, setGroupTab] = useState("all");
 
   const { isAtLimit } = useDeckRules(deck);
 
@@ -88,7 +92,48 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
     return allCards.filter((c) => c.cardType === type);
   }, [allCards, libraryTab]);
 
-  const filters = useCardLibraryFilters(tabFilteredCards);
+  // Reset group tab when the primary tab changes
+  useEffect(() => { setGroupTab("all"); }, [libraryTab]);
+
+  // Derive sub-tab options from the current tab's cards
+  const groupTabs = useMemo((): Tab<string>[] => {
+    if (libraryTab === "oshi" || libraryTab === "cheer") {
+      const colors = [...new Set(tabFilteredCards.flatMap((c) => c.colors))]
+        .sort((a, b) => (COLOR_ORDER[a] ?? 99) - (COLOR_ORDER[b] ?? 99));
+      if (colors.length <= 1) return [];
+      return [
+        { value: "all", label: "All" },
+        ...colors.map((c) => ({ value: c, label: c.charAt(0) + c.slice(1).toLowerCase() })),
+      ];
+    }
+    if (libraryTab === "holomem") {
+      const levels = [...new Set(tabFilteredCards.map((c) => c.bloomLevel).filter(Boolean) as string[])]
+        .sort((a, b) => (BLOOM_ORDER[a] ?? 99) - (BLOOM_ORDER[b] ?? 99));
+      if (levels.length <= 1) return [];
+      return [{ value: "all", label: "All" }, ...levels.map((l) => ({ value: l, label: l }))];
+    }
+    if (libraryTab === "support") {
+      const types = [...new Set(tabFilteredCards.map((c) => c.supportType).filter(Boolean) as string[])]
+        .sort((a, b) => a.localeCompare(b));
+      if (types.length <= 1) return [];
+      return [{ value: "all", label: "All" }, ...types.map((t) => ({ value: t, label: t }))];
+    }
+    return [];
+  }, [libraryTab, tabFilteredCards]);
+
+  // Apply group sub-filter
+  const groupFilteredCards = useMemo(() => {
+    if (groupTab === "all" || groupTabs.length === 0) return tabFilteredCards;
+    if (libraryTab === "oshi" || libraryTab === "cheer")
+      return tabFilteredCards.filter((c) => c.colors.includes(groupTab));
+    if (libraryTab === "holomem")
+      return tabFilteredCards.filter((c) => c.bloomLevel === groupTab);
+    if (libraryTab === "support")
+      return tabFilteredCards.filter((c) => c.supportType === groupTab);
+    return tabFilteredCards;
+  }, [groupTab, groupTabs.length, libraryTab, tabFilteredCards]);
+
+  const filters = useCardLibraryFilters(groupFilteredCards);
   const { scrollRef, rows, virtualizer, gridWidth, gridOffset } = useVirtualGrid(filters.displayCards, {
     itemWidth: CARD_WIDTH,
     itemHeight: CARD_HEIGHT,
@@ -112,6 +157,12 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
       </div>
 
       <Tabs value={libraryTab} onValueChange={setLibraryTab} tabs={LIBRARY_TABS} fullWidth className="shrink-0" />
+
+      {groupTabs.length > 0 && (
+        <div className="overflow-x-auto shrink-0 -mx-1 px-1">
+          <Tabs value={groupTab} onValueChange={setGroupTab} tabs={groupTabs} fullWidth />
+        </div>
+      )}
 
       <CardLibraryControls {...filters} />
 
