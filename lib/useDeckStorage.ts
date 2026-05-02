@@ -20,6 +20,8 @@ export interface SavedDeckMeta {
   name: string;
   cardCount: number;
   isWip: boolean;
+  oshiCardId?: number;
+  oshiImageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,14 +52,17 @@ export function useDeckStorage() {
     name: string,
     cards: RawDeckCard[],
     isWip: boolean,
-    deckId?: string
+    deckId?: string,
+    oshiCardId?: number,
+    oshiImageUrl?: string
   ): Promise<string> {
     const cardCount = cards.reduce((s, c) => s + c.quantity, 0);
+    const oshiFields = oshiCardId != null ? { oshiCardId, oshiImageUrl: oshiImageUrl ?? null } : {};
 
     if (deckId) {
       await setDoc(
         deckDoc(deckId),
-        { name, cardCount, cards, isWip, updatedAt: serverTimestamp() },
+        { name, cardCount, cards, isWip, ...oshiFields, updatedAt: serverTimestamp() },
         { merge: true }
       );
       return deckId;
@@ -68,6 +73,7 @@ export function useDeckStorage() {
       cardCount,
       cards,
       isWip,
+      ...oshiFields,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -84,6 +90,8 @@ export function useDeckStorage() {
         name: data.name as string,
         cardCount: data.cardCount as number,
         isWip: (data.isWip as boolean) ?? false,
+        oshiCardId: data.oshiCardId as number | undefined,
+        oshiImageUrl: data.oshiImageUrl as string | undefined,
         createdAt: (data.createdAt?.toDate() ?? new Date()) as Date,
         updatedAt: (data.updatedAt?.toDate() ?? new Date()) as Date,
       };
@@ -96,9 +104,17 @@ export function useDeckStorage() {
     return snapshot.data().cards as RawDeckCard[];
   }
 
+  async function renameDeck(deckId: string, newName: string): Promise<void> {
+    await setDoc(
+      deckDoc(deckId),
+      { name: newName, updatedAt: serverTimestamp() },
+      { merge: true }
+    );
+  }
+
   async function deleteDeck(deckId: string): Promise<void> {
     await deleteDoc(deckDoc(deckId));
   }
 
-  return { saveDeck, listDecks, loadDeck, deleteDeck, isAuthenticated: !!user };
+  return { saveDeck, listDecks, loadDeck, renameDeck, deleteDeck, isAuthenticated: !!user };
 }

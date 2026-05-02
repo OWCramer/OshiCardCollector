@@ -19,6 +19,7 @@ import {
   MenuIcon,
   MoonIcon,
   PlaySquareIcon,
+  SquareStackIcon,
   SunIcon,
   SunMoonIcon,
   UserIcon,
@@ -79,6 +80,9 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         <button onClick={() => navigate("/library")} className={MOBILE_NAV_ITEM_CLASS}>
           <LibraryIcon size={18} /> Library
         </button>
+        <button onClick={() => navigate("/decks")} className={MOBILE_NAV_ITEM_CLASS}>
+          <SquareStackIcon size={18} /> Decks
+        </button>
       </nav>
     </div>
   );
@@ -120,6 +124,9 @@ function CollectionMenu() {
           </Link>
           <Link href="/library" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
             <LibraryIcon size={14} /> Library
+          </Link>
+          <Link href="/decks" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
+            <SquareStackIcon size={14} /> Decks
           </Link>
         </div>
       )}

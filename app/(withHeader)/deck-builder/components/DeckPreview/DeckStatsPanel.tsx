@@ -180,7 +180,13 @@ export function DeckStatsPanel({
         </div>
       </Modal>
 
-      <SaveDeckModal isOpen={showSave} onClose={() => setShowSave(false)} rawCards={rawCards} />
+      <SaveDeckModal
+        isOpen={showSave}
+        onClose={() => setShowSave(false)}
+        rawCards={rawCards}
+        oshiCardId={oshiCard?.id}
+        oshiImageUrl={oshiCard?.imageUrl ?? undefined}
+      />
 
       <LoadDeckModal
         isOpen={showLoad}

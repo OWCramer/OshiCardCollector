@@ -13,9 +13,11 @@ interface SaveDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
   rawCards: RawDeckCard[];
+  oshiCardId?: number;
+  oshiImageUrl?: string;
 }
 
-export function SaveDeckModal({ isOpen, onClose, rawCards }: SaveDeckModalProps) {
+export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImageUrl }: SaveDeckModalProps) {
   const [name, setName] = useState("My Deck");
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export function SaveDeckModal({ isOpen, onClose, rawCards }: SaveDeckModalProps)
     setSaving(true);
     setError(null);
     try {
-      const id = await saveDeck(name.trim(), rawCards, isWip, deckId);
+      const id = await saveDeck(name.trim(), rawCards, isWip, deckId, oshiCardId, oshiImageUrl);
       setSavedId(id);
       setTimeout(() => {
         setSavedId(null);
