@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
@@ -75,6 +75,16 @@ function OCGCardInner({
 
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const touchMovedRef = useRef(false);
+  const isOverCard = useRef(false);
+
+  useEffect(() => {
+    if (!onHover) return;
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Alt" && isOverCard.current) onHover(true);
+    };
+    document.addEventListener("keyup", handleKeyUp);
+    return () => document.removeEventListener("keyup", handleKeyUp);
+  }, [onHover]);
 
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
@@ -113,8 +123,8 @@ function OCGCardInner({
       style={{ width: `${width}px`, height: `${height}px` }}
       key={card?.id}
       onClick={onClick}
-      onMouseEnter={onHover ? () => onHover(true) : undefined}
-      onMouseLeave={onHover ? () => onHover(false) : undefined}
+      onMouseEnter={onHover ? (e) => { isOverCard.current = true; if (!e.altKey) onHover(true); } : undefined}
+      onMouseLeave={onHover ? (e) => { isOverCard.current = false; if (!e.altKey) onHover(false); } : undefined}
       className={classes("select-none", href ? undefined : className)}
       onTouchStart={href ? undefined : handleTouchStart}
       onTouchMove={href ? undefined : handleTouchMove}
