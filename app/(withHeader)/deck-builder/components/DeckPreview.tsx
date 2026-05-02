@@ -17,9 +17,10 @@ interface DeckPreviewProps {
   deck: DeckEntry[];
   onRemoveCard: (cardId: number) => void;
   onClearDeck: () => void;
+  onCardHover?: (card: FullCardEntry | null) => void;
 }
 
-export function DeckPreview({ deck, onRemoveCard, onClearDeck }: DeckPreviewProps) {
+export function DeckPreview({ deck, onRemoveCard, onClearDeck, onCardHover }: DeckPreviewProps) {
   const totalCards = deck.reduce((sum, e) => sum + e.quantity, 0);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
@@ -37,14 +38,32 @@ export function DeckPreview({ deck, onRemoveCard, onClearDeck }: DeckPreviewProp
         onClearClick={() => setShowClearConfirm(true)}
       />
 
-      <Modal title="Clear deck?" isOpen={showClearConfirm} onClose={() => setShowClearConfirm(false)}>
+      <Modal
+        title="Clear deck?"
+        isOpen={showClearConfirm}
+        onClose={() => setShowClearConfirm(false)}
+      >
         <div className="flex flex-col gap-4">
-          <p className="text-sm opacity-75">This will remove all {totalCards} cards from your deck.</p>
+          <p className="text-sm opacity-75">
+            This will remove all {totalCards} cards from your deck.
+          </p>
           <div className="flex gap-2">
-            <Button variant="transparent" highContrast className="flex-1" onClick={() => setShowClearConfirm(false)}>
+            <Button
+              variant="transparent"
+              highContrast
+              className="flex-1"
+              onClick={() => setShowClearConfirm(false)}
+            >
               Cancel
             </Button>
-            <Button variant="destructive" className="flex-1" onClick={() => { onClearDeck(); setShowClearConfirm(false); }}>
+            <Button
+              variant="destructive"
+              className="flex-1"
+              onClick={() => {
+                onClearDeck();
+                setShowClearConfirm(false);
+              }}
+            >
               Clear deck
             </Button>
           </div>
@@ -74,6 +93,7 @@ export function DeckPreview({ deck, onRemoveCard, onClearDeck }: DeckPreviewProp
               >
                 {rows[virtualRow.index].map(({ card, quantity }) => (
                   <OCGCard
+                    onHover={(isHovered) => onCardHover?.(isHovered ? card : null)}
                     key={card.id}
                     card={card}
                     size="xs"
@@ -90,7 +110,11 @@ export function DeckPreview({ deck, onRemoveCard, onClearDeck }: DeckPreviewProp
   );
 }
 
-function DeckHeader({ totalCards, hasCards, onClearClick }: {
+function DeckHeader({
+  totalCards,
+  hasCards,
+  onClearClick,
+}: {
   totalCards: number;
   hasCards: boolean;
   onClearClick: () => void;

@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { CardPreview } from "@/app/(withHeader)/deck-builder/components/CardPreview";
-import { CardLibrary } from "@/app/(withHeader)/deck-builder/components/CardLibrary";
-import { DeckPreview, type DeckEntry } from "@/app/(withHeader)/deck-builder/components/DeckPreview";
+import {
+  CardLibrary,
+  type FullCardEntry,
+} from "@/app/(withHeader)/deck-builder/components/CardLibrary";
+import {
+  type DeckEntry,
+  DeckPreview,
+} from "@/app/(withHeader)/deck-builder/components/DeckPreview";
 import { useBreakpoint } from "@/lib/useBreakpoint";
-import { type FullCardEntry } from "@/app/(withHeader)/deck-builder/components/CardLibrary";
 
 export default function DeckBuilderPage() {
   const useSinglePane = !useBreakpoint("xl");
@@ -21,7 +26,7 @@ export default function DeckBuilderPage() {
     setDeck((prev) => {
       const existing = prev.find((e) => e.card.id === card.id);
       if (existing) {
-        return prev.map((e) => e.card.id === card.id ? { ...e, quantity: e.quantity + 1 } : e);
+        return prev.map((e) => (e.card.id === card.id ? { ...e, quantity: e.quantity + 1 } : e));
       }
       return [...prev, { card, quantity: 1 }];
     });
@@ -36,7 +41,7 @@ export default function DeckBuilderPage() {
       const existing = prev.find((e) => e.card.id === cardId);
       if (!existing) return prev;
       if (existing.quantity <= 1) return prev.filter((e) => e.card.id !== cardId);
-      return prev.map((e) => e.card.id === cardId ? { ...e, quantity: e.quantity - 1 } : e);
+      return prev.map((e) => (e.card.id === cardId ? { ...e, quantity: e.quantity - 1 } : e));
     });
   }
 
@@ -58,7 +63,12 @@ export default function DeckBuilderPage() {
         <CardLibrary onCardHover={handleCardHover} onCardClick={addCard} />
       </div>
       <div className="flex-1 min-w-0 h-[calc(100dvh-6rem)]">
-        <DeckPreview deck={deck} onRemoveCard={removeCard} onClearDeck={clearDeck} />
+        <DeckPreview
+          deck={deck}
+          onRemoveCard={removeCard}
+          onClearDeck={clearDeck}
+          onCardHover={handleCardHover}
+        />
       </div>
     </PageContainer>
   );

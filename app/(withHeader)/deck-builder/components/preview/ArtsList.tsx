@@ -27,11 +27,19 @@ export function ArtsList({ arts }: ArtsListProps) {
       <h2 className="text-sm font-semibold opacity-80">Arts</h2>
       {arts.map((art, i) => (
         <Card key={i}>
-          <div className="flex flex-row justify-between items-center text-sm font-semibold">
+          <div className="flex flex-row justify-between items-center gap-2 text-sm font-semibold">
             {art.cost && art.cost.length > 0 && (
               <div className="flex gap-1">
                 {art.cost.map((c, j) => (
-                  <Image key={j} src={getArtCostImageSrc(c)} alt={c} width={145} height={145} title={c} className="w-5 h-5" />
+                  <Image
+                    key={j}
+                    src={getArtCostImageSrc(c)}
+                    alt={c}
+                    width={145}
+                    height={145}
+                    title={c}
+                    className="w-5 h-5"
+                  />
                 ))}
               </div>
             )}
@@ -43,7 +51,15 @@ export function ArtsList({ arts }: ArtsListProps) {
                 const src = color ? getDamageBonusImageSrc(color) : null;
                 if (!src) return null;
                 return (
-                  <Image key={k} src={src} alt={color ?? "bonus"} width={100} height={34} title={`+${bonus.amount ?? "?"} vs ${color}`} className="h-3.5 w-auto" />
+                  <Image
+                    key={k}
+                    src={src}
+                    alt={color ?? "bonus"}
+                    width={100}
+                    height={34}
+                    title={`+${bonus.amount ?? "?"} vs ${color}`}
+                    className="h-3.5 w-auto"
+                  />
                 );
               })}
             </div>

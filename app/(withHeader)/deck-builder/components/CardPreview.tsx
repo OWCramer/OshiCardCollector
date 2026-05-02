@@ -8,8 +8,7 @@ import { CardStats } from "./preview/CardStats";
 import { ArtsList } from "./preview/ArtsList";
 import { OshiSkillsList } from "./preview/OshiSkillsList";
 import { KeywordsList } from "./preview/KeywordsList";
-import { CardMeta } from "./preview/CardMeta";
-import { Divider } from "@/components/Divider";
+import { CardMeta } from "@/app/(withHeader)/deck-builder/components/preview/CardMeta";
 
 interface CardPreviewProps {
   card?: FullCardEntry | null;
@@ -25,32 +24,36 @@ export function CardPreview({ card }: CardPreviewProps) {
   }
 
   return (
-    <Card className="flex flex-col w-full h-full overflow-y-auto overscroll-contain gap-4 px-6">
-      <OCGCard
-        className="self-center my-1"
-        card={card}
-        size="detail"
-        scaleFactor={1}
-        tiltFactor={0.1}
-      />
-      <Divider />
-      <CardHeader
-        cardNumber={card.cardNumber}
-        name={card.name}
-        cardType={card.cardType}
-        colors={card.colors?.length ? card.colors : [card.color]}
-        rarity={card.rarity}
-        isBuzz={card.isBuzz}
-        isLimited={card.isLimited}
-        tags={card.tags}
-      />
-      <CardStats
-        hp={card.hp}
-        life={card.life}
-        bloomLevel={card.bloomLevel}
-        batonPass={card.batonPass}
-        supportType={card.supportType}
-      />
+    <Card className="flex flex-col w-full h-full overflow-y-auto overscroll-contain gap-4 px-3">
+      <div className="flex flex-row gap-4">
+        <OCGCard
+          className="shrink-0 self-start"
+          card={card}
+          size="sm"
+          scaleFactor={1}
+          tiltFactor={0}
+          glareIntensity={0}
+        />
+        <div className="flex flex-col gap-2">
+          <CardHeader
+            cardNumber={card.cardNumber}
+            name={card.name}
+            cardType={card.cardType}
+            colors={card.colors?.length ? card.colors : [card.color]}
+            rarity={card.rarity}
+            isBuzz={card.isBuzz}
+            isLimited={card.isLimited}
+            tags={card.tags}
+          />
+          <CardStats
+            hp={card.hp}
+            life={card.life}
+            bloomLevel={card.bloomLevel}
+            batonPass={card.batonPass}
+            supportType={card.supportType}
+          />
+        </div>
+      </div>
       {card.specialText && (
         <p className="text-sm opacity-75 whitespace-pre-wrap">{card.specialText}</p>
       )}
