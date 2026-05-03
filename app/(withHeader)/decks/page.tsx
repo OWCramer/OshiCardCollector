@@ -9,7 +9,7 @@ import { PageLoading } from "@/components/PageLoading";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Modal } from "@/components/Modal";
-import { WipBadge } from "@/app/(withHeader)/deck-builder/components/DeckPreview/WipBadge";
+import { Badge } from "@/components/Badge";
 import { PencilIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import pluralize from "pluralize";
@@ -140,7 +140,7 @@ function DecksContent() {
                   <div className="flex flex-col gap-0.5 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold truncate">{deck.name}</span>
-                      {deck.isWip && <WipBadge />}
+                      {deck.isWip && <Badge color="amber">WIP</Badge>}
                     </div>
                     <span className="text-xs opacity-50">
                       {deck.cardCount} cards · Updated {deck.updatedAt.toLocaleDateString()}

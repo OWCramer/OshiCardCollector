@@ -5,7 +5,7 @@ import { Modal } from "@/components/Modal";
 import { Button } from "@/components/Button";
 import { type RawDeckCard, type SavedDeckMeta, useDeckStorage } from "@/lib/useDeckStorage";
 import { TrashIcon } from "lucide-react";
-import { WipBadge } from "./WipBadge";
+import { Badge } from "@/components/Badge";
 
 interface LoadDeckModalProps {
   isOpen: boolean;
@@ -77,7 +77,7 @@ export function LoadDeckModal({ isOpen, onClose, hasDeckCards, onLoad }: LoadDec
             <div className="flex flex-col min-w-0 gap-0.5">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm truncate">{deck.name}</span>
-                {deck.isWip && <WipBadge />}
+                {deck.isWip && <Badge color="amber">WIP</Badge>}
               </div>
               <span className="text-xs opacity-50">
                 {deck.cardCount} cards · {deck.updatedAt.toLocaleDateString()}
