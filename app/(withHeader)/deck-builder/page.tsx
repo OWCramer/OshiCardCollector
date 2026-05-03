@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useCallback, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/PageContainer";
 import { CardPreview } from "@/app/(withHeader)/deck-builder/components/CardPreview";
@@ -85,15 +85,21 @@ function DeckBuilderContent() {
     setLoadedDeckName(deckName);
   }
 
-  function handleCardsLoaded(cards: FullCardEntry[]) {
-    setAllCards(cards);
-    if (autoLoadId && !hasAutoLoaded.current) {
-      hasAutoLoaded.current = true;
-      loadDeck(autoLoadId)
-        .then(({ cards: rawCards, name }) => handleLoadDeck(rawCards, cards, autoLoadId, name))
-        .catch(() => {});
-    }
-  }
+  const handleCardsLoaded = useCallback(
+    (cards: FullCardEntry[]) => {
+      setAllCards(cards);
+      if (autoLoadId && !hasAutoLoaded.current) {
+        hasAutoLoaded.current = true;
+        loadDeck(autoLoadId)
+          .then(({ cards: rawCards, name }) => handleLoadDeck(rawCards, cards, autoLoadId, name))
+          .catch((err) => console.error("Failed to auto-load deck:", err));
+      }
+    },
+    // handleLoadDeck is stable (only depends on setDeck/setLoadedDeckId/setLoadedDeckName)
+    // autoLoadId is a stable string from searchParams
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [autoLoadId, loadDeck],
+  );
 
   const sharedDeckProps = {
     deck,
