@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { useDeckStorage, type SavedDeckMeta } from "@/lib/useDeckStorage";
+import { type SavedDeckMeta, useDeckStorage } from "@/lib/useDeckStorage";
 import { PageContainer } from "@/components/PageContainer";
 import { PageLoading } from "@/components/PageLoading";
 import { Button } from "@/components/Button";
@@ -115,7 +115,10 @@ function DecksContent() {
             >
               {/* Oshi card banner */}
               <div className="overflow-hidden">
-                <div className="relative w-full aspect-[63/88] bg-black/10 dark:bg-white/5 flex items-center justify-center" style={{ marginBottom: "-15px" }}>
+                <div
+                  className="relative w-full aspect-63/88 bg-black/10 dark:bg-white/5 flex items-center justify-center"
+                  style={{ marginBottom: "-15px" }}
+                >
                   {deck.oshiImageUrl ? (
                     <Image
                       src={deck.oshiImageUrl}
@@ -127,7 +130,7 @@ function DecksContent() {
                   ) : (
                     <span className="text-xs opacity-30">No Oshi</span>
                   )}
-                  <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-black/60 to-transparent" />
                 </div>
               </div>
 

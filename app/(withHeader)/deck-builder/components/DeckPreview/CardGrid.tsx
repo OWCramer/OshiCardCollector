@@ -19,7 +19,5 @@ export function CardGrid({ entries, onRemoveCard, onCardHover }: TabProps) {
 }
 
 export function EmptyTabState({ text }: { text: string }) {
-  return (
-    <div className="flex items-center justify-center py-8 text-sm opacity-40">{text}</div>
-  );
+  return <div className="flex items-center justify-center py-8 text-sm opacity-40">{text}</div>;
 }

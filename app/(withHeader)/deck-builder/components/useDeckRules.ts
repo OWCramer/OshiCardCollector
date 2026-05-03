@@ -115,3 +115,18 @@ export function calculateCheerDistribution(deck: DeckEntry[]): Record<string, nu
 
   return result;
 }
+
+/**
+ * Builds a cheer deck from `calculateCheerDistribution`, picking one cheer card
+ * per color from `cheerOptions`. Used by both desktop and mobile deck builders.
+ */
+export function buildCheerEntries(deck: DeckEntry[], cheerOptions: FullCardEntry[]): DeckEntry[] {
+  const distribution = calculateCheerDistribution(deck);
+  const entries: DeckEntry[] = [];
+  for (const [color, qty] of Object.entries(distribution)) {
+    if (qty <= 0) continue;
+    const card = cheerOptions.find((c) => c.colors.includes(color));
+    if (card) entries.push({ card, quantity: qty });
+  }
+  return entries;
+}

@@ -6,7 +6,7 @@ import { Modal } from "@/components/Modal";
 import { Button } from "@/components/Button";
 import { type Tab, Tabs } from "@/components/Tabs";
 import { type FullCardEntry } from "../CardLibrary";
-import { calculateCheerDistribution, useDeckRules } from "../useDeckRules";
+import { buildCheerEntries, useDeckRules } from "../useDeckRules";
 import { type RawDeckCard } from "@/lib/useDeckStorage";
 import { DeckHeader } from "./DeckHeader";
 import { DeckStatsPanel } from "./DeckStatsPanel";
@@ -47,30 +47,19 @@ export function DeckPreview({
   const cheerEntries = useMemo(() => deck.filter((e) => e.card.cardType === "CHEER"), [deck]);
   const supportEntries = useMemo(() => deck.filter((e) => e.card.cardType === "SUPPORT"), [deck]);
 
+  function tabLabel(base: string, entries: DeckEntry[]): string {
+    const total = entries.reduce((s, e) => s + e.quantity, 0);
+    return total > 0 ? `${base} · ${total}` : base;
+  }
+
   const deckTabs: Tab<DeckTab>[] = [
-    {
-      value: "holomem",
-      label: `Holomem${holomemEntries.length ? ` · ${holomemEntries.reduce((s, e) => s + e.quantity, 0)}` : ""}`,
-    },
-    {
-      value: "cheer",
-      label: `Cheer${cheerEntries.length ? ` · ${cheerEntries.reduce((s, e) => s + e.quantity, 0)}` : ""}`,
-    },
-    {
-      value: "support",
-      label: `Support${supportEntries.length ? ` · ${supportEntries.reduce((s, e) => s + e.quantity, 0)}` : ""}`,
-    },
+    { value: "holomem", label: tabLabel("Holomem", holomemEntries) },
+    { value: "cheer",   label: tabLabel("Cheer", cheerEntries) },
+    { value: "support", label: tabLabel("Support", supportEntries) },
   ];
 
   function handleAutofillCheer() {
-    const distribution = calculateCheerDistribution(deck);
-    const entries: DeckEntry[] = [];
-    for (const [color, qty] of Object.entries(distribution)) {
-      if (qty <= 0) continue;
-      const card = cheerOptions.find((c) => c.colors.includes(color));
-      if (card) entries.push({ card, quantity: qty });
-    }
-    onSetCheer(entries);
+    onSetCheer(buildCheerEntries(deck, cheerOptions));
   }
 
   return (

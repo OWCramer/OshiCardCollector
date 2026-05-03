@@ -9,7 +9,7 @@ import { classes } from "@/lib/classes";
 import { type FullCardEntry } from "../CardLibrary";
 import { type DeckEntry } from "../DeckPreview/types";
 import { type RawDeckCard } from "@/lib/useDeckStorage";
-import { calculateCheerDistribution, DECK_LIMITS, useDeckRules } from "../useDeckRules";
+import { buildCheerEntries, DECK_LIMITS, useDeckRules } from "../useDeckRules";
 import { MobileDeckGrid } from "./MobileDeckGrid";
 import { SaveDeckModal } from "../DeckPreview/SaveDeckModal";
 import { LoadDeckModal } from "../DeckPreview/LoadDeckModal";
@@ -114,14 +114,7 @@ export function MobileDeckPreview({
   const [showLoadConfirm, setShowLoadConfirm] = useState(false);
 
   function handleAutofillCheer() {
-    const distribution = calculateCheerDistribution(deck);
-    const entries: DeckEntry[] = [];
-    for (const [color, qty] of Object.entries(distribution)) {
-      if (qty <= 0) continue;
-      const card = cheerOptions.find((c) => c.colors.includes(color));
-      if (card) entries.push({ card, quantity: qty });
-    }
-    onSetCheer(entries);
+    onSetCheer(buildCheerEntries(deck, cheerOptions));
   }
 
   function handleLoadClick() {
