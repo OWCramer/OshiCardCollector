@@ -14,6 +14,7 @@ import {
   ChevronDownIcon,
   HeartIcon,
   LayersIcon,
+  LayoutListIcon,
   LibraryIcon,
   LogOutIcon,
   MenuIcon,
@@ -69,6 +70,9 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         </button>
         <button onClick={() => navigate("/sets")} className={MOBILE_NAV_ITEM_CLASS}>
           <LayersIcon size={18} /> Sets
+        </button>
+        <button onClick={() => navigate("/deck-builder")} className={MOBILE_NAV_ITEM_CLASS}>
+          <LayoutListIcon size={18} /> Deck Builder
         </button>
 
         <div className="mt-2 px-4 pb-1 text-xs font-semibold uppercase tracking-wider opacity-40">

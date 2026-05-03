@@ -10,6 +10,7 @@ import { maxForCard } from "@/app/(withHeader)/deck-builder/components/useDeckRu
 import { useDeckStorage, type RawDeckCard } from "@/lib/useDeckStorage";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { useLeaveWarning } from "@/lib/useLeaveWarning";
+import { MobileDeckBuilder } from "@/app/(withHeader)/deck-builder/components/Mobile";
 
 function DeckBuilderContent() {
   const searchParams = useSearchParams();
@@ -97,10 +98,20 @@ function DeckBuilderContent() {
 
   if (useSinglePane) {
     return (
-      <PageContainer className="flex flex-col justify-evenly">
-        <DeckPreview {...sharedDeckProps} />
-        <CardLibrary deck={deck} onCardsLoaded={handleCardsLoaded} />
-      </PageContainer>
+      <div className="fixed inset-x-0 top-[3.8125rem] bottom-0 overflow-hidden flex flex-col px-4 pt-4 pb-4">
+        <MobileDeckBuilder
+          deck={deck}
+          allCards={allCards}
+          onRemoveCard={removeCard}
+          onClearDeck={clearDeck}
+          onSetCheer={setCheer}
+          onLoadDeck={(rawCards, deckId, deckName) => handleLoadDeck(rawCards, allCards, deckId, deckName)}
+          onCardsLoaded={handleCardsLoaded}
+          addCard={addCard}
+          loadedDeckId={loadedDeckId}
+          loadedDeckName={loadedDeckName}
+        />
+      </div>
     );
   }
 

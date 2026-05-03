@@ -23,6 +23,11 @@ html {
   background: var(--background);
 }
 
+@keyframes longPressRing {
+  from { stroke-dashoffset: 87.96; }
+  to   { stroke-dashoffset: 0; }
+}
+
 body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
