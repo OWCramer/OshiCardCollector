@@ -7,14 +7,13 @@ import { useAuth } from "@/lib/auth-context";
 import { Card } from "@/components/Card";
 import { OCG_CARD_SIZES, OCGCard } from "@/components/OCGCard";
 import { Checkbox } from "@/components/Checkbox";
-import { Tabs, type Tab } from "@/components/Tabs";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Modal } from "@/components/Modal";
 import { Dropdown } from "@/components/Dropdown";
 import { SlidersHorizontalIcon } from "lucide-react";
 import { classes } from "@/lib/classes";
-import { useCardLibraryFilters, SORT_ITEMS, type SortField } from "../useCardLibraryFilters";
+import { SORT_ITEMS, type SortField, useCardLibraryFilters } from "../useCardLibraryFilters";
 import { useVirtualGrid } from "../useVirtualGrid";
 import { useDeckRules } from "../useDeckRules";
 import { type DeckEntry } from "../DeckPreview/types";
@@ -24,7 +23,7 @@ export type FullCardEntry = GetAllCardsFullQuery["cards"]["nodes"][number];
 
 type LibraryTab = "all" | "oshi" | "holomem" | "cheer" | "support";
 
-const LIBRARY_TABS: Tab<LibraryTab>[] = [
+const LIBRARY_TABS: { value: LibraryTab; label: string }[] = [
   { value: "all", label: "All" },
   { value: "oshi", label: "Oshi" },
   { value: "holomem", label: "Holomem" },
@@ -33,11 +32,17 @@ const LIBRARY_TABS: Tab<LibraryTab>[] = [
 ];
 
 const TAB_CARD_TYPE: Partial<Record<LibraryTab, string>> = {
-  oshi: "OSHI", holomem: "HOLOMEM", cheer: "CHEER", support: "SUPPORT",
+  oshi: "OSHI",
+  holomem: "HOLOMEM",
+  cheer: "CHEER",
+  support: "SUPPORT",
 };
 
-const GAP = 8;
-const { width: CARD_WIDTH, height: CARD_HEIGHT } = OCG_CARD_SIZES["xs"];
+const SCALE = 0.8;
+const GAP = 6;
+const { width: XS_W, height: XS_H } = OCG_CARD_SIZES["xs"];
+const CARD_WIDTH = Math.round(XS_W * SCALE);
+const CARD_HEIGHT = Math.round(XS_H * SCALE);
 
 // r=14 → circumference = 2π×14 ≈ 87.96
 const RING_C = 87.96;
@@ -69,11 +74,10 @@ function LibraryCard({
 
   return (
     <div
-      className={classes("relative select-none overflow-hidden", atLimit && "opacity-40 grayscale")}
+      className={classes("relative select-none overflow-hidden shrink-0", atLimit && "opacity-40 grayscale")}
       style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
     >
-      {/* pointerEvents:none prevents OCGCard's built-in touch modal from firing */}
-      <div style={{ pointerEvents: "none" }}>
+      <div style={{ width: XS_W, height: XS_H, transform: `scale(${SCALE})`, transformOrigin: "top left", pointerEvents: "none" }}>
         <OCGCard
           card={card}
           size="xs"
@@ -91,7 +95,9 @@ function LibraryCard({
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <svg width="36" height="36" style={{ transform: "rotate(-90deg)" }}>
             <circle
-              cx="18" cy="18" r="14"
+              cx="18"
+              cy="18"
+              r="14"
               fill="none"
               stroke="#60a5fa"
               strokeWidth="3"
@@ -114,7 +120,8 @@ export function MobileCardLibrary({
 }: MobileCardLibraryProps) {
   const { user, loading: authLoading } = useAuth();
   const { library, loading: libraryLoading } = useLibrary();
-  const [fetchGQLCards, { data: gqlData, loading: gqlCardsLoading }] = useGetAllCardsFullLazyQuery();
+  const [fetchGQLCards, { data: gqlData, loading: gqlCardsLoading }] =
+    useGetAllCardsFullLazyQuery();
   const [useFireLibrary, setUseFireLibrary] = useState(true);
   const [libraryTab, setLibraryTab] = useState<LibraryTab>("all");
   const [showFilters, setShowFilters] = useState(false);
@@ -141,10 +148,21 @@ export function MobileCardLibrary({
   const allCards = useMemo(() => {
     if (authLoading || libraryLoading || gqlCardsLoading) return [];
     if (allowSwitch && useFireLibrary) {
-      return Object.values(library).map((e) => fullCardMap[e.cardId]).filter(Boolean);
+      return Object.values(library)
+        .map((e) => fullCardMap[e.cardId])
+        .filter(Boolean);
     }
     return gqlData?.cards.nodes ?? [];
-  }, [authLoading, libraryLoading, gqlCardsLoading, allowSwitch, useFireLibrary, library, fullCardMap, gqlData]);
+  }, [
+    authLoading,
+    libraryLoading,
+    gqlCardsLoading,
+    allowSwitch,
+    useFireLibrary,
+    library,
+    fullCardMap,
+    gqlData,
+  ]);
 
   const tabFilteredCards = useMemo(() => {
     const type = TAB_CARD_TYPE[libraryTab];
@@ -153,14 +171,17 @@ export function MobileCardLibrary({
   }, [allCards, libraryTab]);
 
   const filters = useCardLibraryFilters(tabFilteredCards);
-  const { scrollRef, rows, virtualizer, gridWidth, gridOffset } = useVirtualGrid(filters.displayCards, {
-    itemWidth: CARD_WIDTH,
-    itemHeight: CARD_HEIGHT,
-    gap: GAP,
-  });
+  const { scrollRef, rows, virtualizer, gridWidth, gridOffset } = useVirtualGrid(
+    filters.displayCards,
+    {
+      itemWidth: CARD_WIDTH,
+      itemHeight: CARD_HEIGHT,
+      gap: GAP,
+    }
+  );
 
   return (
-    <Card className="flex flex-col gap-2 w-full flex-1 min-h-0">
+    <Card className="flex flex-col gap-1.5 w-full flex-1 min-h-0 p-2 pb-0">
       {/* Compact search row */}
       <div className="flex gap-2 shrink-0">
         <Input
@@ -189,11 +210,23 @@ export function MobileCardLibrary({
         )}
       </div>
 
-      {/* Type tabs */}
-      <Tabs value={libraryTab} onValueChange={setLibraryTab} tabs={LIBRARY_TABS} fullWidth className="shrink-0" />
-
-      {/* Card count */}
-      <p className="text-xs opacity-40 shrink-0">{filters.displayCards.length} cards</p>
+      {/* Type pills */}
+      <div className="flex items-center gap-1 shrink-0 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        {LIBRARY_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setLibraryTab(tab.value)}
+            className={classes(
+              "shrink-0 h-6 px-3 rounded-full text-xs transition-all duration-150 select-none",
+              libraryTab === tab.value
+                ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium"
+                : "opacity-50 hover:opacity-80 bg-black/5 dark:bg-white/5"
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {/* Virtualized grid */}
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-1 -mx-1">
@@ -209,8 +242,11 @@ export function MobileCardLibrary({
                 left: gridOffset,
                 width: gridWidth,
                 transform: `translateY(${virtualRow.start}px)`,
+                display: "flex",
+                alignItems: "flex-start",
+                gap: GAP,
+                paddingBottom: GAP,
               }}
-              className="flex gap-2 pb-2"
             >
               {rows[virtualRow.index].map((card) => {
                 const deckQty = deck.find((e) => e.card.id === card.id)?.quantity ?? 0;
@@ -245,23 +281,65 @@ export function MobileCardLibrary({
               label="Sort by"
             />
             {filters.filterOptions.colorOptions.length > 1 && (
-              <Dropdown multi label="Color" value={filters.colorFilter} onValueChange={filters.setColorFilter} items={filters.filterOptions.colorOptions} className="flex-1 min-w-[120px]" />
+              <Dropdown
+                multi
+                label="Color"
+                value={filters.colorFilter}
+                onValueChange={filters.setColorFilter}
+                items={filters.filterOptions.colorOptions}
+                className="flex-1 min-w-[120px]"
+              />
             )}
             {filters.filterOptions.bloomOptions.length > 1 && (
-              <Dropdown multi label="Bloom" value={filters.bloomFilter} onValueChange={filters.setBloomFilter} items={filters.filterOptions.bloomOptions} className="flex-1 min-w-[120px]" />
+              <Dropdown
+                multi
+                label="Bloom"
+                value={filters.bloomFilter}
+                onValueChange={filters.setBloomFilter}
+                items={filters.filterOptions.bloomOptions}
+                className="flex-1 min-w-[120px]"
+              />
             )}
             {filters.filterOptions.rarityOptions.length > 1 && (
-              <Dropdown multi label="Rarity" value={filters.rarityFilter} onValueChange={filters.setRarityFilter} items={filters.filterOptions.rarityOptions} className="flex-1 min-w-[120px]" />
+              <Dropdown
+                multi
+                label="Rarity"
+                value={filters.rarityFilter}
+                onValueChange={filters.setRarityFilter}
+                items={filters.filterOptions.rarityOptions}
+                className="flex-1 min-w-[120px]"
+              />
             )}
             {filters.filterOptions.tagOptions.length > 0 && (
-              <Dropdown multi label="Tags" value={filters.tagsFilter} onValueChange={filters.setTagsFilter} items={filters.filterOptions.tagOptions} className="flex-1 min-w-[120px]" />
+              <Dropdown
+                multi
+                label="Tags"
+                value={filters.tagsFilter}
+                onValueChange={filters.setTagsFilter}
+                items={filters.filterOptions.tagOptions}
+                className="flex-1 min-w-[120px]"
+              />
             )}
             {filters.filterOptions.supportTypeOptions.length > 1 && (
-              <Dropdown multi label="Support Type" value={filters.supportTypeFilter} onValueChange={filters.setSupportTypeFilter} items={filters.filterOptions.supportTypeOptions} className="flex-1 min-w-[120px]" />
+              <Dropdown
+                multi
+                label="Support Type"
+                value={filters.supportTypeFilter}
+                onValueChange={filters.setSupportTypeFilter}
+                items={filters.filterOptions.supportTypeOptions}
+                className="flex-1 min-w-[120px]"
+              />
             )}
           </div>
           {filters.hasActiveFilters && (
-            <Button variant="transparent" highContrast onClick={() => { filters.clearFilters(); setShowFilters(false); }}>
+            <Button
+              variant="transparent"
+              highContrast
+              onClick={() => {
+                filters.clearFilters();
+                setShowFilters(false);
+              }}
+            >
               Clear filters
             </Button>
           )}

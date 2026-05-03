@@ -64,6 +64,7 @@ export function useLongPress({ onLongPress, onClick, ms = 500, moveThreshold = 8
 
   return {
     pressing,
+    onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); cancel(); onLongPress(); },
     onTouchStart: (e: React.TouchEvent) => start(e.touches[0]?.clientX, e.touches[0]?.clientY),
     onTouchEnd: end,
     onTouchMove: (e: React.TouchEvent) => move(e.touches[0]?.clientX, e.touches[0]?.clientY),

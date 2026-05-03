@@ -68,7 +68,7 @@ export default function CardPage({ params }: { params: Promise<{ slug: string }>
         className="relative z-10 flex flex-col gap-5"
       >
         <div className="flex flex-col items-center md:flex-row md:items-start md:gap-8 gap-5">
-          <OCGCard card={card} size="detail" tiltFactor={0.75} />
+          <OCGCard card={card} size="detail" tiltFactor={0.75} enableTouchModal />
 
           <div className="flex flex-col gap-4 min-w-0 self-stretch flex-1">
             <CardHeader

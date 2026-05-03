@@ -4,10 +4,16 @@ import { Suspense, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageContainer } from "@/components/PageContainer";
 import { CardPreview } from "@/app/(withHeader)/deck-builder/components/CardPreview";
-import { CardLibrary, type FullCardEntry } from "@/app/(withHeader)/deck-builder/components/CardLibrary";
-import { DeckPreview, type DeckEntry } from "@/app/(withHeader)/deck-builder/components/DeckPreview";
+import {
+  CardLibrary,
+  type FullCardEntry,
+} from "@/app/(withHeader)/deck-builder/components/CardLibrary";
+import {
+  type DeckEntry,
+  DeckPreview,
+} from "@/app/(withHeader)/deck-builder/components/DeckPreview";
 import { maxForCard } from "@/app/(withHeader)/deck-builder/components/useDeckRules";
-import { useDeckStorage, type RawDeckCard } from "@/lib/useDeckStorage";
+import { type RawDeckCard, useDeckStorage } from "@/lib/useDeckStorage";
 import { useBreakpoint } from "@/lib/useBreakpoint";
 import { useLeaveWarning } from "@/lib/useLeaveWarning";
 import { MobileDeckBuilder } from "@/app/(withHeader)/deck-builder/components/Mobile";
@@ -61,7 +67,12 @@ function DeckBuilderContent() {
     setDeck((prev) => [...prev.filter((e) => e.card.cardType !== "CHEER"), ...entries]);
   }
 
-  function handleLoadDeck(rawCards: RawDeckCard[], cards: FullCardEntry[] = allCards, deckId?: string, deckName?: string) {
+  function handleLoadDeck(
+    rawCards: RawDeckCard[],
+    cards: FullCardEntry[] = allCards,
+    deckId?: string,
+    deckName?: string
+  ) {
     const cardMap = new Map(cards.map((c) => [c.id, c]));
     const entries: DeckEntry[] = rawCards
       .map(({ cardId, quantity }) => {
@@ -98,14 +109,16 @@ function DeckBuilderContent() {
 
   if (useSinglePane) {
     return (
-      <div className="fixed inset-x-0 top-[3.8125rem] bottom-0 overflow-hidden flex flex-col px-4 pt-4 pb-4">
+      <div className="fixed inset-x-0 top-15.25 bottom-0 overflow-hidden flex flex-col px-2 pt-2 pb-2">
         <MobileDeckBuilder
           deck={deck}
           allCards={allCards}
           onRemoveCard={removeCard}
           onClearDeck={clearDeck}
           onSetCheer={setCheer}
-          onLoadDeck={(rawCards, deckId, deckName) => handleLoadDeck(rawCards, allCards, deckId, deckName)}
+          onLoadDeck={(rawCards, deckId, deckName) =>
+            handleLoadDeck(rawCards, allCards, deckId, deckName)
+          }
           onCardsLoaded={handleCardsLoaded}
           addCard={addCard}
           loadedDeckId={loadedDeckId}

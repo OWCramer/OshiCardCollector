@@ -36,10 +36,11 @@ export function MobileDeckBuilder({
   loadedDeckName,
 }: MobileDeckBuilderProps) {
   const [previewCard, setPreviewCard] = useState<FullCardEntry | null>(null);
+  const [previewFromDeck, setPreviewFromDeck] = useState(false);
   const { isAtLimit } = useDeckRules(deck);
 
   return (
-    <div className="flex flex-col gap-3 h-full overflow-hidden">
+    <div className="flex flex-col gap-2 h-full overflow-hidden">
       <MobileDeckPreview
         deck={deck}
         allCards={allCards}
@@ -47,7 +48,10 @@ export function MobileDeckBuilder({
         onClearDeck={onClearDeck}
         onSetCheer={onSetCheer}
         onLoadDeck={onLoadDeck}
-        onCardPreview={setPreviewCard}
+        onCardPreview={(card) => {
+          setPreviewCard(card);
+          setPreviewFromDeck(true);
+        }}
         loadedDeckId={loadedDeckId}
         loadedDeckName={loadedDeckName}
       />
@@ -57,7 +61,10 @@ export function MobileDeckBuilder({
         <MobileCardLibrary
           deck={deck}
           onCardClick={addCard}
-          onCardPreview={setPreviewCard}
+          onCardPreview={(card) => {
+            setPreviewCard(card);
+            setPreviewFromDeck(false);
+          }}
           onCardsLoaded={onCardsLoaded}
         />
       </div>
@@ -70,7 +77,7 @@ export function MobileDeckBuilder({
         {previewCard && (
           <div className="flex flex-col gap-3">
             <CardPreview card={previewCard} />
-            {!isAtLimit(previewCard) && (
+            {!previewFromDeck && !isAtLimit(previewCard) && (
               <button
                 onClick={() => {
                   addCard(previewCard);

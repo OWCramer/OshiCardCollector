@@ -10,9 +10,10 @@ const SCALE = 0.6;
 const { width: XS_W, height: XS_H } = OCG_CARD_SIZES.xs;
 export const MOBILE_CARD_W = Math.round(XS_W * SCALE);
 export const MOBILE_CARD_H = Math.round(XS_H * SCALE);
-const ROWS = 2;
 const GAP = 6;
-export const MOBILE_GRID_H = MOBILE_CARD_H * ROWS + GAP * (ROWS - 1);
+export function mobileGridH(rows: number) {
+  return MOBILE_CARD_H * rows + GAP * (rows - 1);
+}
 
 // r=14 → circumference = 2π×14 ≈ 87.96
 const RING_C = 87.96;
@@ -22,6 +23,7 @@ const BLOOM_ORDER: Record<string, number> = { Spot: 0, Debut: 1, "1st": 2, "2nd"
 
 interface MobileDeckGridProps {
   deck: DeckEntry[];
+  rows?: 1 | 2;
   onRemoveCard: (cardId: number) => void;
   onCardPreview?: (card: FullCardEntry) => void;
 }
@@ -40,7 +42,6 @@ function DeckCard({
   return (
     // overflow-hidden clips the scaled card so the overlay matches perfectly
     <div className="relative select-none overflow-hidden" style={{ width: MOBILE_CARD_W, height: MOBILE_CARD_H }}>
-      {/* pointerEvents:none prevents OCGCard's built-in touch modal from firing */}
       <div style={{ width: XS_W, height: XS_H, transform: `scale(${SCALE})`, transformOrigin: "top left", pointerEvents: "none" }}>
         <OCGCard card={entry.card} size="xs" shine={false} tiltFactor={0} scaleFactor={1} glareIntensity={0} />
       </div>
@@ -71,7 +72,8 @@ function DeckCard({
   );
 }
 
-export function MobileDeckGrid({ deck, onRemoveCard, onCardPreview }: MobileDeckGridProps) {
+export function MobileDeckGrid({ deck, rows = 2, onRemoveCard, onCardPreview }: MobileDeckGridProps) {
+  const gridH = mobileGridH(rows);
   const sorted = useMemo(() => {
     return [...deck].sort((a, b) => {
       const tA = TYPE_ORDER[a.card.cardType] ?? 99;
@@ -85,7 +87,7 @@ export function MobileDeckGrid({ deck, onRemoveCard, onCardPreview }: MobileDeck
 
   if (sorted.length === 0) {
     return (
-      <div className="flex items-center justify-center text-sm opacity-30 text-center px-4" style={{ height: MOBILE_GRID_H }}>
+      <div className="flex items-center justify-center text-sm opacity-30 text-center px-4" style={{ height: gridH }}>
         Tap cards in the library below to add them
       </div>
     );
@@ -96,12 +98,12 @@ export function MobileDeckGrid({ deck, onRemoveCard, onCardPreview }: MobileDeck
       <div
         className="grid"
         style={{
-          gridTemplateRows: `repeat(${ROWS}, ${MOBILE_CARD_H}px)`,
+          gridTemplateRows: `repeat(${rows}, ${MOBILE_CARD_H}px)`,
           gridAutoFlow: "column",
           gridAutoColumns: MOBILE_CARD_W,
           gap: GAP,
           width: "max-content",
-          height: MOBILE_GRID_H,
+          height: gridH,
         }}
       >
         {sorted.map((entry) => (
