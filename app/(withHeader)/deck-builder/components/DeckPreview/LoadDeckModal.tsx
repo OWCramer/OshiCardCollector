@@ -11,7 +11,7 @@ interface LoadDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
   hasDeckCards: boolean;
-  onLoad: (rawCards: RawDeckCard[]) => void;
+  onLoad: (rawCards: RawDeckCard[], deckId: string, deckName: string) => void;
 }
 
 export function LoadDeckModal({ isOpen, onClose, hasDeckCards, onLoad }: LoadDeckModalProps) {
@@ -36,8 +36,8 @@ export function LoadDeckModal({ isOpen, onClose, hasDeckCards, onLoad }: LoadDec
     setLoadingId(id);
     setError(null);
     try {
-      const cards = await loadDeck(id);
-      onLoad(cards);
+      const { cards, name } = await loadDeck(id);
+      onLoad(cards, id, name);
       onClose();
     } catch {
       setError("Failed to load deck");

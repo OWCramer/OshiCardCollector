@@ -21,6 +21,8 @@ function DeckBuilderContent() {
   const [hoveredCard, setHoveredCard] = useState<FullCardEntry | null>(null);
   const [deck, setDeck] = useState<DeckEntry[]>([]);
   const [allCards, setAllCards] = useState<FullCardEntry[]>([]);
+  const [loadedDeckId, setLoadedDeckId] = useState<string | undefined>();
+  const [loadedDeckName, setLoadedDeckName] = useState<string | undefined>();
 
   useLeaveWarning(deck.length > 0);
 
@@ -58,7 +60,7 @@ function DeckBuilderContent() {
     setDeck((prev) => [...prev.filter((e) => e.card.cardType !== "CHEER"), ...entries]);
   }
 
-  function handleLoadDeck(rawCards: RawDeckCard[], cards: FullCardEntry[] = allCards) {
+  function handleLoadDeck(rawCards: RawDeckCard[], cards: FullCardEntry[] = allCards, deckId?: string, deckName?: string) {
     const cardMap = new Map(cards.map((c) => [c.id, c]));
     const entries: DeckEntry[] = rawCards
       .map(({ cardId, quantity }) => {
@@ -67,6 +69,8 @@ function DeckBuilderContent() {
       })
       .filter((e): e is DeckEntry => e !== null);
     setDeck(entries);
+    setLoadedDeckId(deckId);
+    setLoadedDeckName(deckName);
   }
 
   function handleCardsLoaded(cards: FullCardEntry[]) {
@@ -74,8 +78,8 @@ function DeckBuilderContent() {
     if (autoLoadId && !hasAutoLoaded.current) {
       hasAutoLoaded.current = true;
       loadDeck(autoLoadId)
-        .then((rawCards) => handleLoadDeck(rawCards, cards))
-        .catch(() => {}); // silently ignore if deck not found
+        .then(({ cards: rawCards, name }) => handleLoadDeck(rawCards, cards, autoLoadId, name))
+        .catch(() => {});
     }
   }
 
@@ -85,7 +89,10 @@ function DeckBuilderContent() {
     onRemoveCard: removeCard,
     onClearDeck: clearDeck,
     onSetCheer: setCheer,
-    onLoadDeck: handleLoadDeck,
+    onLoadDeck: (rawCards: RawDeckCard[], deckId: string, deckName: string) =>
+      handleLoadDeck(rawCards, allCards, deckId, deckName),
+    loadedDeckId,
+    loadedDeckName,
   };
 
   if (useSinglePane) {

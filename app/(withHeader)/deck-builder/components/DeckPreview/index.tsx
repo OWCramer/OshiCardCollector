@@ -22,7 +22,9 @@ interface DeckPreviewProps {
   onCardHover?: (card: FullCardEntry | null) => void;
   allCards: FullCardEntry[];
   onSetCheer: (entries: DeckEntry[]) => void;
-  onLoadDeck: (rawCards: RawDeckCard[]) => void;
+  onLoadDeck: (rawCards: RawDeckCard[], deckId: string, deckName: string) => void;
+  loadedDeckId?: string;
+  loadedDeckName?: string;
 }
 
 export function DeckPreview({
@@ -33,6 +35,8 @@ export function DeckPreview({
   allCards,
   onSetCheer,
   onLoadDeck,
+  loadedDeckId,
+  loadedDeckName,
 }: DeckPreviewProps) {
   const cheerOptions = useMemo(() => allCards.filter((c) => c.cardType === "CHEER"), [allCards]);
   const [tab, setTab] = useState<DeckTab>("holomem");
@@ -139,6 +143,8 @@ export function DeckPreview({
         canAutofillCheer={cheerOptions.length > 0}
         onAutofillCheer={handleAutofillCheer}
         onLoadDeck={onLoadDeck}
+        loadedDeckId={loadedDeckId}
+        loadedDeckName={loadedDeckName}
       />
     </Card>
   );

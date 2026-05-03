@@ -15,10 +15,12 @@ interface SaveDeckModalProps {
   rawCards: RawDeckCard[];
   oshiCardId?: number;
   oshiImageUrl?: string;
+  loadedDeckId?: string;
+  loadedDeckName?: string;
 }
 
-export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImageUrl }: SaveDeckModalProps) {
-  const [name, setName] = useState("My Deck");
+export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImageUrl, loadedDeckId, loadedDeckName }: SaveDeckModalProps) {
+  const [name, setName] = useState(loadedDeckName ?? "My Deck");
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +35,10 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
   const isWip = totalCards !== DECK_LIMITS.total;
 
   useEffect(() => {
+    if (isOpen) setName(loadedDeckName ?? "My Deck");
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (!isOpen || !isAuthenticated) return;
     setLoadingDecks(true);
     listDecks()
@@ -41,12 +47,13 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
       .finally(() => setLoadingDecks(false));
   }, [isOpen, isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  async function handleSave(deckId?: string) {
-    if (!name.trim()) return;
+  async function handleSave(deckId?: string, nameOverride?: string) {
+    const nameToSave = nameOverride ?? name.trim();
+    if (!nameToSave) return;
     setSaving(true);
     setError(null);
     try {
-      const id = await saveDeck(name.trim(), rawCards, isWip, deckId, oshiCardId, oshiImageUrl);
+      const id = await saveDeck(nameToSave, rawCards, isWip, deckId, oshiCardId, oshiImageUrl);
       setSavedId(id);
       setTimeout(() => {
         setSavedId(null);
@@ -158,7 +165,12 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
       >
         <div className="flex flex-col gap-4">
           <p className="text-sm opacity-75">
-            This will replace <span className="font-medium opacity-100">&ldquo;{overwriteTarget?.name}&rdquo;</span> with your current deck. This can&apos;t be undone.
+            This will overwrite{" "}
+            <span className="font-medium opacity-100">&ldquo;{overwriteTarget?.name}&rdquo;</span>
+            {name.trim() && name.trim() !== overwriteTarget?.name ? (
+              <> and rename it to <span className="font-medium opacity-100">&ldquo;{name.trim()}&rdquo;</span></>
+            ) : null}
+            . This can&apos;t be undone.
           </p>
           <div className="flex gap-2">
             <Button

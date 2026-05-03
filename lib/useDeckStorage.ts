@@ -98,10 +98,11 @@ export function useDeckStorage() {
     });
   }
 
-  async function loadDeck(deckId: string): Promise<RawDeckCard[]> {
+  async function loadDeck(deckId: string): Promise<{ cards: RawDeckCard[]; name: string }> {
     const snapshot = await getDoc(deckDoc(deckId));
     if (!snapshot.exists()) throw new Error("Deck not found");
-    return snapshot.data().cards as RawDeckCard[];
+    const data = snapshot.data();
+    return { cards: data.cards as RawDeckCard[], name: data.name as string };
   }
 
   async function renameDeck(deckId: string, newName: string): Promise<void> {

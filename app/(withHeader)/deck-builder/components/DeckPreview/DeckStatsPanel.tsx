@@ -29,7 +29,9 @@ interface DeckStatsPanelProps {
   onCardHover?: (card: FullCardEntry | null) => void;
   canAutofillCheer: boolean;
   onAutofillCheer: () => void;
-  onLoadDeck: (rawCards: RawDeckCard[]) => void;
+  onLoadDeck: (rawCards: RawDeckCard[], deckId: string, deckName: string) => void;
+  loadedDeckId?: string;
+  loadedDeckName?: string;
 }
 
 export function DeckStatsPanel({
@@ -40,6 +42,8 @@ export function DeckStatsPanel({
   canAutofillCheer,
   onAutofillCheer,
   onLoadDeck,
+  loadedDeckId,
+  loadedDeckName,
 }: DeckStatsPanelProps) {
   const oshiCard = stats.oshiEntry?.card ?? null;
   const [showAutofillConfirm, setShowAutofillConfirm] = useState(false);
@@ -186,14 +190,16 @@ export function DeckStatsPanel({
         rawCards={rawCards}
         oshiCardId={oshiCard?.id}
         oshiImageUrl={oshiCard?.imageUrl ?? undefined}
+        loadedDeckId={loadedDeckId}
+        loadedDeckName={loadedDeckName}
       />
 
       <LoadDeckModal
         isOpen={showLoad}
         onClose={() => setShowLoad(false)}
         hasDeckCards={rawCards.length > 0}
-        onLoad={(cards) => {
-          onLoadDeck(cards);
+        onLoad={(cards, deckId, deckName) => {
+          onLoadDeck(cards, deckId, deckName);
           setShowLoad(false);
         }}
       />
