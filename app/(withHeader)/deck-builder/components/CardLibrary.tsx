@@ -13,9 +13,7 @@ import { CardLibraryControls } from "./CardLibraryControls";
 import { useVirtualGrid } from "./useVirtualGrid";
 import { useDeckRules } from "./useDeckRules";
 import { type DeckEntry } from "./DeckPreview";
-
-const COLOR_ORDER: Record<string, number> = { WHITE: 0, RED: 1, BLUE: 2, GREEN: 3, YELLOW: 4, PURPLE: 5 };
-const BLOOM_ORDER: Record<string, number> = { Spot: 0, Debut: 1, "1st": 2, "2nd": 3 };
+import { BLOOM_ORDER, COLOR_ORDER } from "./cardOrdering";
 
 export type FullCardEntry = GetAllCardsFullQuery["cards"]["nodes"][number];
 

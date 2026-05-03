@@ -18,6 +18,7 @@ import { useVirtualGrid } from "../useVirtualGrid";
 import { useDeckRules } from "../useDeckRules";
 import { type DeckEntry } from "../DeckPreview/types";
 import { useLongPress } from "./useLongPress";
+import { LONG_PRESS_RING_C } from "./constants";
 
 export type FullCardEntry = GetAllCardsFullQuery["cards"]["nodes"][number];
 
@@ -44,8 +45,6 @@ const { width: XS_W, height: XS_H } = OCG_CARD_SIZES["xs"];
 const CARD_WIDTH = Math.round(XS_W * SCALE);
 const CARD_HEIGHT = Math.round(XS_H * SCALE);
 
-// r=14 → circumference = 2π×14 ≈ 87.96
-const RING_C = 87.96;
 
 interface MobileCardLibraryProps {
   deck: DeckEntry[];
@@ -101,7 +100,7 @@ function LibraryCard({
               fill="none"
               stroke="#60a5fa"
               strokeWidth="3"
-              strokeDasharray={RING_C}
+              strokeDasharray={LONG_PRESS_RING_C}
               opacity="0.9"
               style={{ animation: "longPressRing 0.5s linear forwards" }}
             />
@@ -124,7 +123,6 @@ export function MobileCardLibrary({
     useGetAllCardsFullLazyQuery();
   const [useFireLibrary, setUseFireLibrary] = useState(true);
   const [libraryTab, setLibraryTab] = useState<LibraryTab>("all");
-  const [showFilters, setShowFilters] = useState(false);
 
   const { isAtLimit } = useDeckRules(deck);
   const hasLibraryCards = !libraryLoading && Object.keys(library).length > 0;
@@ -195,7 +193,7 @@ export function MobileCardLibrary({
           spellCheck={false}
         />
         <button
-          onClick={() => setShowFilters(true)}
+          onClick={() => filters.setShowFilters(true)}
           className={classes(
             "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors ring-black/15 dark:ring-white/15 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 relative"
           )}
@@ -270,7 +268,7 @@ export function MobileCardLibrary({
       </div>
 
       {/* Filters modal */}
-      <Modal title="Sort & Filter" isOpen={showFilters} onClose={() => setShowFilters(false)}>
+      <Modal title="Sort & Filter" isOpen={filters.showFilters} onClose={() => filters.setShowFilters(false)}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Dropdown
@@ -337,7 +335,7 @@ export function MobileCardLibrary({
               highContrast
               onClick={() => {
                 filters.clearFilters();
-                setShowFilters(false);
+                filters.setShowFilters(false);
               }}
             >
               Clear filters

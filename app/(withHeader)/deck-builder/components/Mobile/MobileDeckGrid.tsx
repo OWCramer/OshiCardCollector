@@ -4,7 +4,9 @@ import { useMemo } from "react";
 import { OCGCard, OCG_CARD_SIZES } from "@/components/OCGCard";
 import { type FullCardEntry } from "../CardLibrary";
 import { type DeckEntry } from "../DeckPreview/types";
+import { BLOOM_ORDER, TYPE_ORDER } from "../cardOrdering";
 import { useLongPress } from "./useLongPress";
+import { LONG_PRESS_RING_C } from "./constants";
 
 const SCALE = 0.6;
 const { width: XS_W, height: XS_H } = OCG_CARD_SIZES.xs;
@@ -15,11 +17,6 @@ export function mobileGridH(rows: number) {
   return MOBILE_CARD_H * rows + GAP * (rows - 1);
 }
 
-// r=14 → circumference = 2π×14 ≈ 87.96
-const RING_C = 87.96;
-
-const TYPE_ORDER: Record<string, number> = { OSHI: 0, HOLOMEM: 1, SUPPORT: 2, CHEER: 3 };
-const BLOOM_ORDER: Record<string, number> = { Spot: 0, Debut: 1, "1st": 2, "2nd": 3 };
 
 interface MobileDeckGridProps {
   deck: DeckEntry[];
@@ -56,7 +53,7 @@ function DeckCard({
               fill="none"
               stroke="#60a5fa"
               strokeWidth="3"
-              strokeDasharray={RING_C}
+              strokeDasharray={LONG_PRESS_RING_C}
               opacity="0.9"
               style={{ animation: "longPressRing 0.5s linear forwards" }}
             />

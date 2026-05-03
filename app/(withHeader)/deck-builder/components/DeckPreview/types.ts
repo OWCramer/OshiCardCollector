@@ -1,5 +1,6 @@
 import { OCG_CARD_SIZES } from "@/components/OCGCard";
 import { type FullCardEntry } from "../CardLibrary";
+export { BLOOM_ORDER } from "../cardOrdering";
 
 export type DeckEntry = { card: FullCardEntry; quantity: number };
 export type DeckTab = "holomem" | "cheer" | "support";
@@ -10,7 +11,6 @@ export interface TabProps {
   onCardHover?: (card: FullCardEntry | null) => void;
 }
 
-export const BLOOM_ORDER: Record<string, number> = { "Spot": 0, "Debut": 1, "1st": 2, "2nd": 3 };
 
 export const OSHI_SCALE = 0.68;
 const { width: XS_W, height: XS_H } = OCG_CARD_SIZES["xs"];

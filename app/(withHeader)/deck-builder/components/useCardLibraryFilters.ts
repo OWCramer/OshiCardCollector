@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
+import { BLOOM_ORDER, COLOR_ORDER, TYPE_ORDER } from "./cardOrdering";
 
 export type SortField = "name" | "releaseDate" | "rarity" | "cardNumber" | "color" | "bloomLevel" | "type";
 export type SortOrder = "asc" | "desc";
@@ -23,17 +24,6 @@ const RARITY_ORDER: Record<string, number> = {
   C: 0, U: 1, R: 2, RR: 3, SR: 4, HR: 5, OSR: 6, SEC: 7,
 };
 
-const COLOR_ORDER: Record<string, number> = {
-  WHITE: 0, RED: 1, BLUE: 2, GREEN: 3, YELLOW: 4, PURPLE: 5,
-};
-
-const BLOOM_ORDER: Record<string, number> = {
-  Spot: 0, Debut: 1, "1st": 2, "2nd": 3,
-};
-
-const TYPE_ORDER: Record<string, number> = {
-  OSHI: 0, HOLOMEM: 1, SUPPORT: 2, CHEER: 3,
-};
 
 export const SORT_ITEMS: { value: SortField; label: string }[] = [
   { value: "releaseDate", label: "Release Date" },

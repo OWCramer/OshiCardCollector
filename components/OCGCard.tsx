@@ -192,8 +192,8 @@ function OCGCardInner({
                 exitDelay={0}
                 tiltFactor={0.5}
                 shadow
-                shadow-blur={30}
-                glare-intensity={glareIntensity}
+                shadowBlur={30}
+                glareIntensity={glareIntensity}
               >
                 <Image
                   src={imageUrl}
