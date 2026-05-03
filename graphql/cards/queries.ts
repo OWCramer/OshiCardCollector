@@ -22,6 +22,7 @@ export const GET_CARD = gql`
       specialText
       illustrator
       releaseDate
+      supportType
       setNames
       tags
       arts {
@@ -99,6 +100,7 @@ export const GET_ALL_CARDS = gql`
         extraText
         specialText
         releaseDate
+        supportType
       }
     }
   }
