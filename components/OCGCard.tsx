@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./OCGCard.module.css";
@@ -8,6 +8,7 @@ import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
+  xs: { width: 130, height: 182 },
   sm: { width: 160, height: 224 },
   lg: { width: 240, height: 336 },
   detail: { width: 370, height: 517 },
@@ -43,8 +44,11 @@ interface OCGCardProps {
   scaleFactor?: number;
   glareIntensity?: number;
   onClick?: () => void;
+  onHover?: (hovered: boolean) => void;
   className?: string;
   overlayText?: string;
+  /** Enable the built-in touch-tap modal. Off by default; add this only on the card detail page. */
+  enableTouchModal?: boolean;
 }
 
 function OCGCardInner({
@@ -60,8 +64,10 @@ function OCGCardInner({
   scaleFactor = 1.03,
   glareIntensity = 0.5,
   onClick,
+  onHover,
   className,
   overlayText,
+  enableTouchModal = false,
 }: OCGCardProps) {
   const imageUrl = imageUrlProp ?? card?.imageUrl ?? "";
   const name = nameProp ?? card?.name ?? "";
@@ -72,6 +78,16 @@ function OCGCardInner({
 
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const touchMovedRef = useRef(false);
+  const isOverCard = useRef(false);
+
+  useEffect(() => {
+    if (!onHover) return;
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Alt" && isOverCard.current) onHover(true);
+    };
+    document.addEventListener("keyup", handleKeyUp);
+    return () => document.removeEventListener("keyup", handleKeyUp);
+  }, [onHover]);
 
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
@@ -110,16 +126,33 @@ function OCGCardInner({
       style={{ width: `${width}px`, height: `${height}px` }}
       key={card?.id}
       onClick={onClick}
-      className={href ? undefined : className}
-      onTouchStart={href ? undefined : handleTouchStart}
-      onTouchMove={href ? undefined : handleTouchMove}
-      onTouchEnd={href ? undefined : handleTouchEnd}
+      onMouseEnter={
+        onHover
+          ? (e) => {
+              isOverCard.current = true;
+              if (!e.altKey) onHover(true);
+            }
+          : undefined
+      }
+      onMouseLeave={
+        onHover
+          ? (e) => {
+              isOverCard.current = false;
+              if (!e.altKey) onHover(false);
+            }
+          : undefined
+      }
+      className={classes("select-none", href ? undefined : className)}
+      onTouchStart={href || !enableTouchModal ? undefined : handleTouchStart}
+      onTouchMove={href || !enableTouchModal ? undefined : handleTouchMove}
+      onTouchEnd={href || !enableTouchModal ? undefined : handleTouchEnd}
     >
       <hover-tilt
         className={classes(
           "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
           "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
-          isHolo ? `${styles.holo}` : undefined
+          isHolo ? `${styles.holo}` : undefined,
+          href || onClick ? "cursor-pointer" : undefined
         )}
         exitDelay={0}
         tiltFactor={tiltFactor}
@@ -161,33 +194,34 @@ function OCGCardInner({
 
   return (
     <>
-      <Modal title="Card preview" isOpen={showModal} onClose={() => setShowModal(false)}>
-        <div className="flex w-full h-full items-center justify-center">
-          <div className="w-fit h-full items-center justify-center">
-            <hover-tilt
-              className={classes(
-                "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
-                isHolo ? `${styles.holo}` : undefined
-              )}
-              exitDelay={0}
-              tiltFactor={0.5}
-              shadow
-              shadow-blur={30}
-              glare-intensity={glareIntensity}
-            >
-              <Image
-                loading="eager"
-                src={imageUrl}
-                alt={name}
-                width={width}
-                height={height}
-                className="block rounded-[4.55%/3.5%]"
-                style={{ width: `${width}px`, height: `${height}px` }}
-              />
-            </hover-tilt>
+      {enableTouchModal && (
+        <Modal title="Card preview" isOpen={showModal} onClose={() => setShowModal(false)}>
+          <div className="flex w-full h-full items-center justify-center">
+            <div className="w-fit h-full items-center justify-center">
+              <hover-tilt
+                className={classes(
+                  "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
+                  isHolo ? `${styles.holo}` : undefined
+                )}
+                exitDelay={0}
+                tiltFactor={0.5}
+                shadow
+                shadowBlur={30}
+                glareIntensity={glareIntensity}
+              >
+                <Image
+                  loading="eager"src={imageUrl}
+                  alt={name}
+                  width={width}
+                  height={height}
+                  className="block rounded-[4.55%/3.5%]"
+                  style={{ width: `${width}px`, height: `${height}px` }}
+                />
+              </hover-tilt>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
       {cardDiv}
     </>
   );

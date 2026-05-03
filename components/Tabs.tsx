@@ -12,6 +12,7 @@ interface TabsProps<T extends string = string> {
   onValueChange: (value: T) => void;
   tabs: Tab<T>[];
   className?: string;
+  fullWidth?: boolean;
 }
 
 export function Tabs<T extends string = string>({
@@ -19,11 +20,13 @@ export function Tabs<T extends string = string>({
   onValueChange,
   tabs,
   className,
+  fullWidth,
 }: TabsProps<T>) {
   return (
     <div
       className={classes(
-        "flex items-center gap-0.5 p-1 rounded-xl w-fit",
+        "flex items-center gap-0.5 p-1 rounded-xl",
+        fullWidth ? "w-full" : "w-fit",
         "bg-black/5 dark:bg-white/5",
         "ring-1 ring-inset ring-black/10 dark:ring-white/10",
         className
@@ -37,6 +40,7 @@ export function Tabs<T extends string = string>({
             onClick={() => onValueChange(tab.value)}
             className={classes(
               "flex items-center gap-2 px-4 h-7 rounded-lg text-sm transition-all duration-150 cursor-pointer select-none",
+              fullWidth && "flex-1 justify-center",
               active
                 ? "bg-white dark:bg-zinc-700 shadow-sm ring-1 ring-inset ring-black/10 dark:ring-white/10"
                 : "opacity-50 hover:opacity-80"

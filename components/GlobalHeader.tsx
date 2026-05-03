@@ -14,11 +14,13 @@ import {
   ChevronDownIcon,
   HeartIcon,
   LayersIcon,
+  LayoutListIcon,
   LibraryIcon,
   LogOutIcon,
   MenuIcon,
   MoonIcon,
   PlaySquareIcon,
+  SquareStackIcon,
   SunIcon,
   SunMoonIcon,
   UserIcon,
@@ -69,6 +71,9 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         <button onClick={() => navigate("/sets")} className={MOBILE_NAV_ITEM_CLASS}>
           <LayersIcon size={18} /> Sets
         </button>
+        <button onClick={() => navigate("/deck-builder")} className={MOBILE_NAV_ITEM_CLASS}>
+          <LayoutListIcon size={18} /> Deck Builder
+        </button>
 
         <div className="mt-2 px-4 pb-1 text-xs font-semibold uppercase tracking-wider opacity-40">
           Collection
@@ -78,6 +83,9 @@ function MobileMenuOverlay({ onClose }: { onClose: () => void }) {
         </button>
         <button onClick={() => navigate("/library")} className={MOBILE_NAV_ITEM_CLASS}>
           <LibraryIcon size={18} /> Library
+        </button>
+        <button onClick={() => navigate("/decks")} className={MOBILE_NAV_ITEM_CLASS}>
+          <SquareStackIcon size={18} /> Decks
         </button>
       </nav>
     </div>
@@ -107,7 +115,10 @@ function CollectionMenu() {
         className="flex shrink-0 items-center gap-2 h-9 px-4 rounded-xl text-black dark:text-white backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.97] transition-all duration-150 cursor-pointer select-none"
       >
         Collection
-        <ChevronDownIcon size={13} className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")} />
+        <ChevronDownIcon
+          size={13}
+          className={classes("opacity-60 transition-transform duration-150", open && "rotate-180")}
+        />
       </button>
 
       {open && (
@@ -117,6 +128,9 @@ function CollectionMenu() {
           </Link>
           <Link href="/library" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
             <LibraryIcon size={14} /> Library
+          </Link>
+          <Link href="/decks" onClick={() => setOpen(false)} className={NAV_ITEM_CLASS}>
+            <SquareStackIcon size={14} /> Decks
           </Link>
         </div>
       )}
@@ -139,9 +153,24 @@ export function GlobalHeader() {
     {
       label: "Theme",
       items: [
-        { label: "Light", icon: SunIcon, active: theme === "light", onClick: () => setTheme("light") },
-        { label: "Dark", icon: MoonIcon, active: theme === "dark", onClick: () => setTheme("dark") },
-        { label: "System", icon: SunMoonIcon, active: theme === "system", onClick: () => setTheme("system") },
+        {
+          label: "Light",
+          icon: SunIcon,
+          active: theme === "light",
+          onClick: () => setTheme("light"),
+        },
+        {
+          label: "Dark",
+          icon: MoonIcon,
+          active: theme === "dark",
+          onClick: () => setTheme("dark"),
+        },
+        {
+          label: "System",
+          icon: SunMoonIcon,
+          active: theme === "system",
+          onClick: () => setTheme("system"),
+        },
       ],
     },
     {
@@ -156,7 +185,14 @@ export function GlobalHeader() {
   const triggerNode = (
     <div className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150">
       {user?.photoURL ? (
-        <Image src={user.photoURL} alt="Profile" width={32} height={32} className="rounded-full" referrerPolicy="no-referrer" />
+        <Image
+          src={user.photoURL}
+          alt="Profile"
+          width={32}
+          height={32}
+          className="rounded-full"
+          referrerPolicy="no-referrer"
+        />
       ) : (
         <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-700 animate-pulse" />
       )}
@@ -177,14 +213,24 @@ export function GlobalHeader() {
           <MenuIcon size={20} />
         </button>
 
-        <Link href={user ? "/all-cards" : "/"} className="text-lg font-semibold hover:opacity-80 transition-opacity">
+        <Link
+          href={user ? "/all-cards" : "/"}
+          className="text-lg font-semibold hover:opacity-80 transition-opacity"
+        >
           oshi.cards
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2">
-          <Button href="/all-cards" variant="transparent" highContrast>Cards</Button>
-          <Button href="/sets" variant="transparent" highContrast>Sets</Button>
+          <Button href="/all-cards" variant="transparent" highContrast>
+            Cards
+          </Button>
+          <Button href="/sets" variant="transparent" highContrast>
+            Sets
+          </Button>
+          <Button href="/deck-builder" variant="transparent" highContrast>
+            Deck Builder
+          </Button>
           <CollectionMenu />
         </nav>
 
@@ -194,7 +240,9 @@ export function GlobalHeader() {
               {triggerNode}
             </Menu>
           ) : (
-            <Button href="/login" variant="transparent" highContrast>Sign in</Button>
+            <Button href="/login" variant="transparent" highContrast>
+              Sign in
+            </Button>
           )}
         </div>
       </header>

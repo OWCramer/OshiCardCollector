@@ -22,6 +22,7 @@ export const GET_CARD = gql`
       specialText
       illustrator
       releaseDate
+      supportType
       setNames
       tags
       arts {
@@ -99,6 +100,64 @@ export const GET_ALL_CARDS = gql`
         extraText
         specialText
         releaseDate
+        supportType
+      }
+    }
+  }
+`;
+
+export const GET_ALL_CARDS_FULL = gql`
+  query GetAllCardsFull($filters: CardFilter, $pageSize: Int) {
+    cards(filter: $filters, pageSize: $pageSize) {
+      nodes {
+        id
+        name
+        cardNumber
+        cardType
+        color
+        colors
+        rarity
+        imageUrl
+        cardUrl
+        hp
+        life
+        bloomLevel
+        isBuzz
+        isLimited
+        batonPass
+        extraText
+        specialText
+        illustrator
+        releaseDate
+        supportType
+        setNames
+        tags
+        arts {
+          name
+          damage
+          cost
+          effectText
+          damageBonuses {
+            amount
+            colors
+          }
+        }
+        oshiSkills {
+          name
+          skillType
+          cost
+          usageLimit
+          effectText
+        }
+        qna {
+          question
+          answer
+        }
+        keywords {
+          description
+          title
+          type
+        }
       }
     }
   }
