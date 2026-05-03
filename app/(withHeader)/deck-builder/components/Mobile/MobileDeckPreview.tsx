@@ -1,7 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckIcon, FolderOpenIcon, Rows2Icon, SaveIcon, SparklesIcon, Trash2Icon, XIcon } from "lucide-react";
+import {
+  CheckIcon,
+  FolderOpenIcon,
+  Rows2Icon,
+  SaveIcon,
+  SparklesIcon,
+  Trash2Icon,
+  XIcon,
+} from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -161,7 +169,12 @@ export function MobileDeckPreview({
       </div>
 
       {/* Horizontal card grid */}
-      <MobileDeckGrid deck={deck} rows={gridRows} onRemoveCard={onRemoveCard} onCardPreview={onCardPreview} />
+      <MobileDeckGrid
+        deck={deck}
+        rows={gridRows}
+        onRemoveCard={onRemoveCard}
+        onCardPreview={onCardPreview}
+      />
 
       {/* Compact stats + action bar */}
       <div className="flex items-center justify-between gap-2 shrink-0">

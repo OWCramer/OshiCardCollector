@@ -45,7 +45,6 @@ const { width: XS_W, height: XS_H } = OCG_CARD_SIZES["xs"];
 const CARD_WIDTH = Math.round(XS_W * SCALE);
 const CARD_HEIGHT = Math.round(XS_H * SCALE);
 
-
 interface MobileCardLibraryProps {
   deck: DeckEntry[];
   onCardClick: (card: FullCardEntry) => void;
@@ -73,10 +72,21 @@ function LibraryCard({
 
   return (
     <div
-      className={classes("relative select-none overflow-hidden shrink-0", atLimit && "opacity-40 grayscale")}
+      className={classes(
+        "relative select-none overflow-hidden shrink-0",
+        atLimit && "opacity-40 grayscale"
+      )}
       style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
     >
-      <div style={{ width: XS_W, height: XS_H, transform: `scale(${SCALE})`, transformOrigin: "top left", pointerEvents: "none" }}>
+      <div
+        style={{
+          width: XS_W,
+          height: XS_H,
+          transform: `scale(${SCALE})`,
+          transformOrigin: "top left",
+          pointerEvents: "none",
+        }}
+      >
         <OCGCard
           card={card}
           size="xs"
@@ -268,7 +278,11 @@ export function MobileCardLibrary({
       </div>
 
       {/* Filters modal */}
-      <Modal title="Sort & Filter" isOpen={filters.showFilters} onClose={() => filters.setShowFilters(false)}>
+      <Modal
+        title="Sort & Filter"
+        isOpen={filters.showFilters}
+        onClose={() => filters.setShowFilters(false)}
+      >
         <div className="flex flex-col gap-4">
           <div className="flex flex-wrap gap-2">
             <Dropdown

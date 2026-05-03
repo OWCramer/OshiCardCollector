@@ -67,9 +67,7 @@ export function LoadDeckModal({ isOpen, onClose, hasDeckCards, onLoad }: LoadDec
     return (
       <div className="flex flex-col gap-2">
         {hasDeckCards && (
-          <p className="text-sm opacity-60 mb-1">
-            Loading a deck will replace your current deck.
-          </p>
+          <p className="text-sm opacity-60 mb-1">Loading a deck will replace your current deck.</p>
         )}
         {decks.map((deck) => (
           <div

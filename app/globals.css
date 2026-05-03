@@ -15,7 +15,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -24,12 +25,17 @@ html {
 }
 
 @keyframes longPressRing {
-  from { stroke-dashoffset: 87.96; }
-  to   { stroke-dashoffset: 0; }
+  from {
+    stroke-dashoffset: 87.96;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 body {
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, var(--font-inter), "Segoe UI", Helvetica, Arial, sans-serif;
   scrollbar-gutter: stable;
 }

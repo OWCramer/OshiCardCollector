@@ -54,7 +54,7 @@ export function DeckPreview({
 
   const deckTabs: Tab<DeckTab>[] = [
     { value: "holomem", label: tabLabel("Holomem", holomemEntries) },
-    { value: "cheer",   label: tabLabel("Cheer", cheerEntries) },
+    { value: "cheer", label: tabLabel("Cheer", cheerEntries) },
     { value: "support", label: tabLabel("Support", supportEntries) },
   ];
 

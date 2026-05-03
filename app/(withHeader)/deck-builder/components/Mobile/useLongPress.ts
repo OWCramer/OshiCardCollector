@@ -8,7 +8,12 @@ interface LongPressOptions {
   moveThreshold?: number;
 }
 
-export function useLongPress({ onLongPress, onClick, ms = 500, moveThreshold = 8 }: LongPressOptions) {
+export function useLongPress({
+  onLongPress,
+  onClick,
+  ms = 500,
+  moveThreshold = 8,
+}: LongPressOptions) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const hasMoved = useRef(false);
@@ -35,7 +40,7 @@ export function useLongPress({ onLongPress, onClick, ms = 500, moveThreshold = 8
         onLongPress();
       }, ms);
     },
-    [onLongPress, ms],
+    [onLongPress, ms]
   );
 
   const move = useCallback(
@@ -54,7 +59,7 @@ export function useLongPress({ onLongPress, onClick, ms = 500, moveThreshold = 8
         }
       }
     },
-    [cancel, moveThreshold],
+    [cancel, moveThreshold]
   );
 
   const end = useCallback(() => {
@@ -64,7 +69,11 @@ export function useLongPress({ onLongPress, onClick, ms = 500, moveThreshold = 8
 
   return {
     pressing,
-    onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); cancel(); onLongPress(); },
+    onContextMenu: (e: React.MouseEvent) => {
+      e.preventDefault();
+      cancel();
+      onLongPress();
+    },
     onTouchStart: (e: React.TouchEvent) => start(e.touches[0]?.clientX, e.touches[0]?.clientY),
     onTouchEnd: end,
     onTouchMove: (e: React.TouchEvent) => move(e.touches[0]?.clientX, e.touches[0]?.clientY),

@@ -21,7 +21,11 @@ export function SupportTab({ entries, onRemoveCard, onCardHover }: TabProps) {
         const count = groupEntries.reduce((s, e) => s + e.quantity, 0);
         return (
           <Accordion key={type} variant="slim" title={`${type} · ${count}`} defaultOpen>
-            <CardGrid entries={groupEntries} onRemoveCard={onRemoveCard} onCardHover={onCardHover} />
+            <CardGrid
+              entries={groupEntries}
+              onRemoveCard={onRemoveCard}
+              onCardHover={onCardHover}
+            />
           </Accordion>
         );
       })}

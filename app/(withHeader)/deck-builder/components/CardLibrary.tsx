@@ -81,7 +81,16 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
         .filter(Boolean);
     }
     return gqlData?.cards.nodes ?? [];
-  }, [authLoading, libraryLoading, gqlCardsLoading, allowSwitch, useFireLibrary, library, fullCardMap, gqlData]);
+  }, [
+    authLoading,
+    libraryLoading,
+    gqlCardsLoading,
+    allowSwitch,
+    useFireLibrary,
+    library,
+    fullCardMap,
+    gqlData,
+  ]);
 
   // Apply tab filter before passing into the filters hook so options stay scoped
   const tabFilteredCards = useMemo(() => {
@@ -91,13 +100,16 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
   }, [allCards, libraryTab]);
 
   // Reset group tab when the primary tab changes
-  useEffect(() => { setGroupTab("all"); }, [libraryTab]);
+  useEffect(() => {
+    setGroupTab("all");
+  }, [libraryTab]);
 
   // Derive sub-tab options from the current tab's cards
   const groupTabs = useMemo((): Tab<string>[] => {
     if (libraryTab === "oshi" || libraryTab === "cheer") {
-      const colors = [...new Set(tabFilteredCards.flatMap((c) => c.colors))]
-        .sort((a, b) => (COLOR_ORDER[a] ?? 99) - (COLOR_ORDER[b] ?? 99));
+      const colors = [...new Set(tabFilteredCards.flatMap((c) => c.colors))].sort(
+        (a, b) => (COLOR_ORDER[a] ?? 99) - (COLOR_ORDER[b] ?? 99)
+      );
       if (colors.length <= 1) return [];
       return [
         { value: "all", label: "All" },
@@ -105,14 +117,16 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
       ];
     }
     if (libraryTab === "holomem") {
-      const levels = [...new Set(tabFilteredCards.map((c) => c.bloomLevel).filter(Boolean) as string[])]
-        .sort((a, b) => (BLOOM_ORDER[a] ?? 99) - (BLOOM_ORDER[b] ?? 99));
+      const levels = [
+        ...new Set(tabFilteredCards.map((c) => c.bloomLevel).filter(Boolean) as string[]),
+      ].sort((a, b) => (BLOOM_ORDER[a] ?? 99) - (BLOOM_ORDER[b] ?? 99));
       if (levels.length <= 1) return [];
       return [{ value: "all", label: "All" }, ...levels.map((l) => ({ value: l, label: l }))];
     }
     if (libraryTab === "support") {
-      const types = [...new Set(tabFilteredCards.map((c) => c.supportType).filter(Boolean) as string[])]
-        .sort((a, b) => a.localeCompare(b));
+      const types = [
+        ...new Set(tabFilteredCards.map((c) => c.supportType).filter(Boolean) as string[]),
+      ].sort((a, b) => a.localeCompare(b));
       if (types.length <= 1) return [];
       return [{ value: "all", label: "All" }, ...types.map((t) => ({ value: t, label: t }))];
     }
@@ -124,19 +138,20 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
     if (groupTab === "all" || groupTabs.length === 0) return tabFilteredCards;
     if (libraryTab === "oshi" || libraryTab === "cheer")
       return tabFilteredCards.filter((c) => c.colors.includes(groupTab));
-    if (libraryTab === "holomem")
-      return tabFilteredCards.filter((c) => c.bloomLevel === groupTab);
-    if (libraryTab === "support")
-      return tabFilteredCards.filter((c) => c.supportType === groupTab);
+    if (libraryTab === "holomem") return tabFilteredCards.filter((c) => c.bloomLevel === groupTab);
+    if (libraryTab === "support") return tabFilteredCards.filter((c) => c.supportType === groupTab);
     return tabFilteredCards;
   }, [groupTab, groupTabs.length, libraryTab, tabFilteredCards]);
 
   const filters = useCardLibraryFilters(groupFilteredCards);
-  const { scrollRef, rows, virtualizer, gridWidth, gridOffset } = useVirtualGrid(filters.displayCards, {
-    itemWidth: CARD_WIDTH,
-    itemHeight: CARD_HEIGHT,
-    gap: GAP,
-  });
+  const { scrollRef, rows, virtualizer, gridWidth, gridOffset } = useVirtualGrid(
+    filters.displayCards,
+    {
+      itemWidth: CARD_WIDTH,
+      itemHeight: CARD_HEIGHT,
+      gap: GAP,
+    }
+  );
 
   return (
     <Card className="flex flex-col gap-2 w-full h-full">
@@ -154,7 +169,13 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
         )}
       </div>
 
-      <Tabs value={libraryTab} onValueChange={setLibraryTab} tabs={LIBRARY_TABS} fullWidth className="shrink-0" />
+      <Tabs
+        value={libraryTab}
+        onValueChange={setLibraryTab}
+        tabs={LIBRARY_TABS}
+        fullWidth
+        className="shrink-0"
+      />
 
       {groupTabs.length > 0 && (
         <div className="overflow-x-auto shrink-0 -mx-1 px-1">
@@ -193,11 +214,7 @@ export function CardLibrary({ deck, onCardHover, onCardClick, onCardsLoaded }: C
                     onHover={(isHovered) => onCardHover?.(isHovered ? card : null)}
                     onClick={atLimit ? undefined : () => onCardClick?.(card)}
                     className={atLimit ? "opacity-40 grayscale" : undefined}
-                    overlayText={
-                      useFireLibrary && allowSwitch
-                        ? `Owned: ${ownedQty}x`
-                        : undefined
-                    }
+                    overlayText={useFireLibrary && allowSwitch ? `Owned: ${ownedQty}x` : undefined}
                   />
                 );
               })}

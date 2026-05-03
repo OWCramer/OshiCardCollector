@@ -126,8 +126,22 @@ function OCGCardInner({
       style={{ width: `${width}px`, height: `${height}px` }}
       key={card?.id}
       onClick={onClick}
-      onMouseEnter={onHover ? (e) => { isOverCard.current = true; if (!e.altKey) onHover(true); } : undefined}
-      onMouseLeave={onHover ? (e) => { isOverCard.current = false; if (!e.altKey) onHover(false); } : undefined}
+      onMouseEnter={
+        onHover
+          ? (e) => {
+              isOverCard.current = true;
+              if (!e.altKey) onHover(true);
+            }
+          : undefined
+      }
+      onMouseLeave={
+        onHover
+          ? (e) => {
+              isOverCard.current = false;
+              if (!e.altKey) onHover(false);
+            }
+          : undefined
+      }
       className={classes("select-none", href ? undefined : className)}
       onTouchStart={href || !enableTouchModal ? undefined : handleTouchStart}
       onTouchMove={href || !enableTouchModal ? undefined : handleTouchMove}

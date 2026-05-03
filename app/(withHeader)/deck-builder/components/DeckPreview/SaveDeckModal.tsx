@@ -19,7 +19,15 @@ interface SaveDeckModalProps {
   loadedDeckName?: string;
 }
 
-export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImageUrl, loadedDeckId, loadedDeckName }: SaveDeckModalProps) {
+export function SaveDeckModal({
+  isOpen,
+  onClose,
+  rawCards,
+  oshiCardId,
+  oshiImageUrl,
+  loadedDeckId,
+  loadedDeckName,
+}: SaveDeckModalProps) {
   const [name, setName] = useState(loadedDeckName ?? "My Deck");
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -96,7 +104,10 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
           {/* WIP warning */}
           {isWip && (
             <div className="flex items-start gap-2 rounded-xl bg-amber-500/10 ring-1 ring-inset ring-amber-500/30 px-3 py-2.5 text-sm text-amber-600 dark:text-amber-400">
-              <span>This deck has {totalCards}/{DECK_LIMITS.total} cards and will be saved as a work in progress.</span>
+              <span>
+                This deck has {totalCards}/{DECK_LIMITS.total} cards and will be saved as a work in
+                progress.
+              </span>
             </div>
           )}
 
@@ -117,7 +128,9 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
           {/* Overwrite existing */}
           {!loadingDecks && existingDecks.length > 0 && (
             <div className="flex flex-col gap-2">
-              <p className="text-xs opacity-50 font-medium uppercase tracking-wide">Overwrite existing</p>
+              <p className="text-xs opacity-50 font-medium uppercase tracking-wide">
+                Overwrite existing
+              </p>
               {existingDecks.map((deck) => (
                 <div
                   key={deck.id}
@@ -168,7 +181,11 @@ export function SaveDeckModal({ isOpen, onClose, rawCards, oshiCardId, oshiImage
             This will overwrite{" "}
             <span className="font-medium opacity-100">&ldquo;{overwriteTarget?.name}&rdquo;</span>
             {name.trim() && name.trim() !== overwriteTarget?.name ? (
-              <> and rename it to <span className="font-medium opacity-100">&ldquo;{name.trim()}&rdquo;</span></>
+              <>
+                {" "}
+                and rename it to{" "}
+                <span className="font-medium opacity-100">&ldquo;{name.trim()}&rdquo;</span>
+              </>
             ) : null}
             . This can&apos;t be undone.
           </p>

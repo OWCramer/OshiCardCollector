@@ -2,7 +2,14 @@ import { useMemo, useState } from "react";
 import Fuse from "fuse.js";
 import { BLOOM_ORDER, COLOR_ORDER, TYPE_ORDER } from "./cardOrdering";
 
-export type SortField = "name" | "releaseDate" | "rarity" | "cardNumber" | "color" | "bloomLevel" | "type";
+export type SortField =
+  | "name"
+  | "releaseDate"
+  | "rarity"
+  | "cardNumber"
+  | "color"
+  | "bloomLevel"
+  | "type";
 export type SortOrder = "asc" | "desc";
 
 type Card = {
@@ -21,9 +28,15 @@ type Card = {
 };
 
 const RARITY_ORDER: Record<string, number> = {
-  C: 0, U: 1, R: 2, RR: 3, SR: 4, HR: 5, OSR: 6, SEC: 7,
+  C: 0,
+  U: 1,
+  R: 2,
+  RR: 3,
+  SR: 4,
+  HR: 5,
+  OSR: 6,
+  SEC: 7,
 };
-
 
 export const SORT_ITEMS: { value: SortField; label: string }[] = [
   { value: "releaseDate", label: "Release Date" },
@@ -91,20 +104,31 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
 
   const filterOptions = useMemo(
     () => ({
-      colorOptions: [...new Set(cards.flatMap((c) => c.colors))].sort().map((v) => ({ value: v, label: v })),
+      colorOptions: [...new Set(cards.flatMap((c) => c.colors))]
+        .sort()
+        .map((v) => ({ value: v, label: v })),
       typeOptions: [...new Set(cards.map((c) => c.cardType))].map((v) => ({ value: v, label: v })),
-      bloomOptions: [...new Set(cards.map((c) => c.bloomLevel).filter(Boolean) as string[])].map((v) => ({ value: v, label: v })),
+      bloomOptions: [...new Set(cards.map((c) => c.bloomLevel).filter(Boolean) as string[])].map(
+        (v) => ({ value: v, label: v })
+      ),
       rarityOptions: [...new Set(cards.map((c) => c.rarity))].map((v) => ({ value: v, label: v })),
-      tagOptions: [...new Set(cards.flatMap((c) => c.tags))].sort().map((v) => ({ value: v, label: v })),
-      supportTypeOptions: [...new Set(cards.map((c) => c.supportType).filter(Boolean) as string[])].map((v) => ({ value: v, label: v })),
+      tagOptions: [...new Set(cards.flatMap((c) => c.tags))]
+        .sort()
+        .map((v) => ({ value: v, label: v })),
+      supportTypeOptions: [
+        ...new Set(cards.map((c) => c.supportType).filter(Boolean) as string[]),
+      ].map((v) => ({ value: v, label: v })),
     }),
     [cards]
   );
 
   const hasActiveFilters =
-    colorFilter.length > 0 || typeFilter.length > 0 ||
-    bloomFilter.length > 0 || rarityFilter.length > 0 ||
-    tagsFilter.length > 0 || supportTypeFilter.length > 0;
+    colorFilter.length > 0 ||
+    typeFilter.length > 0 ||
+    bloomFilter.length > 0 ||
+    rarityFilter.length > 0 ||
+    tagsFilter.length > 0 ||
+    supportTypeFilter.length > 0;
 
   const fuse = useMemo(
     () =>
@@ -121,14 +145,32 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
 
   const displayCards = useMemo(() => {
     let result = search.trim() ? fuse.search(search).map((r) => r.item) : cards;
-    if (colorFilter.length) result = result.filter((c) => c.colors.some((col) => colorFilter.includes(col)));
+    if (colorFilter.length)
+      result = result.filter((c) => c.colors.some((col) => colorFilter.includes(col)));
     if (typeFilter.length) result = result.filter((c) => typeFilter.includes(c.cardType));
-    if (bloomFilter.length) result = result.filter((c) => c.bloomLevel != null && bloomFilter.includes(c.bloomLevel));
+    if (bloomFilter.length)
+      result = result.filter((c) => c.bloomLevel != null && bloomFilter.includes(c.bloomLevel));
     if (rarityFilter.length) result = result.filter((c) => rarityFilter.includes(c.rarity));
-    if (tagsFilter.length) result = result.filter((c) => tagsFilter.some((t) => c.tags.includes(t)));
-    if (supportTypeFilter.length) result = result.filter((c) => c.supportType != null && supportTypeFilter.includes(c.supportType));
+    if (tagsFilter.length)
+      result = result.filter((c) => tagsFilter.some((t) => c.tags.includes(t)));
+    if (supportTypeFilter.length)
+      result = result.filter(
+        (c) => c.supportType != null && supportTypeFilter.includes(c.supportType)
+      );
     return sortCards(result, sortField, sortOrder);
-  }, [search, fuse, cards, colorFilter, typeFilter, bloomFilter, rarityFilter, tagsFilter, supportTypeFilter, sortField, sortOrder]);
+  }, [
+    search,
+    fuse,
+    cards,
+    colorFilter,
+    typeFilter,
+    bloomFilter,
+    rarityFilter,
+    tagsFilter,
+    supportTypeFilter,
+    sortField,
+    sortOrder,
+  ]);
 
   function clearFilters() {
     setColorFilter([]);
@@ -141,18 +183,28 @@ export function useCardLibraryFilters<T extends Card>(cards: T[]) {
 
   return {
     displayCards,
-    search, setSearch,
-    sortField, setSortField,
-    sortOrder, setSortOrder,
-    colorFilter, setColorFilter,
-    typeFilter, setTypeFilter,
-    bloomFilter, setBloomFilter,
-    rarityFilter, setRarityFilter,
-    tagsFilter, setTagsFilter,
-    supportTypeFilter, setSupportTypeFilter,
+    search,
+    setSearch,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    colorFilter,
+    setColorFilter,
+    typeFilter,
+    setTypeFilter,
+    bloomFilter,
+    setBloomFilter,
+    rarityFilter,
+    setRarityFilter,
+    tagsFilter,
+    setTagsFilter,
+    supportTypeFilter,
+    setSupportTypeFilter,
     filterOptions,
     hasActiveFilters,
     clearFilters,
-    showFilters, setShowFilters,
+    showFilters,
+    setShowFilters,
   };
 }

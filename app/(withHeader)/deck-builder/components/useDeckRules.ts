@@ -4,9 +4,9 @@ import { type FullCardEntry } from "./CardLibrary";
 
 export const DECK_LIMITS = {
   oshi: 1,
-  main: 30,   // holomem + support combined
+  main: 30, // holomem + support combined
   cheer: 20,
-  total: 51,  // oshi + main + cheer
+  total: 51, // oshi + main + cheer
   perCard: 4,
 } as const;
 
@@ -24,8 +24,8 @@ export interface DeckStats {
   holomem: number;
   cheer: number;
   support: number;
-  main: number;   // holomem + support
-  total: number;  // everything
+  main: number; // holomem + support
+  total: number; // everything
 }
 
 export function useDeckRules(deck: DeckEntry[]) {
@@ -59,7 +59,8 @@ export function useDeckRules(deck: DeckEntry[]) {
     if (
       (card.cardType === "HOLOMEM" || card.cardType === "SUPPORT") &&
       stats.main >= DECK_LIMITS.main
-    ) return true;
+    )
+      return true;
 
     // Cheer slots exhausted
     if (card.cardType === "CHEER" && stats.cheer >= DECK_LIMITS.cheer) return true;
