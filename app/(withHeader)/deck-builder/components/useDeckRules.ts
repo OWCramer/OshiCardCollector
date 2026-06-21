@@ -4,9 +4,9 @@ import { type FullCardEntry } from "./CardLibrary";
 
 export const DECK_LIMITS = {
   oshi: 1,
-  main: 30, // holomem + support combined
+  main: 50, // holomem + support combined
   cheer: 20,
-  total: 51, // oshi + main + cheer
+  total: 71, // oshi + main + cheer
   perCard: 4,
 } as const;
 
