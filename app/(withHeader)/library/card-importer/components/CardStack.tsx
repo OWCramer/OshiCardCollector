@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { OCG_CARD_SIZES } from "@/components/OCGCard";
 import type { CardMapEntry } from "@/lib/use-card-map";
-import { classes } from "@/lib/classes";
 import { CARD_ART_SIZE, CardArt } from "./CardArt";
 import type { Density } from "./types";
 
@@ -51,16 +50,19 @@ const STAGGER_MS = 320;
  *
  * Hovering holds the rotation at the next rest point (an in-flight card always
  * finishes its travel) and lets OCGCard's own tilt take over the front card.
+ * Passing `focusCardId` drives it to a specific printing and holds it there —
+ * that's how hovering a rarity chip brings its artwork to the front.
  */
 export function CardStack({
   printings,
   density,
-  dimmed,
+  focusCardId,
   index = 0,
 }: {
   printings: CardMapEntry[];
   density: Density;
-  dimmed?: boolean;
+  /** Pins a printing at the front, using the same travel animation. */
+  focusCardId?: number | null;
   /** Row position, used only to desynchronise the timers. */
   index?: number;
 }) {
@@ -69,11 +71,24 @@ export function CardStack({
   const [front, setFront] = useState(0);
   const [hovered, setHovered] = useState(false);
 
+  const focusIndex =
+    focusCardId == null ? -1 : printings.findIndex((p) => p.id === focusCardId);
+
+  // Adjusting state during render rather than in an effect — React's documented
+  // pattern for deriving from changed props. Writing `front` here (instead of
+  // rendering off a separate "effective front") means that when the hover ends,
+  // cycling resumes from the card you were looking at rather than snapping back.
+  const [lastFocus, setLastFocus] = useState<number | null | undefined>(focusCardId);
+  if (focusCardId !== lastFocus) {
+    setLastFocus(focusCardId);
+    if (focusIndex >= 0) setFront(focusIndex);
+  }
+
   // Scheduling the next advance from an effect keyed on `front` means a hover
   // simply cancels the pending timer. Whatever is already travelling is driven
   // by the `animate` prop and finishes regardless — which is exactly the
   // "pause, but not mid-motion" behaviour we want.
-  const paused = hovered || reduceMotion || count < 2;
+  const paused = hovered || focusIndex >= 0 || reduceMotion || count < 2;
   useEffect(() => {
     if (paused) return;
     const id = setTimeout(
@@ -85,7 +100,7 @@ export function CardStack({
 
   // Nothing to cycle through, so skip the stack machinery entirely.
   if (count < 2) {
-    return <CardArt card={printings[0]} density={density} dimmed={dimmed} />;
+    return <CardArt card={printings[0]} density={density} />;
   }
 
   const { width, height } = OCG_CARD_SIZES[CARD_ART_SIZE[density]];
@@ -93,7 +108,7 @@ export function CardStack({
 
   return (
     <div
-      className={classes("relative shrink-0", dimmed && "opacity-75")}
+      className="relative shrink-0"
       // The box has to cover the full fan, or the deepest card gets clipped by
       // the results panel — its overflow-y resolves overflow-x to auto, so a
       // stray pixel becomes a horizontal scrollbar. Rotation about the top-left

@@ -21,6 +21,7 @@ export function PrintingChips({
   density,
   showHints,
   onPick,
+  onHoverPrinting,
 }: {
   printings: CardMapEntry[];
   /** The printing currently filed in the session, if any. */
@@ -28,9 +29,12 @@ export function PrintingChips({
   density: Density;
   showHints?: boolean;
   onPick: (cardId: number) => void;
+  /** Fires with a card id on hover and null on leave, to drive the card stack. */
+  onHoverPrinting?: (cardId: number | null) => void;
 }) {
   return (
     <div
+      onMouseLeave={() => onHoverPrinting?.(null)}
       className={classes(
         "flex items-center gap-2",
         density === "touch"
@@ -54,6 +58,7 @@ export function PrintingChips({
               showHints ? `${printing.rarity}, press ${i + 1}` : printing.rarity
             }
             onMouseDown={(e) => e.preventDefault()}
+            onMouseEnter={() => onHoverPrinting?.(printing.id)}
             onClick={() => onPick(printing.id)}
             className={classes(
               "flex shrink-0 items-center gap-1.5 cursor-pointer rounded-[11px]",

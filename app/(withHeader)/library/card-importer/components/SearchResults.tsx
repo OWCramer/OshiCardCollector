@@ -72,7 +72,7 @@ export function SearchResults({ ctl, density }: { ctl: ImporterController; densi
               selected && "bg-blue-400/15 shadow-[inset_2px_0_0_var(--color-blue-400)]"
             )}
           >
-            <CardStack printings={group.printings} density={density} index={i} />
+            <CardStack printings={group.stackPrintings} density={density} index={i} />
             <div className="min-w-0 flex-1">
               {/* Only the name reserves room for the floating session count —
                   it's the one line the badge sits level with. */}

@@ -22,6 +22,7 @@ export function SessionRow({
 }) {
   const { entry, card, group, isActiveQuestion } = row;
   const [expanded, setExpanded] = useState(false);
+  const [hoveredPrinting, setHoveredPrinting] = useState<number | null>(null);
 
   const adjustQuantity = useImporterStore((s) => s.adjustQuantity);
   const setQuantity = useImporterStore((s) => s.setQuantity);
@@ -37,6 +38,17 @@ export function SessionRow({
   // A queued row shows its chips permanently — that IS the question. A resolved
   // one hides them behind the rarity pill until you want to change printing.
   const showChips = group && (queued || expanded);
+
+  /**
+   * The stack only holds visually distinct art, so a chip for a collapsed
+   * foil printing has no card of its own to fly to — point it at the base
+   * printing it shares its artwork with.
+   */
+  function stackFocusFor(cardId: number | null) {
+    if (cardId === null || !group) return null;
+    if (group.stackPrintings.some((p) => p.id === cardId)) return cardId;
+    return group.stackPrintings.find((p) => p.rarity === "C" || p.rarity === "U")?.id ?? null;
+  }
 
   const printingBadge = queued ? (
     <span
@@ -102,9 +114,14 @@ export function SessionRow({
             them — that's the question it's asking. Once answered it settles on
             the one chosen. */}
         {queued && group ? (
-          <CardStack printings={group.printings} density={density} dimmed index={entry.seq} />
+          <CardStack
+            printings={group.stackPrintings}
+            density={density}
+            focusCardId={stackFocusFor(hoveredPrinting)}
+            index={entry.seq}
+          />
         ) : (
-          <CardArt card={card ?? group?.printings[0]} density={density} dimmed={queued} />
+          <CardArt card={card ?? group?.printings[0]} density={density} />
         )}
 
         <div className="min-w-0 flex-1">
@@ -148,8 +165,10 @@ export function SessionRow({
                 // always answers the top question, so hinting every row would
                 // be a lie.
                 showHints={isActiveQuestion}
+                onHoverPrinting={setHoveredPrinting}
                 onPick={(cardId) => {
                   setExpanded(false);
+                  setHoveredPrinting(null);
                   assignPrinting(entry.key, cardId);
                   onCommitFocus();
                 }}

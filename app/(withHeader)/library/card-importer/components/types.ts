@@ -48,6 +48,12 @@ export interface CardGroup {
   setName: string;
   /** Sorted lowest rarity first; index 0 is the default printing. */
   printings: CardMapEntry[];
+  /**
+   * `printings` with visually duplicate artwork collapsed — what the card stack
+   * cycles through. Always a non-empty subset; never use it for the rarity
+   * picker, which must offer every real printing.
+   */
+  stackPrintings: CardMapEntry[];
 }
 
 export interface SearchHit {

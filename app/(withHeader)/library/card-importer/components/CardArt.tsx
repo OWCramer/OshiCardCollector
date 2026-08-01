@@ -1,5 +1,4 @@
 import { OCG_CARD_SIZES, OCGCard, type OCGCardSize, type OCGCardData } from "@/components/OCGCard";
-import { classes } from "@/lib/classes";
 import type { Density } from "./types";
 
 /** Phones get the smaller card so a row doesn't eat half the screen. */
@@ -15,12 +14,10 @@ export const CARD_ART_SIZE: Record<Density, OCGCardSize> = { compact: "xs", touc
 export function CardArt({
   card,
   density,
-  dimmed,
 }: {
   /** Undefined when a persisted draft references a card the catalog lost. */
   card?: OCGCardData;
   density: Density;
-  dimmed?: boolean;
 }) {
   const size = CARD_ART_SIZE[density];
 
@@ -35,7 +32,7 @@ export function CardArt({
   }
 
   return (
-    <div className={classes("shrink-0", dimmed && "opacity-75")}>
+    <div className="shrink-0">
       <OCGCard card={card} size={size} />
     </div>
   );
