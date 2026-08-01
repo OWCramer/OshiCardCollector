@@ -6,6 +6,7 @@ import { classes } from "@/lib/classes";
 import { useImporterStore } from "../importerStore";
 import { CardArt } from "./CardArt";
 import { CardMeta } from "./CardMeta";
+import { CardStack } from "./CardStack";
 import { PrintingChips, rarityPillClasses } from "./PrintingChips";
 import { QuantityStepper } from "./QuantityStepper";
 import type { Density, LedgerRow } from "./types";
@@ -97,9 +98,14 @@ export function SessionRow({
       {/* On touch the stepper drops to its own full-width row below, because a
           44px stepper beside the info squeezed the name and set to initials. */}
       <div className={classes("relative flex gap-3", density === "touch" ? "items-start" : "items-center")}>
-        {/* A queued row has no chosen printing yet, so it shows the group's
-            default art, dimmed until the question is answered. */}
-        <CardArt card={card ?? group?.printings[0]} density={density} dimmed={queued} />
+        {/* A queued row hasn't picked a printing, so it cycles through all of
+            them — that's the question it's asking. Once answered it settles on
+            the one chosen. */}
+        {queued && group ? (
+          <CardStack printings={group.printings} density={density} dimmed index={entry.seq} />
+        ) : (
+          <CardArt card={card ?? group?.printings[0]} density={density} dimmed={queued} />
+        )}
 
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium">

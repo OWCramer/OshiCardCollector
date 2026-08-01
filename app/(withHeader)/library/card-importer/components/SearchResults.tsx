@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { classes } from "@/lib/classes";
-import { CardArt } from "./CardArt";
 import { CardMeta } from "./CardMeta";
+import { CardStack } from "./CardStack";
 import { RESULTS_ID, optionId } from "./SearchField";
 import type { Density } from "./types";
 import type { ImporterController } from "./useImporterController";
@@ -72,7 +72,7 @@ export function SearchResults({ ctl, density }: { ctl: ImporterController; densi
               selected && "bg-blue-400/15 shadow-[inset_2px_0_0_var(--color-blue-400)]"
             )}
           >
-            <CardArt card={group.printings[0]} density={density} />
+            <CardStack printings={group.printings} density={density} index={i} />
             <div className="min-w-0 flex-1">
               {/* Only the name reserves room for the floating session count —
                   it's the one line the badge sits level with. */}

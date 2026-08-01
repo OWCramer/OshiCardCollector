@@ -21,6 +21,7 @@
     "graphql": "^16.13.2",
     "hover-tilt": "^1.0.0",
     "lucide-react": "^1.8.0",
+    "motion": "^12.43.0",
     "next": "16.2.3",
     "pluralize": "^8.0.0",
     "react": "19.2.4",
