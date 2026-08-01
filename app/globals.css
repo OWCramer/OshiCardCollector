@@ -33,6 +33,16 @@ html {
   }
 }
 
+/* Card importer — the blue "this row was just touched" receipt. */
+@keyframes importerFlash {
+  from {
+    background-color: color-mix(in srgb, var(--color-blue-500) 22%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
 body {
   color: var(--foreground);
   font-family:

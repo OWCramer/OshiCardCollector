@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/lib/auth-context";
 import { LibraryProvider } from "@/lib/library-context";
 import { FavoritesProvider } from "@/lib/favorites-context";
@@ -17,6 +17,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Oshi Card Collector",
   description: "Hololive OCG Collection Manager",
+};
+
+export const viewport: Viewport = {
+  // Shrink the visual viewport when a soft keyboard opens so bottom-docked
+  // controls (the card importer's mobile search bar) stay above it.
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
