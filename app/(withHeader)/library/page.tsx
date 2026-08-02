@@ -26,6 +26,7 @@ import { useLibraryDefaults } from "./components/useLibraryDefaults";
 import { useFilterOptions } from "./components/useFilterOptions";
 import { sortEntries } from "./components/utils";
 import { type CardEntry, FACTORY_DEFAULTS, type LibraryDefaults, SORT_ITEMS, } from "./components/types";
+import { Divider } from "@/components/Divider";
 
 const ICON_BTN =
   "h-9 w-9 shrink-0 flex items-center justify-center rounded-xl ring-1 ring-inset transition-colors";
@@ -89,6 +90,10 @@ export default function LibraryPage() {
             </Link>{" "}
             and hit + to add them.
           </p>
+          <Divider text="OR" className="my-2" />
+          <Button href="/library/card-importer" className="w-full" highContrast variant="primary">
+            Import cards
+          </Button>
         </div>
       </div>
     );
