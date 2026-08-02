@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 import { useImporterStore } from "../importerStore";
-import { searchGroups } from "./searchCards";
+import { searchGroups, type SessionAffinity } from "./searchCards";
 import { sortRows } from "./sortRows";
 import type { CardGroup, LedgerRow, SearchHit, SortMode } from "./types";
 import type { CardGroupIndex } from "./cardGroups";
@@ -46,8 +46,6 @@ export function useImporterController(index: CardGroupIndex): ImporterController
   const queueCard = useImporterStore((s) => s.queueCard);
   const assignPrinting = useImporterStore((s) => s.assignPrinting);
 
-  const results = useMemo(() => searchGroups(index.groups, query), [index.groups, query]);
-
   const rows = useMemo<LedgerRow[]>(() => {
     const joined = Object.values(storeEntries).map((entry) => ({
       entry,
@@ -69,6 +67,30 @@ export function useImporterController(index: CardGroupIndex): ImporterController
 
   const totalCards = useMemo(() => rows.reduce((sum, r) => sum + r.entry.quantity, 0), [rows]);
   const unansweredCount = useMemo(() => rows.filter((r) => r.entry.cardId === null).length, [rows]);
+
+  /**
+   * What the session has taught us so far. Derived from the ledger rather than
+   * tracked separately, so removing a card unlearns it too.
+   */
+  const affinity = useMemo<SessionAffinity>(() => {
+    const countByGroup = new Map<string, number>();
+    const countBySet = new Map<string, number>();
+    let total = 0;
+    for (const { entry, group } of rows) {
+      countByGroup.set(entry.groupKey, (countByGroup.get(entry.groupKey) ?? 0) + entry.quantity);
+      if (!group) continue;
+      countBySet.set(group.setName, (countBySet.get(group.setName) ?? 0) + entry.quantity);
+      total += entry.quantity;
+    }
+    const shareBySet = new Map<string, number>();
+    for (const [setName, count] of countBySet) shareBySet.set(setName, count / total);
+    return { countByGroup, shareBySet };
+  }, [rows]);
+
+  const results = useMemo(
+    () => searchGroups(index.groups, query, affinity),
+    [index.groups, query, affinity]
+  );
 
   const setQuery = useCallback((next: string) => {
     setQueryState(next);
