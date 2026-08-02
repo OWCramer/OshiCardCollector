@@ -21,12 +21,14 @@
     "graphql": "^16.13.2",
     "hover-tilt": "^1.0.0",
     "lucide-react": "^1.8.0",
+    "motion": "^12.43.0",
     "next": "16.2.3",
     "pluralize": "^8.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.1",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@graphql-codegen/add": "^6.0.0",

@@ -29,7 +29,7 @@ function listDocRef(uid: string, listId: string) {
   return doc(db, "users", uid, "favoriteLists", listId);
 }
 
-function cardDocRef(uid: string, listId: string, cardId: number) {
+export function favoriteCardDocRef(uid: string, listId: string, cardId: number) {
   return doc(db, "users", uid, "favoriteLists", listId, "cards", String(cardId));
 }
 
@@ -43,7 +43,7 @@ export async function createFavoriteList(uid: string, name: string): Promise<str
 
 export async function deleteFavoriteList(uid: string, listId: string, cardIds: number[]): Promise<void> {
   // Firestore doesn't auto-delete subcollections — remove card docs first.
-  await Promise.all(cardIds.map((id) => deleteDoc(cardDocRef(uid, listId, id))));
+  await Promise.all(cardIds.map((id) => deleteDoc(favoriteCardDocRef(uid, listId, id))));
   await deleteDoc(listDocRef(uid, listId));
 }
 
@@ -52,12 +52,12 @@ export async function renameFavoriteList(uid: string, listId: string, name: stri
 }
 
 export async function addCardToList(uid: string, listId: string, cardId: number): Promise<void> {
-  await setDoc(cardDocRef(uid, listId, cardId), {
+  await setDoc(favoriteCardDocRef(uid, listId, cardId), {
     cardId,
     addedAt: serverTimestamp(),
   });
 }
 
 export async function removeCardFromList(uid: string, listId: string, cardId: number): Promise<void> {
-  await deleteDoc(cardDocRef(uid, listId, cardId));
+  await deleteDoc(favoriteCardDocRef(uid, listId, cardId));
 }

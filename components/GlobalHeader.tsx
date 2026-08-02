@@ -109,7 +109,13 @@ function CollectionMenu() {
   }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div
+      aria-label="Collection menu"
+      aria-haspopup="menu"
+      aria-expanded={open}
+      className="relative"
+      ref={ref}
+    >
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex shrink-0 items-center gap-2 h-9 px-4 rounded-xl text-black dark:text-white backdrop-blur-md backdrop-saturate-150 ring-1 ring-inset ring-black/10 dark:ring-white/15 hover:bg-black/10 dark:hover:bg-white/10 active:scale-[0.97] transition-all duration-150 cursor-pointer select-none"
@@ -183,7 +189,10 @@ export function GlobalHeader() {
   ];
 
   const triggerNode = (
-    <div className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150">
+    <div
+      aria-haspopup="menu"
+      className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150"
+    >
       {user?.photoURL ? (
         <Image
           src={user.photoURL}
@@ -203,7 +212,11 @@ export function GlobalHeader() {
     <>
       {mobileOpen && <MobileMenuOverlay onClose={() => setMobileOpen(false)} />}
 
-      <header className="fixed w-full h-15.25 z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md px-6 py-2 dark:border-zinc-800">
+      {/* Grows by the safe-area inset rather than sliding under the status bar,
+          now that viewport-fit=cover lets content reach the screen edges. Every
+          inset is 0 on desktop, Android and non-notched devices, so these
+          calc()s reduce to the previous fixed values there. */}
+      <nav className="fixed w-full h-[var(--header-height)] pt-[env(safe-area-inset-top)] z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] py-2 dark:border-zinc-800">
         {/* Hamburger — mobile only */}
         <button
           onClick={() => setMobileOpen(true)}
@@ -221,7 +234,10 @@ export function GlobalHeader() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2">
+        <div
+          aria-label="Main navigation"
+          className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-2"
+        >
           <Button href="/all-cards" variant="transparent" highContrast>
             Cards
           </Button>
@@ -232,9 +248,9 @@ export function GlobalHeader() {
             Deck Builder
           </Button>
           <CollectionMenu />
-        </nav>
+        </div>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div aria-label="User account actions" className="ml-auto flex items-center gap-1">
           {user ? (
             <Menu sections={sections} align="right" menuClassName="w-44">
               {triggerNode}
@@ -245,7 +261,7 @@ export function GlobalHeader() {
             </Button>
           )}
         </div>
-      </header>
+      </nav>
     </>
   );
 }

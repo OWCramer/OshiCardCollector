@@ -32,6 +32,11 @@ interface MultiProps<T extends string = string> extends BaseProps<T> {
   multi: true;
   value: T[];
   onValueChange: (value: T[]) => void;
+  /**
+   * Trigger text when nothing is selected. Defaults to "All", which suits
+   * filters — override it where an empty selection means "none" instead.
+   */
+  emptyLabel?: string;
 }
 
 type DropdownProps<T extends string = string> = SingleProps<T> | MultiProps<T>;
@@ -164,7 +169,7 @@ export function Dropdown<T extends string = string>(props: DropdownProps<T>) {
   // Trigger label
   const triggerLabel = (() => {
     if (props.multi) {
-      if (props.value.length === 0) return "All";
+      if (props.value.length === 0) return props.emptyLabel ?? "All";
       if (props.value.length === 1) {
         return items.find((i) => i.value === props.value[0])?.label ?? "1 selected";
       }

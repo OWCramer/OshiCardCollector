@@ -8,6 +8,7 @@ import { classes } from "@/lib/classes";
 import { Modal } from "@/components/Modal";
 
 export const OCG_CARD_SIZES = {
+  xxs: { width: 98, height: 137 },
   xs: { width: 130, height: 182 },
   sm: { width: 160, height: 224 },
   lg: { width: 240, height: 336 },
@@ -149,7 +150,7 @@ function OCGCardInner({
     >
       <hover-tilt
         className={classes(
-          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%]",
+          "block h-full w-full touch-pan-y [&::part(container)]:rounded-[4.55%/3.5%] z-10",
           "[@media(hover:none)_and_(pointer:coarse)]:pointer-events-none",
           isHolo ? `${styles.holo}` : undefined,
           href || onClick ? "cursor-pointer" : undefined
@@ -200,7 +201,7 @@ function OCGCardInner({
             <div className="w-fit h-full items-center justify-center">
               <hover-tilt
                 className={classes(
-                  "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%]",
+                  "block h-full w-full [&::part(container)]:rounded-[4.55%/3.5%] z-10",
                   isHolo ? `${styles.holo}` : undefined
                 )}
                 exitDelay={0}

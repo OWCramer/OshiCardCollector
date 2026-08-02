@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { AuthProvider } from "@/lib/auth-context";
 import { LibraryProvider } from "@/lib/library-context";
 import { FavoritesProvider } from "@/lib/favorites-context";
@@ -17,6 +17,17 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "Oshi Card Collector",
   description: "Hololive OCG Collection Manager",
+};
+
+export const viewport: Viewport = {
+  // Shrink the visual viewport when a soft keyboard opens so bottom-docked
+  // controls (the card importer's mobile search bar) stay above it.
+  interactiveWidget: "resizes-content",
+  // Let content run edge to edge, so the page scrolls behind Safari's floating
+  // URL bar rather than stopping above it. This is also what makes
+  // env(safe-area-inset-*) report real values — without cover they are all 0,
+  // and every safe-area calc() in the app silently collapses to its base value.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -40,9 +51,9 @@ export default function RootLayout({
               <AuthProvider>
                 <LibraryProvider>
                   <FavoritesProvider>
-                    <main id="app-root" className="flex flex-col flex-1">
+                    <div aria-label="App root" id="app-root" className="flex flex-col flex-1">
                       {children}
-                    </main>
+                    </div>
                   </FavoritesProvider>
                 </LibraryProvider>
               </AuthProvider>
