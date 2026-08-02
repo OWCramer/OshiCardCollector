@@ -68,7 +68,7 @@ export function SaveDialog({
           <Button variant="transparent" highContrast onClick={onClose}>
             Cancel
           </Button>
-          <Button disabled={saving} onClick={onConfirm}>
+          <Button highContrast disabled={saving} onClick={onConfirm}>
             {saving ? "Saving…" : `Save ${totalCards} ${pluralize("card", totalCards)}`}
           </Button>
         </div>
