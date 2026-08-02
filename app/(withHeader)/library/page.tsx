@@ -327,7 +327,7 @@ function LibraryView({ library, cardMap, defaults, saveDefaults }: LibraryViewPr
       <div className="flex flex-col gap-0.5">
         <div className="flex justify-between items-center w-full">
           <h1 className="text-xl font-semibold">Library</h1>
-          <Button variant="primary" icon={PlusIcon} href="/library/card-importer">
+          <Button highContrast variant="primary" icon={PlusIcon} href="/library/card-importer">
             Add
           </Button>
         </div>
