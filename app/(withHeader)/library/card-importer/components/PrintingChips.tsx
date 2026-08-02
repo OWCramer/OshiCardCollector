@@ -1,19 +1,16 @@
-import type { CardMapEntry } from "@/lib/use-card-map";
+import { Button } from "@/components/Button";
 import { classes } from "@/lib/classes";
+import type { CardMapEntry } from "@/lib/use-card-map";
 import type { Density } from "./types";
 
 /** Rarities that get the gold treatment — the ones worth double-checking. */
 const HOT_RARITIES = new Set(["SR", "SEC", "OUR", "OSR", "UR", "HR"]);
 
-export function rarityPillClasses(rarity: string) {
-  return HOT_RARITIES.has(rarity)
-    ? "bg-amber-400/15 text-amber-500 dark:text-amber-400 ring-amber-400/30"
-    : "bg-black/8 dark:bg-white/8 opacity-75 ring-black/10 dark:ring-white/10";
-}
+export const isHotRarity = (rarity: string) => HOT_RARITIES.has(rarity);
 
 /**
- * The printing picker — the rarity question itself when a row is queued, and a
- * "change printing" control once it's answered.
+ * The rarity picker — the question itself when a row is queued, and a "change
+ * rarity" control once it's answered.
  */
 export function PrintingChips({
   printings,
@@ -47,46 +44,31 @@ export function PrintingChips({
           : "min-w-0 flex-wrap"
       )}
     >
-      {printings.map((printing, i) => {
-        const active = printing.id === selectedId;
-        return (
-          <button
-            key={printing.id}
-            type="button"
-            aria-keyshortcuts={showHints ? String(i + 1) : undefined}
-            aria-label={showHints ? `${printing.rarity}, press ${i + 1}` : printing.rarity}
-            onMouseDown={(e) => e.preventDefault()}
-            onMouseEnter={() => onHoverPrinting?.(printing.id)}
-            onClick={() => onPick(printing.id)}
-            className={classes(
-              "flex shrink-0 items-center gap-1.5 cursor-pointer rounded-[11px]",
-              "ring-1 ring-inset transition-colors focus-visible:outline-2 focus-visible:outline-blue-500",
-              density === "touch" ? "h-11 px-3.5" : "h-7 px-3",
-              active
-                ? "bg-blue-400/25 ring-blue-400/45"
-                : "bg-black/5 dark:bg-white/6 opacity-75 ring-black/10 dark:ring-white/10"
-            )}
-          >
-            <span
-              className={classes(
-                "shrink-0 font-mono font-semibold",
-                density === "touch" ? "text-[15px]" : "text-xs"
-              )}
-            >
-              {printing.rarity}
+      {printings.map((printing, i) => (
+        <Button
+          key={printing.id}
+          variant={printing.id === selectedId ? "primary" : "secondary"}
+          highContrast
+          aria-keyshortcuts={showHints ? String(i + 1) : undefined}
+          aria-label={showHints ? `${printing.rarity}, press ${i + 1}` : printing.rarity}
+          onMouseDown={(e) => e.preventDefault()}
+          onMouseEnter={() => onHoverPrinting?.(printing.id)}
+          onClick={() => onPick(printing.id)}
+          className={classes(
+            "gap-1.5 font-mono font-semibold",
+            density === "touch" ? "h-11 px-3.5 text-[15px]" : "h-7 px-3 text-xs"
+          )}
+        >
+          {printing.rarity}
+          {showHints && (
+            // Hidden on touch for the same reason as the ↵ badge — no keyboard
+            // to press the number on.
+            <span aria-hidden className="font-mono text-[10px] opacity-75 pointer-coarse:hidden">
+              {i + 1}
             </span>
-            {showHints && (
-              // No opacity of its own: an inactive chip is already at 75%, and
-              // stacking another would take the hint down to 41%. Hidden on
-              // touch for the same reason as the ↵ badge — no keyboard to
-              // press the number on.
-              <span aria-hidden className="shrink-0 font-mono text-[10px] pointer-coarse:hidden">
-                {i + 1}
-              </span>
-            )}
-          </button>
-        );
-      })}
+          )}
+        </Button>
+      ))}
     </div>
   );
 }

@@ -1,10 +1,14 @@
-import { ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 import { ExternalLinkIcon, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { classes } from "@/lib/classes";
 
-interface ButtonProps {
-  onClick?: () => void;
+/**
+ * Native button attributes pass through, mirroring how Input is written. This
+ * is what lets an icon-only button carry an `aria-label` — without one it has
+ * no accessible name at all — and lets callers attach hover/pointer handlers.
+ */
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> {
   children?: ReactNode;
   className?: string;
   variant?: "primary" | "secondary" | "transparent" | "destructive";
@@ -12,7 +16,6 @@ interface ButtonProps {
   iconSize?: number;
   highContrast?: boolean;
   href?: string;
-  disabled?: boolean;
   external?: boolean;
 }
 
@@ -27,6 +30,7 @@ export function Button({
   href,
   disabled,
   external,
+  ...rest
 }: ButtonProps) {
   const iconOnly = !!Icon && !children;
 
@@ -65,7 +69,7 @@ export function Button({
   }
 
   return (
-    <button onClick={onClick} disabled={disabled} className={resolvedClass}>
+    <button {...rest} onClick={onClick} disabled={disabled} className={resolvedClass}>
       {content}
     </button>
   );

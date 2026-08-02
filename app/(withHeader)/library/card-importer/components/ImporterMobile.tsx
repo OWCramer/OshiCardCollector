@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/Button";
+import { Divider } from "@/components/Divider";
 import { Dropdown } from "@/components/Dropdown";
 import { useImporterStore } from "../importerStore";
 import { DiscardDialog } from "./DiscardDialog";
@@ -47,7 +48,7 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
     // all-cards: normal document scroll, a `fixed` bar, and bottom padding on
     // the content to clear it.
     <section aria-label="Card importer" className="w-full">
-      <div className="border-b border-black/8 dark:border-white/8 px-3.5 pb-3 mt-3">
+      <div className="px-3.5 pb-3 mt-3">
         <div className="mb-2.5 flex items-center gap-2">
           <div className="flex justify-between w-full items-center">
             <h1 className="shrink-0 text-lg font-semibold">Import</h1>
@@ -99,6 +100,7 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
           </Button>
         </div>
       </div>
+      <Divider />
 
       {/* Bottom padding clears the fixed bar so the last row can scroll out
           from behind it, plus the iOS home indicator inset. */}
@@ -114,10 +116,13 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
         )}
       </ul>
 
-      {/* Fixed, like the all-cards filter bar — out of flow entirely, so the
-          ledger scrolls behind it. z-30 sits under the global header (z-40)
-          and the modals (z-50). */}
-      <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-2 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+      {/* Same floating translucent card as the all-cards / library filter bars.
+          Fixed, so it's out of flow entirely and the ledger scrolls behind it —
+          and behind Safari's floating URL bar, which overlays the same corner.
+          The safe-area inset keeps it clear of the home indicator; it resolves
+          to 0 when there isn't one, so it matches the other pages exactly.
+          z-30 sits under the global header (z-40) and modals (z-50). */}
+      <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-4 right-4 z-30 flex flex-col gap-3 rounded-lg bg-white/50 p-4 ring-1 ring-inset ring-black/10 backdrop-blur dark:bg-black/50 dark:ring-white/15">
         <SearchResults ctl={ctl} density="touch" />
         <SearchField ctl={ctl} density="touch" />
       </div>

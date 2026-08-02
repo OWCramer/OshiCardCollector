@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { classes } from "@/lib/classes";
 import { CardMeta } from "./CardMeta";
 import { CardStack } from "./CardStack";
-import { RESULTS_ID, optionId } from "./SearchField";
+import { RESULTS_ID, blurAfterCommitOnTouch, optionId } from "./SearchField";
 import type { Density } from "./types";
 import type { ImporterController } from "./useImporterController";
 
@@ -18,9 +18,16 @@ export function SearchResults({ ctl, density }: { ctl: ImporterController; densi
     listRef.current?.children[selectedIndex]?.scrollIntoView({ block: "nearest" });
   }, [selectedIndex, results.length]);
 
+  // On touch this renders inside the floating search card, so it drops its own
+  // surface — a panel within a panel reads as a mistake.
+  const surface =
+    density === "touch"
+      ? ""
+      : "rounded-2xl bg-black/5 dark:bg-white/6 ring-1 ring-inset ring-black/10 dark:ring-white/10 shadow-lg backdrop-blur-lg";
+
   if (query && !results.length) {
     return (
-      <div className="flex items-center gap-3 rounded-2xl bg-black/5 dark:bg-white/6 p-4 ring-1 ring-inset ring-black/10 dark:ring-white/10 backdrop-blur-lg">
+      <div className={classes("flex items-center gap-3", surface, density === "compact" && "p-4")}>
         <span className="text-[13.5px]">
           No card matches “<span className="font-mono">{query}</span>”
         </span>
@@ -43,8 +50,8 @@ export function SearchResults({ ctl, density }: { ctl: ImporterController; densi
       // scroll — on mobile it would otherwise push the docked search bar off
       // the bottom of the screen.
       className={classes(
-        "overflow-y-auto overscroll-contain rounded-2xl shadow-lg backdrop-blur-lg",
-        "bg-black/5 dark:bg-white/6 ring-1 ring-inset ring-black/10 dark:ring-white/10",
+        "overflow-y-auto overscroll-contain",
+        surface,
         density === "touch" ? "max-h-[46dvh]" : "max-h-[60dvh]"
       )}
     >
@@ -65,18 +72,27 @@ export function SearchResults({ ctl, density }: { ctl: ImporterController; densi
             // hijack the selection when the list re-renders under it.
             onMouseMove={() => ctl.setSelectedIndex(i)}
             onMouseDown={(e) => e.preventDefault()}
-            onClick={() => ctl.pickGroup(group)}
+            onClick={() => {
+              ctl.pickGroup(group);
+              blurAfterCommitOnTouch();
+            }}
             className={classes(
-              "relative flex cursor-pointer items-center gap-3 border-t border-black/5 dark:border-white/5 first:border-t-0",
+              // Rounded because the panel no longer clips it: on touch the list
+              // has no surface of its own, so a square highlight ran flat into
+              // the floating card's rounded corners.
+              "relative flex cursor-pointer items-center gap-3 rounded-lg border-t border-black/5 dark:border-white/5 first:border-t-0",
               density === "touch" ? "px-3 py-2.5" : "px-3.5 py-2.5",
               selected && "bg-blue-400/15 shadow-[inset_2px_0_0_var(--color-blue-400)]"
             )}
           >
             <CardStack printings={group.stackPrintings} density={density} index={i} />
             <div className="min-w-0 flex-1">
-              {/* Only the name reserves room for the floating session count —
-                  it's the one line the badge sits level with. */}
-              <div className="truncate pr-20 text-sm font-medium">{group.name}</div>
+              {/* Reserve room for the floating session count only when there is
+                  one — otherwise the padding truncates names for a badge that
+                  isn't rendered, which bites hardest on narrow screens. */}
+              <div className={classes("truncate text-sm font-medium", inSession > 0 && "pr-24")}>
+                {group.name}
+              </div>
               <CardMeta
                 className="mt-0.5"
                 cardNumber={group.cardNumber}

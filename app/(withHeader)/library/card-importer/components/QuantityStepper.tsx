@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
 import { classes } from "@/lib/classes";
 import type { Density } from "./types";
 
 /**
  * `− [qty] +`. On desktop the quantity is click-to-edit; on touch it's a plain
- * span, since a 44px tap target that opens a numeric keyboard mid-import is
+ * label, since a 44px tap target that opens a numeric keyboard mid-import is
  * more disruptive than useful.
  */
 export function QuantityStepper({
@@ -35,7 +37,8 @@ export function QuantityStepper({
     if (draft !== null) inputRef.current?.select();
   }, [draft]);
 
-  const button = density === "touch" ? "size-11 rounded-[11px]" : "size-7 rounded-[9px]";
+  const size = density === "touch" ? "size-11" : "size-7";
+  const iconSize = density === "touch" ? 18 : 15;
   /** Stepping down from 1 deletes the row, so the button changes meaning. */
   const removes = quantity <= 1;
 
@@ -54,79 +57,73 @@ export function QuantityStepper({
         fullWidth ? "w-full justify-between" : "shrink-0"
       )}
     >
-      <button
-        type="button"
-        // At 1 this button removes the row rather than decrementing it, so it
-        // reads as destructive — matching Button's own destructive variant.
+      <Button
+        // At 1 this removes the row rather than decrementing it, so it becomes
+        // an X and reads as destructive — it's the only remove affordance, so
+        // it has to say so itself.
+        variant={removes ? "destructive" : "secondary"}
+        highContrast={!removes}
+        icon={removes ? XIcon : MinusIcon}
+        iconSize={iconSize}
         aria-label={removes ? `Remove ${label} from session` : `Decrease quantity of ${label}`}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => onAdjust(-1)}
-        className={classes(
-          button,
-          "flex items-center justify-center cursor-pointer ring-1 ring-inset",
-          "focus-visible:outline-2 focus-visible:outline-blue-500",
-          removes
-            ? "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50"
-            : "bg-black/5 dark:bg-white/8 hover:bg-black/10 dark:hover:bg-white/15 ring-transparent"
-        )}
-      >
-        <MinusIcon size={density === "touch" ? 18 : 15} />
-      </button>
+        className={size}
+      />
 
       {draft !== null ? (
-        <input
+        <Input
           ref={inputRef}
           value={draft}
           inputMode="numeric"
           aria-label={`Quantity of ${label}`}
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
-          // The search field owns every other keystroke in this page; keep the
+          // The search field owns every other keystroke on this page; keep the
           // editor's digits and Enter from reaching it.
           onKeyDown={(e) => {
             e.stopPropagation();
             if (e.key === "Enter") commit();
-            if (e.key === "Escape") {
-              setDraft(null);
-            }
+            if (e.key === "Escape") setDraft(null);
           }}
-          className={classes(
-            "h-7 w-10 rounded-lg text-center font-mono text-sm outline-none",
-            "bg-blue-400/20"
+          className="w-14"
+          inputClassName={classes(
+            "px-0 text-center font-mono font-semibold",
+            density === "touch" ? "h-11" : "h-7"
           )}
         />
       ) : (
-        <button
-          type="button"
+        <Button
+          variant="transparent"
+          highContrast
           aria-hidden
           tabIndex={-1}
           disabled={!editable}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => editable && setDraft(String(quantity))}
           className={classes(
-            "min-w-10 font-mono font-semibold",
+            "min-w-10 px-0 font-mono font-semibold ring-0",
             density === "touch" ? "h-11 text-[15px]" : "h-7 text-sm cursor-text",
+            // Not really disabled on touch — just not editable — so it should
+            // not read as dimmed.
+            !editable && "opacity-100",
             fullWidth && "flex-1"
           )}
         >
           {quantity}
-        </button>
+        </Button>
       )}
 
-      <button
-        type="button"
+      <Button
+        variant="secondary"
+        highContrast
+        icon={PlusIcon}
+        iconSize={iconSize}
         aria-label={`Increase quantity of ${label}`}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => onAdjust(1)}
-        className={classes(
-          button,
-          "flex items-center justify-center cursor-pointer",
-          "bg-black/5 dark:bg-white/8 hover:bg-black/10 dark:hover:bg-white/15",
-          "focus-visible:outline-2 focus-visible:outline-blue-500"
-        )}
-      >
-        <PlusIcon size={density === "touch" ? 18 : 15} />
-      </button>
+        className={size}
+      />
     </div>
   );
 }

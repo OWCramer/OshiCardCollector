@@ -23,6 +23,11 @@ export const viewport: Viewport = {
   // Shrink the visual viewport when a soft keyboard opens so bottom-docked
   // controls (the card importer's mobile search bar) stay above it.
   interactiveWidget: "resizes-content",
+  // Let content run edge to edge, so the page scrolls behind Safari's floating
+  // URL bar rather than stopping above it. This is also what makes
+  // env(safe-area-inset-*) report real values — without cover they are all 0,
+  // and every safe-area calc() in the app silently collapses to its base value.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDownIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
+import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
 import { classes } from "@/lib/classes";
 import { useImporterStore } from "../importerStore";
 import { CardArt } from "./CardArt";
 import { CardMeta } from "./CardMeta";
 import { CardStack } from "./CardStack";
-import { PrintingChips, rarityPillClasses } from "./PrintingChips";
+import { PrintingChips, isHotRarity } from "./PrintingChips";
 import { QuantityStepper } from "./QuantityStepper";
 import type { Density, LedgerRow } from "./types";
 
@@ -18,7 +20,6 @@ export function SessionRow({ row, density }: { row: LedgerRow; density: Density 
 
   const adjustQuantity = useImporterStore((s) => s.adjustQuantity);
   const setQuantity = useImporterStore((s) => s.setQuantity);
-  const removeEntry = useImporterStore((s) => s.removeEntry);
   const assignPrinting = useImporterStore((s) => s.assignPrinting);
   const flash = useImporterStore((s) => s.flash);
 
@@ -42,38 +43,33 @@ export function SessionRow({ row, density }: { row: LedgerRow; density: Density 
     return group.stackPrintings.find((p) => p.rarity === "C" || p.rarity === "U")?.id ?? null;
   }
 
-  const printingBadge = queued ? (
-    <span
-      className={classes(
-        "shrink-0 rounded-full px-1.5 py-[3px] font-mono text-[10px] tracking-wide ring-1 ring-inset",
-        "bg-amber-400/20 text-amber-600 dark:text-amber-400 ring-amber-400/35"
-      )}
-    >
-      pick rarity
-    </span>
+  const rarityControl = queued ? (
+    <Badge color="amber">pick rarity</Badge>
   ) : (
-    card && (
-      <button
-        type="button"
-        aria-expanded={multi ? expanded : undefined}
-        aria-label={multi ? `${card.rarity}, change rarity` : card.rarity}
-        disabled={!multi}
+    card &&
+    // Only clickable when there's something to switch to; otherwise it's a
+    // plain label, so it renders as a Badge rather than a dead button.
+    (multi ? (
+      <Button
+        variant={isHotRarity(card.rarity) ? "primary" : "secondary"}
+        highContrast
+        aria-expanded={expanded}
+        aria-label={`${card.rarity}, change rarity`}
         onMouseDown={(e) => e.preventDefault()}
-        onClick={() => multi && setExpanded((v) => !v)}
+        onClick={() => setExpanded((v) => !v)}
         className={classes(
-          "flex shrink-0 items-center gap-0.5 rounded-full font-mono tracking-wide ring-1 ring-inset",
-          rarityPillClasses(card.rarity),
+          "gap-0.5 rounded-full font-mono tracking-wide",
+          isHotRarity(card.rarity) && "bg-amber-400/15 text-amber-600 dark:text-amber-400",
           // On its own line on touch, so it can afford a real tap target.
-          density === "touch" ? "h-7 px-2.5 text-[11px]" : "px-1.5 py-[3px] text-[10px]",
-          multi
-            ? "cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-500"
-            : "cursor-default"
+          density === "touch" ? "h-7 px-2.5 text-[11px]" : "h-5 px-2 text-[10px]"
         )}
       >
         {card.rarity}
-        {multi && <ChevronDownIcon size={density === "touch" ? 12 : 10} aria-hidden />}
-      </button>
-    )
+        <ChevronDownIcon size={density === "touch" ? 12 : 10} aria-hidden />
+      </Button>
+    ) : (
+      <Badge color={isHotRarity(card.rarity) ? "amber" : "default"}>{card.rarity}</Badge>
+    ))
   );
 
   return (
@@ -136,9 +132,9 @@ export function SessionRow({ row, density }: { row: LedgerRow; density: Density 
           >
             {/* Desktop keeps the pill inline; touch gives it its own line
                 below, so the set name isn't squeezed down to an initial. */}
-            {density === "compact" && printingBadge}
+            {density === "compact" && rarityControl}
           </CardMeta>
-          {density === "touch" && <div className="mt-1.5 flex">{printingBadge}</div>}
+          {density === "touch" && <div className="mt-1.5 flex">{rarityControl}</div>}
 
           {/* Inside the info column, so the options sit beside the art rather
               than under it — the card is tall and this space is otherwise dead. */}
