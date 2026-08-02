@@ -9,16 +9,8 @@ export const RESULTS_ID = "importer-results";
 export const HINT_ID = "importer-hint";
 export const optionId = (index: number) => `importer-opt-${index}`;
 
-export function SearchField({
-  ctl,
-  density,
-  autoFocus,
-}: {
-  ctl: ImporterController;
-  density: Density;
-  autoFocus?: boolean;
-}) {
-  const { setInputEl, query, setQuery, onKeyDown, onInputFocus, onInputBlur, results } = ctl;
+export function SearchField({ ctl, density }: { ctl: ImporterController; density: Density }) {
+  const { query, setQuery, onKeyDown, results } = ctl;
   const expanded = results.length > 0;
 
   return (
@@ -31,15 +23,9 @@ export function SearchField({
     >
       <SearchIcon size={17} className="shrink-0 text-blue-400" />
       <input
-        ref={setInputEl}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={onKeyDown}
-        onFocus={onInputFocus}
-        onBlur={onInputBlur}
-        // Autofocus is desktop-only — on a phone it pops the keyboard over the
-        // ledger before the user has asked for it.
-        autoFocus={autoFocus}
         placeholder={
           density === "touch" ? "Name, set code, number…" : "Card name, set code, or number…"
         }

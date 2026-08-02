@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
 import { useImporterStore } from "../importerStore";
 import { searchGroups } from "./searchCards";
 import { sortRows } from "./sortRows";
@@ -15,22 +15,11 @@ export interface ImporterController {
   setSelectedIndex: (index: number) => void;
   rows: LedgerRow[];
   totalCards: number;
-  /** Rows still waiting on a printing. Save is blocked while this is non-empty. */
+  /** Rows still waiting on a rarity. Save is blocked while this is non-empty. */
   unansweredCount: number;
   sortMode: SortMode;
   setSortMode: (mode: SortMode) => void;
   index: CardGroupIndex;
-
-  /**
-   * A callback ref, not a ref object — the compiler lint taints every property
-   * of an object that holds one, which would flag all of `ctl` in render.
-   */
-  setInputEl: (el: HTMLInputElement | null) => void;
-  focusInput: () => void;
-  onInputFocus: () => void;
-  onInputBlur: () => void;
-  /** Whether the input held focus, so a layout swap can restore it. */
-  isInputFocused: () => boolean;
 
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   commitSelected: () => void;
@@ -49,9 +38,6 @@ export interface ImporterController {
 export function useImporterController(index: CardGroupIndex): ImporterController {
   const [query, setQueryState] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const inputElRef = useRef<HTMLInputElement | null>(null);
-  const wasFocusedRef = useRef(false);
 
   const storeEntries = useImporterStore((s) => s.entries);
   const sortMode = useImporterStore((s) => s.sortMode);
@@ -76,25 +62,13 @@ export function useImporterController(index: CardGroupIndex): ImporterController
     // Number keys always answer the topmost row that's still waiting — and
     // sortRows pins those to the top under every sort, so this stays reachable.
     const active = sorted.find((r) => r.entry.cardId === null);
-    return active ? sorted.map((r) => (r === active ? { ...r, isActiveQuestion: true } : r)) : sorted;
+    return active
+      ? sorted.map((r) => (r === active ? { ...r, isActiveQuestion: true } : r))
+      : sorted;
   }, [storeEntries, index, sortMode]);
 
-  const totalCards = useMemo(
-    () => rows.reduce((sum, r) => sum + r.entry.quantity, 0),
-    [rows]
-  );
-  const unansweredCount = useMemo(
-    () => rows.filter((r) => r.entry.cardId === null).length,
-    [rows]
-  );
-
-  const setInputEl = useCallback((el: HTMLInputElement | null) => {
-    inputElRef.current = el;
-  }, []);
-
-  const focusInput = useCallback(() => {
-    inputElRef.current?.focus();
-  }, []);
+  const totalCards = useMemo(() => rows.reduce((sum, r) => sum + r.entry.quantity, 0), [rows]);
+  const unansweredCount = useMemo(() => rows.filter((r) => r.entry.cardId === null).length, [rows]);
 
   const setQuery = useCallback((next: string) => {
     setQueryState(next);
@@ -111,9 +85,8 @@ export function useImporterController(index: CardGroupIndex): ImporterController
       else queueCard(group.key);
       setQueryState("");
       setSelectedIndex(0);
-      focusInput();
     },
-    [addPrinting, queueCard, focusInput]
+    [addPrinting, queueCard]
   );
 
   const commitSelected = useCallback(() => {
@@ -175,15 +148,6 @@ export function useImporterController(index: CardGroupIndex): ImporterController
     sortMode,
     setSortMode,
     index,
-    setInputEl,
-    focusInput,
-    onInputFocus: () => {
-      wasFocusedRef.current = true;
-    },
-    onInputBlur: () => {
-      wasFocusedRef.current = false;
-    },
-    isInputFocused: () => wasFocusedRef.current,
     onKeyDown,
     commitSelected,
     pickGroup,

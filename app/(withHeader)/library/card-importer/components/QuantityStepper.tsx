@@ -17,7 +17,6 @@ export function QuantityStepper({
   fullWidth,
   onAdjust,
   onSet,
-  onCommitFocus,
 }: {
   quantity: number;
   /** Card name, for the buttons' accessible names. */
@@ -27,8 +26,6 @@ export function QuantityStepper({
   fullWidth?: boolean;
   onAdjust: (delta: number) => void;
   onSet: (quantity: number) => void;
-  /** Returns focus to the search field after an inline edit ends. */
-  onCommitFocus?: () => void;
 }) {
   const editable = density === "compact";
   const [draft, setDraft] = useState<string | null>(null);
@@ -39,13 +36,14 @@ export function QuantityStepper({
   }, [draft]);
 
   const button = density === "touch" ? "size-11 rounded-[11px]" : "size-7 rounded-[9px]";
+  /** Stepping down from 1 deletes the row, so the button changes meaning. */
+  const removes = quantity <= 1;
 
   function commit() {
     if (draft === null) return;
     const parsed = Number.parseInt(draft, 10);
     setDraft(null);
     onSet(Number.isNaN(parsed) ? quantity : parsed);
-    onCommitFocus?.();
   }
 
   return (
@@ -58,14 +56,18 @@ export function QuantityStepper({
     >
       <button
         type="button"
-        aria-label={`Decrease quantity of ${label}`}
-        // Never let a click on the ledger steal focus from the search field.
+        // At 1 this button removes the row rather than decrementing it, so it
+        // reads as destructive — matching Button's own destructive variant.
+        aria-label={removes ? `Remove ${label} from session` : `Decrease quantity of ${label}`}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => onAdjust(-1)}
         className={classes(
           button,
-          "flex items-center justify-center cursor-pointer opacity-75",
-          "hover:bg-black/5 dark:hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-blue-500"
+          "flex items-center justify-center cursor-pointer ring-1 ring-inset",
+          "focus-visible:outline-2 focus-visible:outline-blue-500",
+          removes
+            ? "bg-red-500/15 hover:bg-red-500/25 text-red-500 ring-red-500/20 dark:ring-red-500/50"
+            : "bg-black/5 dark:bg-white/8 hover:bg-black/10 dark:hover:bg-white/15 ring-transparent"
         )}
       >
         <MinusIcon size={density === "touch" ? 18 : 15} />
@@ -86,7 +88,6 @@ export function QuantityStepper({
             if (e.key === "Enter") commit();
             if (e.key === "Escape") {
               setDraft(null);
-              onCommitFocus?.();
             }
           }}
           className={classes(

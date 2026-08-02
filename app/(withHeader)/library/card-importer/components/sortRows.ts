@@ -22,8 +22,7 @@ const COMPARATORS: Record<SortMode, (a: LedgerRow, b: LedgerRow) => number> = {
     const rb = RARITY_ORDER[b.card?.rarity ?? ""] ?? 99;
     return ra - rb || cardNumber(a).localeCompare(cardNumber(b));
   },
-  set: (a, b) =>
-    setName(a).localeCompare(setName(b)) || cardNumber(a).localeCompare(cardNumber(b)),
+  set: (a, b) => setName(a).localeCompare(setName(b)) || cardNumber(a).localeCompare(cardNumber(b)),
   id: (a, b) => (a.card?.id ?? 0) - (b.card?.id ?? 0),
 };
 

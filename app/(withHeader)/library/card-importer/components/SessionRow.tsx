@@ -11,15 +11,7 @@ import { PrintingChips, rarityPillClasses } from "./PrintingChips";
 import { QuantityStepper } from "./QuantityStepper";
 import type { Density, LedgerRow } from "./types";
 
-export function SessionRow({
-  row,
-  density,
-  onCommitFocus,
-}: {
-  row: LedgerRow;
-  density: Density;
-  onCommitFocus: () => void;
-}) {
+export function SessionRow({ row, density }: { row: LedgerRow; density: Density }) {
   const { entry, card, group, isActiveQuestion } = row;
   const [expanded, setExpanded] = useState(false);
   const [hoveredPrinting, setHoveredPrinting] = useState<number | null>(null);
@@ -57,14 +49,14 @@ export function SessionRow({
         "bg-amber-400/20 text-amber-600 dark:text-amber-400 ring-amber-400/35"
       )}
     >
-      pick printing
+      pick rarity
     </span>
   ) : (
     card && (
       <button
         type="button"
         aria-expanded={multi ? expanded : undefined}
-        aria-label={multi ? `${card.rarity}, change printing` : card.rarity}
+        aria-label={multi ? `${card.rarity}, change rarity` : card.rarity}
         disabled={!multi}
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => multi && setExpanded((v) => !v)}
@@ -109,7 +101,12 @@ export function SessionRow({
 
       {/* On touch the stepper drops to its own full-width row below, because a
           44px stepper beside the info squeezed the name and set to initials. */}
-      <div className={classes("relative flex gap-3", density === "touch" ? "items-start" : "items-center")}>
+      <div
+        className={classes(
+          "relative flex gap-3",
+          density === "touch" ? "items-start" : "items-center"
+        )}
+      >
         {/* A queued row hasn't picked a printing, so it cycles through all of
             them — that's the question it's asking. Once answered it settles on
             the one chosen. */}
@@ -154,7 +151,7 @@ export function SessionRow({
             >
               {density === "compact" && (
                 <span className="shrink-0 text-[11.5px] opacity-75">
-                  {queued ? "Which printing?" : "Printing"}
+                  {queued ? "Which rarity?" : "Rarity"}
                 </span>
               )}
               <PrintingChips
@@ -170,7 +167,6 @@ export function SessionRow({
                   setExpanded(false);
                   setHoveredPrinting(null);
                   assignPrinting(entry.key, cardId);
-                  onCommitFocus();
                 }}
               />
             </div>
@@ -184,20 +180,7 @@ export function SessionRow({
             density={density}
             onAdjust={(delta) => adjustQuantity(entry.key, delta)}
             onSet={(qty) => setQuantity(entry.key, qty)}
-            onCommitFocus={onCommitFocus}
           />
-        )}
-
-        {density === "compact" && (
-          <button
-            type="button"
-            aria-label={`Remove ${name} from session`}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => removeEntry(entry.key)}
-            className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-[9px] opacity-75 hover:bg-black/5 hover:opacity-100 dark:hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-blue-500"
-          >
-            <XIcon size={15} />
-          </button>
         )}
       </div>
 
@@ -212,7 +195,6 @@ export function SessionRow({
             fullWidth
             onAdjust={(delta) => adjustQuantity(entry.key, delta)}
             onSet={(qty) => setQuantity(entry.key, qty)}
-            onCommitFocus={onCommitFocus}
           />
         </div>
       )}

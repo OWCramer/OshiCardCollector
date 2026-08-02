@@ -42,16 +42,14 @@ export function SaveDialog({
     <Modal isOpen={isOpen} onClose={onClose} title="Save to library">
       <div className="flex flex-col gap-5">
         <p className="text-sm opacity-75">
-          Add <span className="font-semibold">{totalCards}</span>{" "}
-          {pluralize("card", totalCards)} across {rowCount} {pluralize("row", rowCount)} to your
-          library? Quantities are added to what you already own.
+          Add <span className="font-semibold">{totalCards}</span> {pluralize("card", totalCards)}{" "}
+          across {rowCount} {pluralize("row", rowCount)} to your library? Quantities are added to
+          what you already own.
         </p>
 
         {lists.length > 0 && (
           <div className="flex flex-col gap-2.5">
-            <p className="text-sm font-medium">
-              Also add to a list?
-            </p>
+            <p className="text-sm font-medium">Also add to a list?</p>
             <p className="-mt-1.5 text-xs opacity-75">
               Lists track which cards you have, not how many.
             </p>

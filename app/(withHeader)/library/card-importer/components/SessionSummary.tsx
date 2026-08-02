@@ -15,18 +15,14 @@ export function SessionSummary({
   unansweredCount: number;
 }) {
   return (
-    <span
-      aria-live="polite"
-      aria-atomic="true"
-      className="block text-xs text-balance opacity-75"
-    >
+    <span aria-live="polite" aria-atomic="true" className="block text-xs text-balance opacity-75">
       {totalCards === 0
         ? "empty"
         : `${totalCards} ${pluralize("card", totalCards)} · ${uniqueCount} ${pluralize("row", uniqueCount)}`}
       {unansweredCount > 0 && (
         // Says why Save is disabled, rather than leaving a dead button.
         <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">
-          {unansweredCount} still {pluralize("need", unansweredCount)} a printing
+          {unansweredCount} still {pluralize("need", unansweredCount)} a rarity
         </span>
       )}
     </span>

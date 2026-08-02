@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { PageLoading } from "@/components/PageLoading";
 import { useAuth } from "@/lib/auth-context";
@@ -28,7 +28,11 @@ export default function CardImporterPage() {
   // useBreakpoint reports false until its effect runs, so the very first paint
   // is always the mobile branch. Gate on mount to avoid a layout flash — the
   // catalog query and store hydration both outlast one tick anyway.
-  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    subscribeNever,
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (!authLoading && !user) router.replace("/login");
@@ -45,18 +49,12 @@ export default function CardImporterPage() {
   const ctl = useImporterController(index);
   const saver = useSaveSession();
 
-  // The two layouts render different <input> elements, so the swap unmounts the
-  // focused node. Put focus back if the user had it.
-  const prevDesktop = useRef(isDesktop);
-  const { isInputFocused, focusInput } = ctl;
-  useEffect(() => {
-    if (prevDesktop.current === isDesktop) return;
-    prevDesktop.current = isDesktop;
-    if (isInputFocused()) focusInput();
-  }, [isDesktop, isInputFocused, focusInput]);
-
   if (authLoading || !mounted || cardsLoading || status !== "ready") return <PageLoading />;
   if (!user) return null;
 
-  return isDesktop ? <ImporterDesktop ctl={ctl} saver={saver} /> : <ImporterMobile ctl={ctl} saver={saver} />;
+  return isDesktop ? (
+    <ImporterDesktop ctl={ctl} saver={saver} />
+  ) : (
+    <ImporterMobile ctl={ctl} saver={saver} />
+  );
 }

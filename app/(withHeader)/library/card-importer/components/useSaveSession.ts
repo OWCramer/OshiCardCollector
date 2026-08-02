@@ -1,11 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  importCardsToLibrary,
-  type LibraryIncrement,
-  type ListMembership,
-} from "@/api/library";
+import { importCardsToLibrary, type LibraryIncrement, type ListMembership } from "@/api/library";
 import { useAuth } from "@/lib/auth-context";
 import { useLibrary } from "@/lib/library-context";
 import { useFavorites } from "@/lib/favorites-context";
@@ -31,7 +27,12 @@ export function useSaveSession(): SaveSession {
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    []
+  );
 
   const save = useCallback(async () => {
     const { entries, listIds, clearAfterSave } = useImporterStore.getState();
@@ -39,9 +40,9 @@ export function useSaveSession(): SaveSession {
     if (!user || rows.length === 0 || saving) return;
 
     // Belt and braces — the Save button is already disabled in this state, but
-    // an unanswered row has no card id and must never reach Firestore.
+    // a row with no rarity chosen has no card id and must never reach Firestore.
     if (rows.some((entry) => entry.cardId === null)) {
-      setError("Some cards still need a printing.");
+      setError("Some cards still need a rarity.");
       return;
     }
 

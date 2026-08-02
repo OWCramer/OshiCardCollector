@@ -5,6 +5,7 @@ import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/Button";
 import { Dropdown } from "@/components/Dropdown";
 import { useImporterStore } from "../importerStore";
+import { DiscardDialog } from "./DiscardDialog";
 import { SaveDialog } from "./SaveDialog";
 import { SearchField } from "./SearchField";
 import { SearchResults } from "./SearchResults";
@@ -17,6 +18,7 @@ import type { SaveSession } from "./useSaveSession";
 export function ImporterDesktop({ ctl, saver }: { ctl: ImporterController; saver: SaveSession }) {
   const discard = useImporterStore((s) => s.discard);
   const [confirming, setConfirming] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
   const hasEntries = ctl.rows.length > 0;
   const blocked = ctl.unansweredCount > 0;
 
@@ -35,7 +37,7 @@ export function ImporterDesktop({ ctl, saver }: { ctl: ImporterController; saver
       </div>
 
       <div className="flex flex-col gap-2">
-        <SearchField ctl={ctl} density="compact" autoFocus />
+        <SearchField ctl={ctl} density="compact" />
         <SearchResults ctl={ctl} density="compact" />
       </div>
 
@@ -68,7 +70,7 @@ export function ImporterDesktop({ ctl, saver }: { ctl: ImporterController; saver
             value={ctl.sortMode}
             onValueChange={ctl.setSortMode}
           />
-          <Button variant="destructive" disabled={!hasEntries} onClick={discard}>
+          <Button variant="destructive" disabled={!hasEntries} onClick={() => setDiscarding(true)}>
             Discard
           </Button>
           {/* Blocked while anything is unanswered — there's no card id to write. */}
@@ -87,14 +89,7 @@ export function ImporterDesktop({ ctl, saver }: { ctl: ImporterController; saver
           it was cutting off the card art's drop shadow on the edge rows. */}
       <ul className="rounded-xl ring-1 ring-inset ring-black/8 dark:ring-white/8">
         {hasEntries ? (
-          ctl.rows.map((row) => (
-            <SessionRow
-              key={row.entry.key}
-              row={row}
-              density="compact"
-              onCommitFocus={ctl.focusInput}
-            />
-          ))
+          ctl.rows.map((row) => <SessionRow key={row.entry.key} row={row} density="compact" />)
         ) : (
           <li className="px-5 py-10 text-center text-[13px] opacity-75">
             {/* No opacity on these — they'd nest inside the parent's 75% and
@@ -104,6 +99,17 @@ export function ImporterDesktop({ ctl, saver }: { ctl: ImporterController; saver
           </li>
         )}
       </ul>
+
+      <DiscardDialog
+        isOpen={discarding}
+        onClose={() => setDiscarding(false)}
+        onConfirm={() => {
+          discard();
+          setDiscarding(false);
+        }}
+        totalCards={ctl.totalCards}
+        rowCount={ctl.rows.length}
+      />
 
       <SaveDialog
         isOpen={confirming}

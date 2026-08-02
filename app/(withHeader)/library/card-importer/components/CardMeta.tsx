@@ -26,9 +26,7 @@ export function CardMeta({
 }) {
   return (
     <div className={classes("flex items-center gap-2 min-w-0", className)}>
-      <span className="font-mono text-[11.5px] leading-none opacity-75">
-        {cardNumber}
-      </span>
+      <span className="font-mono text-[11.5px] leading-none opacity-75">{cardNumber}</span>
       {colors.length > 0 && (
         <span className="flex shrink-0 gap-[3px]">
           {getColorImageSrcs(colors).map((src) => (
@@ -39,14 +37,10 @@ export function CardMeta({
         </span>
       )}
       {cardType && (
-        <span className="shrink-0 text-[11.5px] leading-none opacity-75">
-          {cardType}
-        </span>
+        <span className="shrink-0 text-[11.5px] leading-none opacity-75">{cardType}</span>
       )}
       {setName && (
-        <span className="min-w-0 truncate text-[11.5px] leading-none opacity-75">
-          {setName}
-        </span>
+        <span className="min-w-0 truncate text-[11.5px] leading-none opacity-75">{setName}</span>
       )}
       {children}
     </div>

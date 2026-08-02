@@ -5,6 +5,7 @@ import { CheckIcon } from "lucide-react";
 import { Button } from "@/components/Button";
 import { Dropdown } from "@/components/Dropdown";
 import { useImporterStore } from "../importerStore";
+import { DiscardDialog } from "./DiscardDialog";
 import { SaveDialog } from "./SaveDialog";
 import { SearchField } from "./SearchField";
 import { SearchResults } from "./SearchResults";
@@ -23,6 +24,7 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
   const discard = useImporterStore((s) => s.discard);
   const flash = useImporterStore((s) => s.flash);
   const [confirming, setConfirming] = useState(false);
+  const [discarding, setDiscarding] = useState(false);
   const hasEntries = ctl.rows.length > 0;
   const blocked = ctl.unansweredCount > 0;
 
@@ -37,9 +39,14 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
   }
 
   return (
-    // min-h rather than h, and no overflow: the page itself scrolls, so the
-    // ledger is plain flow content instead of a nested scroll container.
-    <section aria-label="Card importer" className="flex min-h-[calc(100dvh-3.8125rem)] flex-col">
+    // Plain flow, no height cap and no flex column. The previous version pinned
+    // the section to 100dvh with a `sticky bottom-0` bar, but a sticky last
+    // child *reserves* its own space at the end of the flow — so content could
+    // never pass behind it, and on iOS Safari the 100dvh box fought the
+    // collapsing toolbar and clipped the tail of the list. This mirrors
+    // all-cards: normal document scroll, a `fixed` bar, and bottom padding on
+    // the content to clear it.
+    <section aria-label="Card importer" className="w-full">
       <div className="border-b border-black/8 dark:border-white/8 px-3.5 pb-3 mt-3">
         <div className="mb-2.5 flex items-center gap-2">
           <div className="flex justify-between w-full items-center">
@@ -87,22 +94,17 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
               </span>
             )}
           </div>
-          <Button variant="destructive" disabled={!hasEntries} onClick={discard}>
+          <Button variant="destructive" disabled={!hasEntries} onClick={() => setDiscarding(true)}>
             Discard
           </Button>
         </div>
       </div>
 
-      <ul className="flex-1 px-1 py-2">
+      {/* Bottom padding clears the fixed bar so the last row can scroll out
+          from behind it, plus the iOS home indicator inset. */}
+      <ul className="px-1 py-2 pb-[calc(9rem+env(safe-area-inset-bottom))]">
         {hasEntries ? (
-          ctl.rows.map((row) => (
-            <SessionRow
-              key={row.entry.key}
-              row={row}
-              density="touch"
-              onCommitFocus={ctl.focusInput}
-            />
-          ))
+          ctl.rows.map((row) => <SessionRow key={row.entry.key} row={row} density="touch" />)
         ) : (
           <li className="px-5 py-12 text-center text-[13px] leading-relaxed opacity-75">
             Search from the bar below.
@@ -112,14 +114,24 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
         )}
       </ul>
 
-      {/* Sticky rather than fixed: it still occupies layout space at the end of
-          the flow, so nothing hides behind it and no bottom padding is needed
-          to compensate. Pinned to the viewport bottom while the page scrolls,
-          and it settles into place once you reach the end. */}
-      <div className="sticky bottom-0 z-10 flex flex-col gap-2 bg-transparent px-3 pt-2 pb-2">
+      {/* Fixed, like the all-cards filter bar — out of flow entirely, so the
+          ledger scrolls behind it. z-30 sits under the global header (z-40)
+          and the modals (z-50). */}
+      <div className="fixed inset-x-0 bottom-0 z-30 flex flex-col gap-2 px-3 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
         <SearchResults ctl={ctl} density="touch" />
         <SearchField ctl={ctl} density="touch" />
       </div>
+
+      <DiscardDialog
+        isOpen={discarding}
+        onClose={() => setDiscarding(false)}
+        onConfirm={() => {
+          discard();
+          setDiscarding(false);
+        }}
+        totalCards={ctl.totalCards}
+        rowCount={ctl.rows.length}
+      />
 
       <SaveDialog
         isOpen={confirming}

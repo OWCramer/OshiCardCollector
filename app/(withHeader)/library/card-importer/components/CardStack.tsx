@@ -71,8 +71,7 @@ export function CardStack({
   const [front, setFront] = useState(0);
   const [hovered, setHovered] = useState(false);
 
-  const focusIndex =
-    focusCardId == null ? -1 : printings.findIndex((p) => p.id === focusCardId);
+  const focusIndex = focusCardId == null ? -1 : printings.findIndex((p) => p.id === focusCardId);
 
   // Adjusting state during render rather than in an effect — React's documented
   // pattern for deriving from changed props. Writing `front` here (instead of
@@ -140,9 +139,7 @@ export function CardStack({
               y: slotY(slot, height),
               scale: slotScale(slot),
               // A little flick as it tucks away, settling on the fan angle.
-              rotate: wrapping
-                ? [0, -FLICK_DEG, slot * ROTATE_STEP]
-                : slot * ROTATE_STEP,
+              rotate: wrapping ? [0, -FLICK_DEG, slot * ROTATE_STEP] : slot * ROTATE_STEP,
               zIndex: count - slot,
             }}
             transition={{

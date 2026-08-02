@@ -32,7 +32,10 @@ function comparePrintings(a: CardMapEntry, b: CardMapEntry): number {
 
 /** "Booster Pack – Enchant Regalia" → "Enchant Regalia" */
 export function shortSetName(setName: string): string {
-  const afterDash = setName.split(/\s[–—-]\s/).slice(1).join(" ");
+  const afterDash = setName
+    .split(/\s[–—-]\s/)
+    .slice(1)
+    .join(" ");
   return (afterDash || setName).trim();
 }
 

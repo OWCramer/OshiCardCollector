@@ -54,9 +54,7 @@ export function PrintingChips({
             key={printing.id}
             type="button"
             aria-keyshortcuts={showHints ? String(i + 1) : undefined}
-            aria-label={
-              showHints ? `${printing.rarity}, press ${i + 1}` : printing.rarity
-            }
+            aria-label={showHints ? `${printing.rarity}, press ${i + 1}` : printing.rarity}
             onMouseDown={(e) => e.preventDefault()}
             onMouseEnter={() => onHoverPrinting?.(printing.id)}
             onClick={() => onPick(printing.id)}
@@ -79,8 +77,10 @@ export function PrintingChips({
             </span>
             {showHints && (
               // No opacity of its own: an inactive chip is already at 75%, and
-              // stacking another would take the hint down to 41%.
-              <span aria-hidden className="shrink-0 font-mono text-[10px]">
+              // stacking another would take the hint down to 41%. Hidden on
+              // touch for the same reason as the ↵ badge — no keyboard to
+              // press the number on.
+              <span aria-hidden className="shrink-0 font-mono text-[10px] pointer-coarse:hidden">
                 {i + 1}
               </span>
             )}
