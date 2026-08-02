@@ -48,65 +48,74 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
     // all-cards: normal document scroll, a `fixed` bar, and bottom padding on
     // the content to clear it.
     <section aria-label="Card importer" className="w-full">
-      <div className="px-3.5 pb-3 mt-3">
-        {/* Summary sits with the title. It's free to shrink and wrap, because
+      {/* Sticks directly under the fixed GlobalHeader, so Save and Discard stay
+          reachable however far down the ledger you are. Needs its own opaque
+          backdrop — rows scroll underneath it — and pt rather than mt, or the
+          margin would leave a transparent strip once it's stuck. z-20 keeps it
+          under the header (z-40) and the docked search bar (z-30). */}
+      <div className="sticky top-[var(--header-height)] z-20 bg-white/80 backdrop-blur-md dark:bg-zinc-950/80">
+        <div className="px-3.5 pt-3 pb-3">
+          {/* Summary sits with the title. It's free to shrink and wrap, because
             the unanswered-rarity warning makes it long at 390px. */}
-        <div className="mb-2.5 flex items-center gap-2">
-          <h1 className="shrink-0 text-lg font-semibold">Import</h1>
-          <div className="min-w-0 flex-1">
-            <SessionSummary
-              totalCards={ctl.totalCards}
-              uniqueCount={ctl.rows.length}
-              unansweredCount={ctl.unansweredCount}
+          <div className="mb-2.5 flex items-center gap-2">
+            <h1 className="shrink-0 text-lg font-semibold">Import</h1>
+            <div className="min-w-0 flex-1">
+              <SessionSummary
+                totalCards={ctl.totalCards}
+                uniqueCount={ctl.rows.length}
+                unansweredCount={ctl.unansweredCount}
+              />
+            </div>
+            <Dropdown
+              className="w-40 shrink-0"
+              items={SORT_ITEMS}
+              value={ctl.sortMode}
+              onValueChange={ctl.setSortMode}
             />
           </div>
-          <Dropdown
-            className="w-40 shrink-0"
-            items={SORT_ITEMS}
-            value={ctl.sortMode}
-            onValueChange={ctl.setSortMode}
-          />
-        </div>
 
-        {/* Half and half. Destructive on the left, primary on the right — the
+          {/* Half and half. Destructive on the left, primary on the right — the
             conventional order, and it puts Save under the right thumb. */}
-        <div className="flex gap-2">
-          <Button
-            className="flex-1 min-w-0"
-            variant="destructive"
-            disabled={!hasEntries}
-            onClick={() => setDiscarding(true)}
-          >
-            Discard
-          </Button>
-          {/* Blocked while a rarity is unanswered — there's no card id to write. */}
-          <Button
-            className="flex-1 min-w-0"
-            variant="primary"
-            highContrast
-            disabled={!hasEntries || blocked}
-            onClick={() => setConfirming(true)}
-          >
-            Save to library
-          </Button>
-        </div>
-
-        {(saver.savedAt || saver.error) && (
-          <div className="mt-2 flex items-center gap-2 text-xs font-medium">
-            {saver.savedAt && (
-              <span role="status" className="flex items-center gap-1 text-green-500">
-                <CheckIcon size={13} /> saved
-              </span>
-            )}
-            {saver.error && (
-              <span role="alert" className="text-red-500">
-                {saver.error}
-              </span>
-            )}
+          <div className="flex gap-2">
+            <Button
+              className="flex-1 min-w-0"
+              variant="destructive"
+              disabled={!hasEntries}
+              onClick={() => setDiscarding(true)}
+            >
+              Discard
+            </Button>
+            {/* Blocked while a rarity is unanswered — there's no card id to write. */}
+            <Button
+              className="flex-1 min-w-0"
+              variant="primary"
+              highContrast
+              disabled={!hasEntries || blocked}
+              onClick={() => setConfirming(true)}
+            >
+              Save to library
+            </Button>
           </div>
-        )}
+
+          {(saver.savedAt || saver.error) && (
+            <div className="mt-2 flex items-center gap-2 text-xs font-medium">
+              {saver.savedAt && (
+                <span role="status" className="flex items-center gap-1 text-green-500">
+                  <CheckIcon size={13} /> saved
+                </span>
+              )}
+              {saver.error && (
+                <span role="alert" className="text-red-500">
+                  {saver.error}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+        {/* Inside the sticky block, so it reads as its lower edge rather than
+            scrolling away and leaving the panel floating. */}
+        <Divider />
       </div>
-      <Divider />
 
       {/* Bottom padding clears the fixed bar so the last row can scroll out
           from behind it, plus the iOS home indicator inset. */}

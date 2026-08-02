@@ -216,7 +216,7 @@ export function GlobalHeader() {
           now that viewport-fit=cover lets content reach the screen edges. Every
           inset is 0 on desktop, Android and non-notched devices, so these
           calc()s reduce to the previous fixed values there. */}
-      <nav className="fixed w-full h-[calc(3.8125rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] py-2 dark:border-zinc-800">
+      <nav className="fixed w-full h-[var(--header-height)] pt-[env(safe-area-inset-top)] z-40 flex items-center gap-3 border-b border-zinc-200 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] py-2 dark:border-zinc-800">
         {/* Hamburger — mobile only */}
         <button
           onClick={() => setMobileOpen(true)}

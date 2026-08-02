@@ -7,11 +7,7 @@ export default function WithHeaderLayout({ children }: { children: ReactNode }) 
       <nav aria-label="Global header navigation" className="shrink-0">
         <GlobalHeader />
       </nav>
-      {/* Tracks the header's height, which now includes the safe-area top inset. */}
-      <main
-        aria-label="Main content"
-        className="mt-[calc(3.8125rem+env(safe-area-inset-top))] flex flex-col flex-1"
-      >
+      <main aria-label="Main content" className="mt-[var(--header-height)] flex flex-col flex-1">
         <div className="flex flex-col flex-1 w-full max-w-full">{children}</div>
       </main>
     </div>

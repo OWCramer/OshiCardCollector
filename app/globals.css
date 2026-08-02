@@ -5,6 +5,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /*
+   * Height of the fixed GlobalHeader, including the iOS status-bar inset that
+   * viewport-fit=cover exposes. Anything that offsets below the header — the
+   * main content's top margin, sticky sub-headers — reads it from here so the
+   * three don't drift apart. The inset is 0 wherever there is no notch.
+   */
+  --header-height: calc(3.8125rem + env(safe-area-inset-top));
 }
 
 .dark {
