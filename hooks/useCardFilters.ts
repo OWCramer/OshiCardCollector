@@ -305,11 +305,15 @@ export function useCardFilters(allCards: CardNode[]) {
     return `${pathname}${qs ? `?${qs}` : ""}`;
   }, [pathname, sortField, sortOrder]);
 
-  // ── fuzzy search ─────────────────────────────────────────────────────────
+  // ── search ───────────────────────────────────────────────────────────────
+  // `cardNumber` is deliberately NOT a Fuse key. Every number shares the
+  // `hXXNN-NNN` shape, so any two are ~80% similar and a fuzzy pass over that
+  // field is close to a no-op filter — searching "hBP01-098" returned 1386 of
+  // 1724 cards. Structured codes get an exact substring match instead.
   const fuse = useMemo(
     () =>
       new Fuse(allCards, {
-        keys: ["name", "cardNumber", "tags", "specialText", "extraText"],
+        keys: ["name", "tags", "specialText", "extraText"],
         threshold: 0.35,
         ignoreLocation: true,
         ignoreDiacritics: true,
@@ -320,8 +324,20 @@ export function useCardFilters(allCards: CardNode[]) {
   );
 
   const afterSearch = useMemo(() => {
-    if (!search.trim()) return allCards;
-    return fuse.search(search).map((r) => r.item);
+    const query = search.trim();
+    if (!query) return allCards;
+
+    const bare = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const bareQuery = bare(query);
+    // Substring rather than prefix, so "01-098" finds hBP01-098.
+    const byNumber = bareQuery
+      ? allCards.filter((card) => bare(card.cardNumber).includes(bareQuery))
+      : [];
+
+    const matched = new Map(byNumber.map((card) => [card.id, card]));
+    for (const { item } of fuse.search(query)) matched.set(item.id, item);
+    // Preserve the catalog's own order; sorting is applied downstream.
+    return allCards.filter((card) => matched.has(card.id));
   }, [fuse, search, allCards]);
 
   // ── filter ───────────────────────────────────────────────────────────────
