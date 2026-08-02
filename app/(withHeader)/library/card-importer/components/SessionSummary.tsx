@@ -16,9 +16,11 @@ export function SessionSummary({
 }) {
   return (
     <span aria-live="polite" aria-atomic="true" className="block text-xs text-balance opacity-75">
-      {totalCards === 0
-        ? "empty"
-        : `${totalCards} ${pluralize("card", totalCards)} · ${uniqueCount} ${pluralize("row", uniqueCount)}`}
+      {/* Nothing at all when the session is empty — the ledger's own placeholder
+          already says so, and the live region stays mounted either way so an
+          add still announces. */}
+      {totalCards > 0 &&
+        `${totalCards} ${pluralize("card", totalCards)} · ${uniqueCount} ${pluralize("row", uniqueCount)}`}
       {unansweredCount > 0 && (
         // Says why Save is disabled, rather than leaving a dead button.
         <span className="ml-2 font-medium text-amber-600 dark:text-amber-400">

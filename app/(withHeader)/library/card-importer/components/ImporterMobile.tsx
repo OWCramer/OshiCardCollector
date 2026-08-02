@@ -49,56 +49,62 @@ export function ImporterMobile({ ctl, saver }: { ctl: ImporterController; saver:
     // the content to clear it.
     <section aria-label="Card importer" className="w-full">
       <div className="px-3.5 pb-3 mt-3">
+        {/* Summary sits with the title. It's free to shrink and wrap, because
+            the unanswered-rarity warning makes it long at 390px. */}
         <div className="mb-2.5 flex items-center gap-2">
-          <div className="flex justify-between w-full items-center">
-            <h1 className="shrink-0 text-lg font-semibold">Import</h1>
-            <Dropdown
-              className="w-40 shrink"
-              items={SORT_ITEMS}
-              value={ctl.sortMode}
-              onValueChange={ctl.setSortMode}
-            />
-          </div>
-          {saver.savedAt && (
-            <span
-              role="status"
-              className="ml-auto flex shrink-0 items-center gap-1 text-xs font-medium text-green-500"
-            >
-              <CheckIcon size={13} /> saved
-            </span>
-          )}
-        </div>
-
-        {/* Blocked while anything is unanswered — there's no card id to write. */}
-        <Button
-          className="w-full"
-          variant="primary"
-          highContrast
-          disabled={!hasEntries || blocked}
-          onClick={() => setConfirming(true)}
-        >
-          Save to library
-        </Button>
-
-        {/* Summary must be free to shrink and wrap — the unanswered warning
-            makes it long, and at 390px it would otherwise push Discard off. */}
-        <div className="mt-2.5 flex items-center gap-2">
+          <h1 className="shrink-0 text-lg font-semibold">Import</h1>
           <div className="min-w-0 flex-1">
             <SessionSummary
               totalCards={ctl.totalCards}
               uniqueCount={ctl.rows.length}
               unansweredCount={ctl.unansweredCount}
             />
+          </div>
+          <Dropdown
+            className="w-40 shrink-0"
+            items={SORT_ITEMS}
+            value={ctl.sortMode}
+            onValueChange={ctl.setSortMode}
+          />
+        </div>
+
+        {/* Half and half. Destructive on the left, primary on the right — the
+            conventional order, and it puts Save under the right thumb. */}
+        <div className="flex gap-2">
+          <Button
+            className="flex-1 min-w-0"
+            variant="destructive"
+            disabled={!hasEntries}
+            onClick={() => setDiscarding(true)}
+          >
+            Discard
+          </Button>
+          {/* Blocked while a rarity is unanswered — there's no card id to write. */}
+          <Button
+            className="flex-1 min-w-0"
+            variant="primary"
+            highContrast
+            disabled={!hasEntries || blocked}
+            onClick={() => setConfirming(true)}
+          >
+            Save to library
+          </Button>
+        </div>
+
+        {(saver.savedAt || saver.error) && (
+          <div className="mt-2 flex items-center gap-2 text-xs font-medium">
+            {saver.savedAt && (
+              <span role="status" className="flex items-center gap-1 text-green-500">
+                <CheckIcon size={13} /> saved
+              </span>
+            )}
             {saver.error && (
-              <span role="alert" className="block text-xs font-medium text-red-500">
+              <span role="alert" className="text-red-500">
                 {saver.error}
               </span>
             )}
           </div>
-          <Button variant="destructive" disabled={!hasEntries} onClick={() => setDiscarding(true)}>
-            Discard
-          </Button>
-        </div>
+        )}
       </div>
       <Divider />
 
