@@ -87,7 +87,9 @@ function comparator(a: CardNode, b: CardNode, field: SortField, order: SortOrder
       if (!da && !db) result = 0;
       else if (!da) result = 1;
       else if (db) {
-        result = da.localeCompare(db);
+        const daDate = new Date(da)
+        const dbDate = new Date(db)
+        result = dbDate.getTime() - daDate.getTime();
       } else {
         result = -1;
       }
