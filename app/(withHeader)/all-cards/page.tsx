@@ -16,7 +16,6 @@ import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { type SortField, useCardFilters } from "@/hooks/useCardFilters";
 import { ArrowDownIcon, ArrowUpIcon, FilterIcon, Loader2Icon, SearchIcon } from "lucide-react";
 import { classes } from "@/lib/classes";
@@ -162,7 +161,6 @@ function AllCardsContent() {
     filteredCards,
     hasActiveFilters,
     clearFilters,
-    clearFiltersHref,
   } = useCardFilters(allCards);
 
   // Local state for the input so the field updates instantly. Makes it not bad
@@ -180,6 +178,14 @@ function AllCardsContent() {
 
   function handleSearchChange(v: string) {
     setInputValue(v);
+  }
+
+  // The input holds its own value, so clearing only the hook's `search` would
+  // let the debounce effect above write it straight back — filter and URL param
+  // included.
+  function handleClearFilters() {
+    setInputValue("");
+    clearFilters();
   }
 
   useEffect(() => {
@@ -349,11 +355,14 @@ function AllCardsContent() {
 
       {/* Clear filters */}
       {hasActiveFilters && (
-        <Link href={clearFiltersHref} onClick={clearFilters} className="w-full">
-          <Button variant="transparent" highContrast className="w-full">
-            Clear filters
-          </Button>
-        </Link>
+        <Button
+          variant="transparent"
+          highContrast
+          className="w-full"
+          onClick={handleClearFilters}
+        >
+          Clear filters
+        </Button>
       )}
     </div>
   );

@@ -37,6 +37,22 @@ const RARITY_ORDER: Record<string, number> = {
   SEC: 7,
 };
 
+// Every URL param owned by a filter — i.e. everything Clear filters removes.
+// Sorting params are deliberately absent; clearing filters keeps the sort.
+const FILTER_PARAMS = [
+  "search",
+  "rarity",
+  "cardType",
+  "colors",
+  "bloomLevel",
+  "sets",
+  "tags",
+  "isLimited",
+  "isBuzz",
+  "minHp",
+  "maxHp",
+];
+
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 function parseList(value: string | null): string[] {
@@ -296,16 +312,17 @@ export function useCardFilters(allCards: CardNode[]) {
     setIsBuzzFilter(null);
     setMinHp(undefined);
     setMaxHp(undefined);
-  }, []);
 
-  // URL preserving only sorting params — used by the Clear filters Link
-  const clearFiltersHref = useMemo(() => {
-    const params = new URLSearchParams();
-    if (sortField !== "releaseDate") params.set("sortField", sortField);
-    if (sortOrder !== "asc") params.set("sortOrder", sortOrder);
+    // The URL has to be cleared through the same replaceState channel the
+    // updaters use. A <Link> can't do it: the Next router never sees those
+    // replaceState writes, so navigating to the un-filtered href is a no-op
+    // whenever the router still believes that's the current URL — and the
+    // filter params stay in the address bar. Sorting params are preserved.
+    const params = new URLSearchParams(globalThis.location.search);
+    for (const key of FILTER_PARAMS) params.delete(key);
     const qs = params.toString();
-    return `${pathname}${qs ? `?${qs}` : ""}`;
-  }, [pathname, sortField, sortOrder]);
+    globalThis.history.replaceState(null, "", `${pathname}${qs ? `?${qs}` : ""}`);
+  }, [pathname]);
 
   // ── search ───────────────────────────────────────────────────────────────
   // `cardNumber` is deliberately NOT a Fuse key. Every number shares the
@@ -411,6 +428,5 @@ export function useCardFilters(allCards: CardNode[]) {
     filteredCards,
     hasActiveFilters,
     clearFilters,
-    clearFiltersHref,
   };
 }
